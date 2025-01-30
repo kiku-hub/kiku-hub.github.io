@@ -26,7 +26,9 @@ const Hero = () => {
         </div>
       </div>
 
-      <OrcaCanvas />
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3/5 h-full">
+        <OrcaCanvas />
+      </div>
 
       <div className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center'>
         <a href='#about'>

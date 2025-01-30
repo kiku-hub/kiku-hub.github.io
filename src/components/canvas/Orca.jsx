@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { Suspense, useEffect, useState, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
 
@@ -9,6 +9,7 @@ const Orca = ({ isMobile }) => {
   const orca = useGLTF("./orca/Animation_Skill_01_withSkin.glb");
   const { animations } = orca;
   const { actions, names } = useAnimations(animations, orca.scene);
+  const modelRef = useRef();
 
   useEffect(() => {
     console.log('Available animations:', names);
@@ -32,7 +33,7 @@ const Orca = ({ isMobile }) => {
   }, [actions, names]);
 
   return (
-    <mesh>
+    <mesh ref={modelRef}>
       <hemisphereLight intensity={0.15} groundColor='black' />
       <spotLight
         position={[-20, 50, 10]}
@@ -45,9 +46,9 @@ const Orca = ({ isMobile }) => {
       <pointLight intensity={1} />
       <primitive
         object={orca.scene}
-        scale={isMobile ? 2.5 : 3.0}
-        position={[4, -1.5, 0]}
-        rotation={[-0.00, -0.0, -0.0]}
+        scale={isMobile ? 4.5 : 5.0}
+        position={[0, -2.5, -2.0]}
+        rotation={[0, 0, 0]}
       />
     </mesh>
   );
@@ -78,7 +79,12 @@ const OrcaCanvas = () => {
       frameloop='always'
       shadows
       dpr={[1, 2]}
-      camera={{ position: [20, 3, 5], fov: 25 }}
+      camera={{ 
+        fov: 45,
+        near: 0.1,
+        far: 200,
+        position: [20, 3, 5],
+      }}
       gl={{ preserveDrawingBuffer: true }}
       onError={(error) => {
         console.error('Canvas error:', error);
@@ -86,9 +92,14 @@ const OrcaCanvas = () => {
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
+          autoRotate
+          autoRotateSpeed={5}
           enableZoom={false}
+          enableRotate={true}
+          enablePan={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
+          target={[0, 0, 0]}
         />
         <Orca isMobile={isMobile} />
       </Suspense>
