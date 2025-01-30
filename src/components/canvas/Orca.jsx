@@ -92,7 +92,6 @@ const OrcaCanvas = () => {
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
-          autoRotate
           autoRotateSpeed={5}
           enableZoom={false}
           enableRotate={true}
