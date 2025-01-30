@@ -1,13 +1,35 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
+import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
+import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
 
 const Orca = ({ isMobile }) => {
   const orca = useGLTF("./orca/Animation_Skill_01_withSkin.glb");
-  
-  console.log('Model loaded:', orca); // デバッグ用
+  const { animations } = orca;
+  const { actions, names } = useAnimations(animations, orca.scene);
+
+  useEffect(() => {
+    console.log('Available animations:', names);
+
+    names.forEach((name) => {
+      const action = actions[name];
+      action
+        .reset()
+        .setLoop(THREE.LoopRepeat, Infinity)
+        .setEffectiveTimeScale(0.6)
+        .fadeIn(0.5)
+        .play();
+    });
+
+    return () => {
+      names.forEach((name) => {
+        const action = actions[name];
+        action.fadeOut(0.5);
+      });
+    };
+  }, [actions, names]);
 
   return (
     <mesh>
@@ -23,9 +45,9 @@ const Orca = ({ isMobile }) => {
       <pointLight intensity={1} />
       <primitive
         object={orca.scene}
-        scale={isMobile ? 0.3 : 0.5}
-        position={isMobile ? [0, -2, -1] : [0, -2, -1.5]}
-        rotation={[0, 0, 0]}
+        scale={isMobile ? 2.5 : 3.0}
+        position={[4, -1.5, 0]}
+        rotation={[-0.00, -0.0, -0.0]}
       />
     </mesh>
   );
@@ -53,7 +75,7 @@ const OrcaCanvas = () => {
 
   return (
     <Canvas
-      frameloop='demand'
+      frameloop='always'
       shadows
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
