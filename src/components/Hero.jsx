@@ -177,8 +177,8 @@ const Hero = () => {
             transition={{ delay: 1.8, duration: 1 }}
           >
             {[
-              ["BREAK", " the ordinary, ", "CREATE", " new value."],
-              ["See", " the essence, ", "OPEN", " the future."]
+              ["BREAK", "the ordinary,", "CREATE", "new value."],
+              ["See", "the essence,", "OPEN", "the future."]
             ].map((textParts, index) => (
               <motion.div
                 key={index}
@@ -193,7 +193,7 @@ const Hero = () => {
                 }}
               >
                 <motion.span 
-                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 block tracking-wider`}
+                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 block tracking-wider flex items-center gap-4`}
                   animate={{
                     y: [-1, 1, -1],
                     filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"]
@@ -208,8 +208,8 @@ const Hero = () => {
                   {textParts.map((part, partIndex) => (
                     <motion.span
                       key={partIndex}
-                      className={`inline-block ${part.toUpperCase() === part ? 'text-[#00a8ff] font-bold' : ''}`}
-                      whileHover={part.toUpperCase() === part ? {
+                      className={`inline-block ${part.trim().toUpperCase() === part.trim() ? 'text-[#00a8ff] font-bold' : ''}`}
+                      whileHover={part.trim().toUpperCase() === part.trim() ? {
                         scale: 1.1,
                         textShadow: "0 0 10px rgba(0, 168, 255, 0.5)"
                       } : {}}
