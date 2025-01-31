@@ -40,22 +40,27 @@ export const navLinks = [
   },
 ];
 
-const services = [
+export const services = [
   {
-    title: "Web Developer",
+    title: "Vision",
     icon: web,
+    description: "固定観念をくつがえし、本質を見据えた新たな可能性を広げる",
   },
   {
-    title: "React Native Developer",
+    title: "Mission",
     icon: mobile,
+    description: "先端技術と批判的思考を融合し、革新的で有益な成果を人々にもたらす",
   },
   {
-    title: "Backend Developer",
+    title: "Values",
     icon: backend,
-  },
-  {
-    title: "Content Creator",
-    icon: creator,
+    points: [
+      "Challenging Perspectives: 常識を疑い、多角的な視点からベストな答えを探る",
+      "Constructive Criticism: 建設的なフィードバックを重視し、より良い解決を生む",
+      "Technical Excellence: 本質的な価値をもたらす技術を追究し、品質を厳守",
+      "Integrity & Responsibility: 誠実さと一貫性を保ち、責任ある行動を徹底",
+      "Empowering Collaboration: 独自の視点を持ち寄り、相乗効果を重視する",
+    ],
   },
 ];
 
@@ -262,4 +267,4 @@ const projects = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects };
+export { technologies, experiences, testimonials, projects };
