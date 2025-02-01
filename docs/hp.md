@@ -1,8 +1,8 @@
 # ORCX 株式会社
 
-## 製品
+## 製品(products)
 
-## サービス
+## サービス(services)
 
 ### SES 事業
 
@@ -44,7 +44,7 @@ NVIDIA 最新 GPU を活用した高性能環境の構築をサポートしま�
 - 24/7 の安定運用サポート
 - セキュリティ対策の実装
 
-## 企業理念 | Mission & Vision
+## 企業理念 | About us
 
 ### Vision
 
@@ -62,7 +62,7 @@ Integrate cutting-edge technology with critical thinking to deliver innovative a
 - **Integrity & Responsibility**: 誠実さと一貫性を保ち、責任ある行動を徹底
 - **Empowering Collaboration**: 独自の視点を持ち寄り、相乗効果を重視する
 
-## 会社概要
+## 会社概要(company)
 
 - 社名：ORCX 株式会社
 - 設立：2025 年 2 月 1 日
@@ -71,7 +71,7 @@ Integrate cutting-edge technology with critical thinking to deliver innovative a
 - 資本金：100 万円
 - 従業員数：2 名（別途、BP エンジニア 10 名以上）
 
-## メンバー紹介
+## メンバー紹介(team)
 
 ### 代表取締役社長 吉田 翔一朗
 
@@ -83,7 +83,7 @@ Integrate cutting-edge technology with critical thinking to deliver innovative a
 クラウドインフラ構築のスペシャリスト。大規模システムの設計・運用経験を持ち、
 技術戦略の立案から実装まで幅広く対応。AWS ソリューションアーキテクト認定資格保有。
 
-## お問い合わせ
+## お問い合わせ(contact)
 
 お気軽にご相談ください。貴社のニーズに合わせた最適なソリューションをご提案いたします。
 
