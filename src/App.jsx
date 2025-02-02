@@ -12,17 +12,17 @@ const App = () => {
         <Navbar />
         <Hero />
       </div>
-      <div className='relative z-0 ocean-gradient wave-effect'>
-        <Products />
-        <Services />
-        <About />
-        <Experience />
-        <Tech />
-        <Feedbacks />
-        <div className='relative z-0'>
+      <div className='relative'>
+        <div className='relative z-0 ocean-gradient'>
+          <Products />
+          <Services />
+          <About />
+          <Experience />
+          <Tech />
+          <Feedbacks />
           <Contact />
-          <StarsCanvas />
         </div>
+        <StarsCanvas />
       </div>
     </BrowserRouter>
   );
