@@ -250,42 +250,10 @@ const Hero = () => {
       </div>
 
       <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3/5 h-full">
-        <OrcaCanvas />
+        <div className="relative w-full h-full">
+          <OrcaCanvas />
+        </div>
       </div>
-
-      <motion.div 
-        className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center'
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 3, duration: 1 }}
-      >
-        <a href='#about'>
-          <motion.div 
-            className='relative w-[35px] h-[64px] rounded-full border-2 border-[#00a8ff]/20 flex justify-center items-start p-2 backdrop-blur-sm hover:border-[#00a8ff]/40 transition-colors duration-300'
-            whileHover={{ 
-              scale: 1.1,
-              boxShadow: "0 0 15px rgba(0, 168, 255, 0.2)"
-            }}
-          >
-            <motion.div
-              animate={{
-                y: [0, 24, 0],
-                boxShadow: [
-                  "0 0 5px rgba(0, 168, 255, 0.2)",
-                  "0 0 10px rgba(0, 168, 255, 0.4)",
-                  "0 0 5px rgba(0, 168, 255, 0.2)"
-                ]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-              className='w-3 h-3 rounded-full bg-[#00a8ff]/80 mb-1'
-            />
-          </motion.div>
-        </a>
-      </motion.div>
 
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none" />
     </section>
