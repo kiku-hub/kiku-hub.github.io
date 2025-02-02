@@ -32,27 +32,31 @@ const Orca = ({ isMobile }) => {
   const { actions, names } = useAnimations(animations, orca.scene);
 
   useEffect(() => {
-    const setupAnimations = () => {
-      names.forEach((name) => {
-        const action = actions[name];
-        action
-          .reset()
-          .setLoop(THREE.LoopRepeat, Infinity)
-          .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
-          .fadeIn(ANIMATION_CONFIG.fadeInDuration)
-          .play();
-      });
-    };
+    // シーンの最適化
+    orca.scene.traverse((object) => {
+      if (object.isMesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
 
-    const cleanupAnimations = () => {
+    // アニメーションの設定
+    names.forEach((name) => {
+      const action = actions[name];
+      action
+        .reset()
+        .setLoop(THREE.LoopRepeat, Infinity)
+        .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
+        .fadeIn(ANIMATION_CONFIG.fadeInDuration)
+        .play();
+    });
+
+    return () => {
       names.forEach((name) => {
         actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
       });
     };
-
-    setupAnimations();
-    return cleanupAnimations;
-  }, [actions, names]);
+  }, [actions, names, orca.scene]);
 
   return (
     <mesh ref={modelRef}>
@@ -76,51 +80,42 @@ const Orca = ({ isMobile }) => {
   );
 };
 
-// OrbitControlsコンポーネント
-const SceneControls = () => (
-  <OrbitControls
-    enableZoom={false}
-    enableRotate={true}
-    enablePan={false}
-    maxPolarAngle={Math.PI / 2}
-    minPolarAngle={Math.PI / 2}
-    target={[0, 0, 0]}
-  />
-);
-
-// メインのCanvasコンポーネント
+// Canvas コンポーネント
 const OrcaCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 500px)");
-    
+    setIsMobile(mediaQuery.matches);
+
     const handleMediaQueryChange = (event) => {
       setIsMobile(event.matches);
     };
 
-    setIsMobile(mediaQuery.matches);
     mediaQuery.addEventListener("change", handleMediaQueryChange);
-
     return () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange);
     };
   }, []);
 
-  // モデルのプリロード
-  useGLTF.preload(MODEL_PATH);
-
   return (
     <Canvas
-      frameloop='always'
       shadows
+      frameloop='always'
       dpr={[1, 2]}
+      gl={{ 
+        preserveDrawingBuffer: true,
+        antialias: true,
+      }}
       camera={CAMERA_CONFIG}
-      gl={{ preserveDrawingBuffer: true }}
-      onError={(error) => console.error('Canvas error:', error)}
     >
       <Suspense fallback={<CanvasLoader />}>
-        <SceneControls />
+        <OrbitControls
+          enableZoom={false}
+          enableRotate={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2}
+        />
         <Orca isMobile={isMobile} />
       </Suspense>
       <Preload all />

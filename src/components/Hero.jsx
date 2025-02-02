@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 import { styles } from "../styles";
 import { OrcaCanvas } from "./canvas";
+import { useEffect, useRef } from "react";
 
 // 青系のカラーパレット
 const colors = {
@@ -10,6 +11,7 @@ const colors = {
   neon: '#48dbfb'          // ネオン効果用の鮮やかな青
 };
 
+// アニメーション設定をメモ化
 const textVariants = {
   animate: {
     transition: {
@@ -47,15 +49,25 @@ const glowVariants = {
 };
 
 const Hero = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref);
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start("animate");
+    }
+  }, [isInView, controls]);
+
   return (
-    <section className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}>
+    <section ref={ref} className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}>
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-[#00a8ff]/5 via-transparent to-transparent"
         variants={glowVariants}
         initial="initial"
-        animate="animate"
+        animate={controls}
       />
 
       <motion.div
@@ -109,7 +121,7 @@ const Hero = () => {
               className={`${styles.heroHeadText} text-white relative inline-block`}
               variants={textVariants}
               initial="initial"
-              animate="animate"
+              animate={controls}
             >
               <motion.div className="relative flex flex-col items-start gap-0">
                 {["BREAK", "AND", "BUILD"].map((text, index) => (
