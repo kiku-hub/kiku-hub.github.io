@@ -11,6 +11,7 @@ import { github } from "../assets";
 const ProjectCard = ({
   index,
   name,
+  subtitle,
   description,
   tags,
   image,
@@ -52,6 +53,7 @@ const ProjectCard = ({
 
         <div className='mt-5'>
           <h3 className='text-white font-bold text-[32px]'>{name}</h3>
+          <p className='mt-1 text-[#80d0c7] text-[18px] italic'>{subtitle}</p>
           <p className='mt-2 text-secondary text-[18px]'>{description}</p>
         </div>
 
