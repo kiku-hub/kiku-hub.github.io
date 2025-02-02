@@ -7,7 +7,7 @@ import Experience from "./Experience";
 import Feedbacks from "./Feedbacks";
 import Contact from "./Contact";
 import CanvasLoader from "./Loader";
-
+import Services from "./Services";
 
 export {
   Hero,
@@ -21,7 +21,8 @@ export {
   EarthCanvas, 
   BallCanvas, 
   OrcaCanvas,
-  StarsCanvas
+  StarsCanvas,
+  Services
 };
 
 export { default as Products } from './Products';

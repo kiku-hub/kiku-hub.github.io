@@ -76,6 +76,8 @@ const Products = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
+        <p className={styles.sectionSubText}>製品
+        </p>
         <h2 className={`${styles.sectionHeadText}`}>Products.</h2>
       </motion.div>
 

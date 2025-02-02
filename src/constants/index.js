@@ -29,6 +29,10 @@ export const navLinks = [
     title: "About",
   },
   {
+    id: "services",
+    title: "Services",
+  },
+  {
     id: "work",
     title: "Work",
   },
@@ -40,24 +44,47 @@ export const navLinks = [
 
 export const services = [
   {
-    title: "Vision",
-    icon: web,
-    description: "固定観念をくつがえし、本質を見据えた新たな可能性を広げる",
-  },
-  {
-    title: "Mission",
-    icon: mobile,
-    description: "先端技術と批判的思考を融合し、革新的で有益な成果を人々にもたらす",
-  },
-  {
-    title: "Values",
-    icon: backend,
+    title: "システムエンジニアリングサービス",
+    description: "独自開発のスキルマッチング AI を活用し、最適な人材配置を実現します。",
     points: [
-      "Challenging Perspectives: 常識を疑い、多角的な視点からベストな答えを探る",
-      "Constructive Criticism: 建設的なフィードバックを重視し、より良い解決を生む",
-      "Technical Excellence: 本質的な価値をもたらす技術を追究し、品質を厳守",
-      "Integrity & Responsibility: 誠実さと一貫性を保ち、責任ある行動を徹底",
-      "Empowering Collaboration: 独自の視点を持ち寄り、相乗効果を重視する",
+      "高精度なスキル評価システム",
+      "エンジニアの技術力を客観的に可視化",
+      "取引先 50 社以上との安定的な取引関係",
+      "エンジニア 10 名以上の技術パートナー体制",
+      "月 1 回のキャリア面談実施",
+      "技術・心理面での充実したサポート体制",
+    ],
+  },
+  {
+    title: "SES プラットフォーム Arch",
+    description: "SES 企業とエンジニアを結ぶ、次世代型プラットフォームを提供します。",
+    points: [
+      "独自 AI 技術による高精度マッチング",
+      "スキルの定量的評価・可視化",
+      "効率的な選考プロセス",
+      "データ分析による継続的な精度向上",
+      "クラウドベースで全国規模に対応",
+    ],
+  },
+  {
+    title: "受託開発",
+    description: "最新技術を活用した高品質なシステム開発を提供します。",
+    points: [
+      "Web システム開発",
+      "クラウドシステム構築",
+      "AI アルゴリズム実装",
+      "アジャイル開発手法の採用",
+      "要件定義から運用保守まで一貫支援",
+    ],
+  },
+  {
+    title: "AI サーバー構築サービス",
+    description: "NVIDIA 最新 GPU を活用した高性能環境の構築をサポートします。",
+    points: [
+      "オンプレミス・クラウド環境対応",
+      "負荷・用途に応じた最適構成の提案",
+      "24/7 の安定運用サポート",
+      "セキュリティ対策の実装",
     ],
   },
 ];
