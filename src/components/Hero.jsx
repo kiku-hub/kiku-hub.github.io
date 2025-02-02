@@ -193,7 +193,7 @@ const Hero = () => {
                 }}
               >
                 <motion.span 
-                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 block tracking-wider flex items-center gap-4`}
+                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 tracking-wider flex items-center gap-4`}
                   animate={{
                     y: [-1, 1, -1],
                     filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"]

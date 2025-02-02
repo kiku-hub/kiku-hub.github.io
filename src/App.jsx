@@ -6,13 +6,11 @@ import CursorEffect from "./components/CursorEffect";
 const App = () => {
   return (
     <BrowserRouter>
-      <CursorEffect />
-      <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
-        <Navbar />
-        <Hero />
-      </div>
-      <div className='relative z-0 ocean-gradient wave-effect'>
-        <div className="absolute inset-0 bg-[#0052D4]/10 backdrop-blur-[2px] pointer-events-none"></div>
+       <div className='relative z-0 bg-primary'>
+        <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
+          <Navbar />
+          <Hero />
+        </div>
         <Products />
         <About />
         <Experience />
