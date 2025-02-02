@@ -85,18 +85,25 @@ const InitialLoader = () => {
   const { progress } = useProgress();
   const [displayProgress, setDisplayProgress] = useState(0);
   const progressRef = useRef(0);
+  const maxProgressRef = useRef(0);
 
   // 実際の進捗値を滑らかにアニメーション
   useEffect(() => {
     let animationFrame;
+    const ANIMATION_SPEED = 0.08; // よりゆっくりとした速度
+
     const animateProgress = () => {
-      const diff = progress - progressRef.current;
-      if (Math.abs(diff) < 0.1) {
-        progressRef.current = progress;
-        setDisplayProgress(progress);
+      const targetProgress = Math.max(progress, maxProgressRef.current);
+      maxProgressRef.current = targetProgress;
+
+      const diff = targetProgress - progressRef.current;
+      
+      if (Math.abs(diff) < 0.01) {
+        progressRef.current = targetProgress;
+        setDisplayProgress(targetProgress);
       } else {
-        // 現在値から目標値に向かってスムーズに変化
-        progressRef.current += diff * 0.1;
+        const step = Math.max(diff * ANIMATION_SPEED, 0.1); // 最小増加量を設定
+        progressRef.current = Math.min(progressRef.current + step, targetProgress);
         setDisplayProgress(progressRef.current);
         animationFrame = requestAnimationFrame(animateProgress);
       }
@@ -106,16 +113,12 @@ const InitialLoader = () => {
     return () => cancelAnimationFrame(animationFrame);
   }, [progress]);
 
-  // ローディング完了時の処理
   useEffect(() => {
     if (progress === 100) {
-      // displayProgressが100%に到達するまで待つ
       const checkProgress = setInterval(() => {
         if (Math.round(displayProgress) === 100) {
           clearInterval(checkProgress);
-          // フェードアウトアニメーションを開始
           setFadeOut(true);
-          // フェードアウト完了後にローディングを終了
           setTimeout(() => {
             setLoading(false);
           }, 1500);
@@ -139,6 +142,29 @@ const InitialLoader = () => {
             ease: [0.4, 0, 0.2, 1]
           }}
         >
+          {/* オーバーレイグラデーション */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-t from-black to-transparent"
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: displayProgress / 200, // より控えめな効果
+            }}
+            transition={{ duration: 0.4 }}
+          />
+          
+          {/* 明るさのオーバーレイ */}
+          <motion.div
+            className="absolute inset-0 mix-blend-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: fadeOut ? 0.4 : displayProgress / 300,
+              background: fadeOut 
+                ? 'radial-gradient(circle at center, white 0%, transparent 70%)'
+                : 'radial-gradient(circle at center, white 0%, transparent 100%)'
+            }}
+            transition={{ duration: 0.4 }}
+          />
+
           <LoaderContainer maxWidth={false}>
             <motion.div
               variants={containerVariants}
@@ -182,7 +208,8 @@ const InitialLoader = () => {
                       thickness={1.5}
                       sx={{
                         position: 'absolute',
-                        transform: 'rotate(-90deg)'
+                        transform: 'rotate(-90deg)',
+                        transition: 'none' // トランジションを無効化して即時反映
                       }}
                     />
                     <Typography
