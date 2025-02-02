@@ -82,34 +82,7 @@ const Hero = () => {
         }}
       />
 
-      <div className={`absolute inset-0 top-[120px] max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}>
-        <div className='flex flex-col justify-center items-center mt-5'>
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7],
-              boxShadow: [
-                `0 0 10px ${colors.primary}33`,
-                `0 0 20px ${colors.primary}66`,
-                `0 0 10px ${colors.primary}33`
-              ]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-            className='w-5 h-5 rounded-full bg-[#00a8ff] backdrop-blur-sm' 
-          />
-          <motion.div
-            initial={{ scaleY: 0, opacity: 0 }}
-            animate={{ scaleY: 1, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className='w-[2px] sm:h-80 h-40 bg-gradient-to-b from-[#00a8ff] via-[#00a8ff]/50 to-transparent' 
-          />
-        </div>
-
+      <div className={`absolute inset-0 top-1/2 -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-center gap-5`}>
         <div className="relative z-10">
           <motion.div 
             className="relative"
@@ -118,7 +91,7 @@ const Hero = () => {
             transition={{ duration: 1 }}
           >
             <motion.h1 
-              className={`${styles.heroHeadText} text-white relative inline-block`}
+              className={`${styles.heroHeadText} text-white relative inline-block text-[7rem] sm:text-[9rem]`}
               variants={textVariants}
               initial="initial"
               animate={controls}
@@ -129,7 +102,7 @@ const Hero = () => {
                     key={index}
                     className={`relative ${
                       text === "AND" 
-                        ? "text-white/60 transform tracking-[0.3em] py-1"
+                        ? "text-white/60 transform tracking-[0.3em] py-3"
                         : "text-[#e6e6ed] font-bold tracking-[0.3em] text-glow"
                     }`}
                     initial={{ opacity: 0, y: 20 }}
@@ -149,33 +122,8 @@ const Hero = () => {
                         }}
                       >
                         {letter}
-                        <motion.div
-                          className="absolute -bottom-1 left-0 w-full h-[1px] bg-[#00a8ff]"
-                          initial={{ scaleX: 0 }}
-                          animate={{ scaleX: [0, 1, 0] }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            delay: letterIndex * 0.1
-                          }}
-                        />
                       </motion.span>
                     ))}
-                    <motion.div
-                      className="absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#00a8ff]/0 via-[#00a8ff] to-[#00a8ff]/0"
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      animate={{ 
-                        scaleX: 1, 
-                        opacity: [0.5, 1, 0.5],
-                        filter: ["blur(0px)", "blur(2px)", "blur(0px)"]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatType: "reverse"
-                      }}
-                    />
                   </motion.span>
                 ))}
               </motion.div>
@@ -183,18 +131,18 @@ const Hero = () => {
           </motion.div>
 
           <motion.div 
-            className="mt-8 space-y-6"
+            className="mt-12 space-y-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.8, duration: 1 }}
           >
             {[
               ["BREAK", "the ordinary,", "CREATE", "new value."],
-              ["See", "the essence,", "OPEN", "the future."]
+              ["SEE", "the essence,", "OPEN", "the future."]
             ].map((textParts, index) => (
               <motion.div
                 key={index}
-                className="relative overflow-hidden inline-block group"
+                className="relative overflow-hidden inline-block group text-[2.5rem] sm:text-[3.5rem]"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 2 + index * 0.3, duration: 0.8 }}
@@ -205,7 +153,7 @@ const Hero = () => {
                 }}
               >
                 <motion.span 
-                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 tracking-wider flex items-center gap-4`}
+                  className={`${styles.heroSubText} text-[#e6e6ed] relative z-10 tracking-wider flex items-center gap-8`}
                   animate={{
                     y: [-1, 1, -1],
                     filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"]
@@ -220,18 +168,26 @@ const Hero = () => {
                   {textParts.map((part, partIndex) => (
                     <motion.span
                       key={partIndex}
-                      className={`inline-block ${part.trim().toUpperCase() === part.trim() ? 'text-[#00a8ff] font-bold' : ''}`}
-                      whileHover={part.trim().toUpperCase() === part.trim() ? {
-                        scale: 1.1,
-                        textShadow: "0 0 10px rgba(0, 168, 255, 0.5)"
-                      } : {}}
+                      className={`inline-block ${
+                        part.trim().toUpperCase() === part.trim() || part === "See" 
+                          ? 'text-[#00a8ff] font-bold' 
+                          : ''
+                      }`}
+                      whileHover={
+                        part.trim().toUpperCase() === part.trim() || part === "See" 
+                          ? {
+                              scale: 1.1,
+                              textShadow: "0 0 10px rgba(0, 168, 255, 0.5)"
+                            } 
+                          : {}
+                      }
                     >
-                      {part}
+                      {part === "See" ? "SEE" : part}
                     </motion.span>
                   ))}
                 </motion.span>
                 <motion.div
-                  className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#00a8ff]/0 via-[#00a8ff]/30 to-[#00a8ff]/0"
+                  className="absolute -bottom-2 left-0 w-full h-[2px] bg-gradient-to-r from-[#00a8ff]/0 via-[#00a8ff]/30 to-[#00a8ff]/0"
                   animate={{
                     x: ["-100%", "0%", "100%"],
                     opacity: [0.3, 0.7, 0.3]

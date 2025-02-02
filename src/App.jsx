@@ -1,10 +1,12 @@
 import { BrowserRouter } from "react-router-dom";
 import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Products, StarsCanvas, Services } from "./components";
 import CursorEffect from "./components/CursorEffect";
+import InitialLoader from "./components/InitialLoader";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <InitialLoader />
       <CursorEffect />
       <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
         <Navbar />

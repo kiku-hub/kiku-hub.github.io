@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
-import CanvasLoader from "../Loader";
 
 // 定数の定義
 const MODEL_PATH = "./orca/Animation_Skill_01_withSkin.glb";
@@ -109,7 +108,7 @@ const OrcaCanvas = () => {
       }}
       camera={CAMERA_CONFIG}
     >
-      <Suspense fallback={<CanvasLoader />}>
+      <Suspense>
         <OrbitControls
           enableZoom={false}
           enableRotate={false}
