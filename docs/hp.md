@@ -46,21 +46,31 @@ NVIDIA 最新 GPU を活用した高性能環境の構築をサポートしま�
 
 ## 企業理念 | About us
 
-### Vision
-
-Transform conventional wisdom and expand new possibilities by focusing on the essence.
-固定観念をくつがえし、本質を見据えた新たな可能性を広げる
-
 ### Mission
 
 Integrate cutting-edge technology with critical thinking to deliver innovative and valuable outcomes for people.
 先端技術と批判的思考を融合し、革新的で有益な成果を人々にもたらす
 
+### Vision
+
+Transform conventional wisdom and expand new possibilities by focusing on the essence.
+固定観念をくつがえし、本質を見据えた新たな可能性を広げる
+
+### Value
+
+Pursue excellence through technology and innovative thinking to create a better future.
+本質を追求する技術と革新的思考で、より良い未来を創造する
+
 - **Challenging Perspectives**: 常識を疑い、多角的な視点からベストな答えを探る
+  Question assumptions and seek optimal solutions from multiple angles
 - **Constructive Criticism**: 建設的なフィードバックを重視し、より良い解決を生む
+  Emphasize constructive feedback to generate better solutions
 - **Technical Excellence**: 本質的な価値をもたらす技術を追究し、品質を厳守
+  Pursue technologies that bring fundamental value while maintaining quality standards
 - **Integrity & Responsibility**: 誠実さと一貫性を保ち、責任ある行動を徹底
+  Maintain consistency and sincerity while ensuring responsible actions
 - **Empowering Collaboration**: 独自の視点を持ち寄り、相乗効果を重視する
+  Bring unique perspectives together to create synergistic effects
 
 ## メンバー紹介(team)
 
