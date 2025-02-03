@@ -237,8 +237,8 @@ const projects = [
 ];
 
 export const aboutContent = {
-  title: "Our Philosophy",
-  subtitle: "Message",
+  title: "私たちについて",
+  subtitle: "About Us",
   description: "私たちは、技術革新と創造的思考を通じて、社会に新たな価値を創造することを目指しています。常に本質を追求し、固定観念にとらわれない視点で、より良い未来を築くためのソリューションを提供します。",
   cards: [
     {
