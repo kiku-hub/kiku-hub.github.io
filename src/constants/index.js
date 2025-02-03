@@ -250,7 +250,7 @@ export const aboutContent = {
     {
       title: "Vision",
       icon: "👁️",
-      description: "固定観念をくつがえし、本質を見据えた新たな可能性を広げる",
+      description: "固定観念を覆し、本質を見据えた新たな可能性を広げる",
       subDescription: "Transform conventional wisdom and expand new possibilities by focusing on the essence.",
     },
     {
