@@ -23,7 +23,7 @@ import {
   threejs,
 } from "../assets";
 
-export const navLinks = [
+const navLinks = [
   {
     id: "about",
     title: "About",
@@ -42,7 +42,7 @@ export const navLinks = [
   },
 ];
 
-export const services = [
+const services = [
   {
     title: "ITソリューション事業",
     description: "本質的価値を創造する、真のテクノロジーパートナーへ。",
@@ -184,33 +184,6 @@ const experiences = [
   },
 ];
 
-const testimonials = [
-  {
-    testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Rick proved me wrong.",
-    name: "Sara Lee",
-    designation: "CFO",
-    company: "Acme Co",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
-  },
-  {
-    testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Rick does.",
-    name: "Chris Brown",
-    designation: "COO",
-    company: "DEF Corp",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
-  {
-    testimonial:
-      "After Rick optimized our website, our traffic increased by 50%. We can't thank them enough!",
-    name: "Lisa Wang",
-    designation: "CTO",
-    company: "456 Enterprises",
-    image: "https://randomuser.me/api/portraits/women/6.jpg",
-  },
-];
-
 const projects = [
   {
     name: "Arch",
@@ -236,7 +209,7 @@ const projects = [
   },
 ];
 
-export const aboutContent = {
+const aboutContent = {
   title: "私たちについて",
   subtitle: "About Us",
   description: "私たちは、技術革新と創造的思考を通じて、社会に新たな価値を創造することを目指しています。常に本質を追求し、固定観念にとらわれない視点で、より良い未来を築くためのソリューションを提供します。",
@@ -284,4 +257,29 @@ export const aboutContent = {
   ]
 };
 
-export { technologies, experiences, testimonials, projects };
+const members = [
+  {
+    message: "大手SIerでのシステム開発経験を経て、AI開発ベンチャーにて技術責任者を務める。機械学習やデータ分析の専門知識を活かし、革新的なAIソリューションの開発をリード。",
+    name: "吉田 翔一朗",
+    role: "代表取締役社長",
+    company: "ORCX",
+    image: "https://randomuser.me/api/portraits/men/4.jpg",
+  },
+  {
+    message: "クラウドインフラ構築のスペシャリスト。大規模システムの設計・運用経験を持ち、技術戦略の立案から実装まで幅広く対応。AWSソリューションアーキテクト認定資格保有。",
+    name: "菊池 恭輔",
+    role: "取締役COO",
+    company: "ORCX",
+    image: "https://randomuser.me/api/portraits/men/5.jpg",
+  },
+];
+
+export {
+  navLinks,
+  services,
+  technologies,
+  experiences,
+  projects,
+  aboutContent,
+  members,
+};

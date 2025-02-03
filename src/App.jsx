@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Products, StarsCanvas, Services } from "./components";
+import { About, Contact, Experience, Member, Hero, Navbar, Tech, Products, StarsCanvas, Services } from "./components";
 import CursorEffect from "./components/CursorEffect";
 import InitialLoader from "./components/InitialLoader";
 
@@ -18,7 +18,7 @@ const App = () => {
           <Services />
           <About />
           <Tech />
-          <Feedbacks />
+          <Member />
           <Experience />
           <Contact />
         </div>
