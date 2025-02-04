@@ -1,26 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { useProgress } from "@react-three/drei";
-import { Box, CircularProgress, Typography, Container } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-// カスタムスタイルのCircularProgress
-const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
-  color: 'white',
-  opacity: 0.9,
-  '& .MuiCircularProgress-circle': {
-    strokeLinecap: 'round',
-    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  },
-}));
-
-// カスタムスタイルのコンテナ
-const LoaderContainer = styled(Container)({
-  height: '100vh',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
 
 // アニメーション設定
 const containerVariants = {
@@ -55,25 +35,25 @@ const containerVariants = {
 
 const childVariants = {
   hidden: { 
+    scale: 0.9,
     opacity: 0,
-    y: 20,
-    scale: 0.9
+    y: 10
   },
   visible: { 
+    scale: 1,
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.4,
       ease: [0.4, 0, 0.2, 1]
     }
   },
   exit: {
+    scale: 0.9,
     opacity: 0,
     y: -10,
-    scale: 0.95,
     transition: {
-      duration: 0.4,
+      duration: 0.3,
       ease: [0.4, 0, 0.2, 1]
     }
   }
@@ -147,7 +127,7 @@ const InitialLoader = () => {
             className="absolute inset-0 bg-gradient-to-t from-black to-transparent"
             initial={{ opacity: 0 }}
             animate={{ 
-              opacity: displayProgress / 200, // より控えめな効果
+              opacity: displayProgress / 200,
             }}
             transition={{ duration: 0.4 }}
           />
@@ -165,88 +145,65 @@ const InitialLoader = () => {
             transition={{ duration: 0.4 }}
           />
 
-          <LoaderContainer maxWidth={false}>
+          <div className="h-screen flex items-center justify-center">
             <motion.div
               variants={containerVariants}
               initial="visible"
               animate={fadeOut ? "exit" : "visible"}
               exit="exit"
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 3
-                }}
-              >
+              <div className="flex flex-col items-center gap-8">
                 <motion.div variants={childVariants}>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: 100,
-                      height: 100,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <StyledCircularProgress
-                      variant="determinate"
-                      value={100}
-                      size={100}
-                      thickness={1.5}
-                      sx={{ 
-                        opacity: 0.1,
-                        position: 'absolute'
-                      }}
-                    />
-                    <StyledCircularProgress
-                      variant="determinate"
-                      value={displayProgress}
-                      size={100}
-                      thickness={1.5}
-                      sx={{
-                        position: 'absolute',
-                        transform: 'rotate(-90deg)',
-                        transition: 'none' // トランジションを無効化して即時反映
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: 'white',
-                        fontWeight: 300,
-                        letterSpacing: 1,
-                        fontSize: '1rem'
-                      }}
-                    >
+                  <div className="relative w-[100px] h-[100px] flex items-center justify-center">
+                    {/* Background Circle */}
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle
+                        className="text-white/10"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        r="47"
+                        cx="50"
+                        cy="50"
+                      />
+                    </svg>
+                    {/* Progress Circle */}
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle
+                        className="text-white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        stroke="currentColor"
+                        fill="none"
+                        r="47"
+                        cx="50"
+                        cy="50"
+                        style={{
+                          strokeDasharray: `${2 * Math.PI * 47}`,
+                          strokeDashoffset: `${2 * Math.PI * 47 * (1 - displayProgress / 100)}`,
+                          transition: 'none'
+                        }}
+                      />
+                    </svg>
+                    {/* Progress Text */}
+                    <span className="text-white text-base font-light tracking-wider">
                       {Math.round(displayProgress)}
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
                 </motion.div>
                 
                 <motion.div variants={childVariants}>
-                  <Typography
-                    variant="overline"
-                    sx={{
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      letterSpacing: '0.3em',
-                      fontSize: '0.6rem',
-                      fontWeight: 400,
-                      textTransform: 'uppercase'
-                    }}
-                  >
+                  <span className="text-white/50 text-xs tracking-[0.3em] font-normal uppercase">
                     Loading
-                  </Typography>
+                  </span>
                 </motion.div>
-              </Box>
+              </div>
             </motion.div>
-          </LoaderContainer>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 };
 
-export default InitialLoader; 
+export default InitialLoader;

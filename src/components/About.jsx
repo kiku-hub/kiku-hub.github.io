@@ -1,9 +1,6 @@
 import React from "react";
 import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
-import TargetIcon from '@mui/icons-material/GpsFixed';
-import VisionIcon from '@mui/icons-material/RemoveRedEye';
-import ValueIcon from '@mui/icons-material/Diamond';
 
 import { styles } from "../styles";
 import { fadeIn, textVariant } from "../utils/motion";
@@ -13,11 +10,29 @@ import { aboutContent } from "../constants";
 const getIcon = (title) => {
   switch (title) {
     case 'Mission':
-      return <TargetIcon sx={{ fontSize: 40 }} />;
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+          <circle cx="12" cy="12" r="8" className="stroke-white fill-white/20" />
+          <circle cx="12" cy="12" r="6" className="stroke-white fill-white/20" />
+          <circle cx="12" cy="12" r="4" className="stroke-white fill-white/20" />
+          <circle cx="12" cy="12" r="2" className="stroke-white fill-white" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4l0 16" className="stroke-white" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M20 12l-16 0" className="stroke-white" />
+        </svg>
+      );
     case 'Vision':
-      return <VisionIcon sx={{ fontSize: 40 }} />;
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+          <path d="M12 5.5C7 5.5 2.73 8.61 1 13c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z" className="stroke-white fill-white/20" />
+          <circle cx="12" cy="13" r="3.5" className="stroke-white fill-white" />
+        </svg>
+      );
     case 'Value':
-      return <ValueIcon sx={{ fontSize: 40 }} />;
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={2} className="w-10 h-10">
+          <path d="M12 3L4 11l8 8 8-8-8-8z M12 3L4 11h16L12 3z M12 3v16 M4 11h16" className="stroke-white" fill="none" />
+        </svg>
+      );
     default:
       return null;
   }
