@@ -4,7 +4,6 @@ import Navbar from "./Navbar";
 import About from "./About";
 import Tech from "./Tech";
 import Experience from "./Experience";
-import Member from "./Member";
 import Contact from "./Contact";
 import CanvasLoader from "./Loader";
 import Services from "./Services";
@@ -14,7 +13,6 @@ export {
   Navbar,
   About,
   Tech,
-  Member,
   Experience,
   Contact,
   CanvasLoader,
