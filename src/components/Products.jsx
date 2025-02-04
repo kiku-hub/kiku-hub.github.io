@@ -16,14 +16,23 @@ const ProjectCard = ({
   source_code_link,
 }) => {
   return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+    <motion.div 
+      variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.25 }}
       className='w-full'>
       <motion.div
         whileHover={{ scale: 1.02 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className='bg-[#003973] p-5 rounded-2xl w-full max-w-[800px] mx-auto shadow-lg hover:shadow-xl hover:bg-[#004483] transition-all duration-300'
       >
-        <div className='relative w-full h-[400px]'>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.2 }}
+          className='w-full h-[400px] bg-gradient-to-br from-[#003973] to-[#0093E9] rounded-xl overflow-hidden relative group shadow-lg mb-8'
+        >
           <img
             src={image}
             alt='project_image'
@@ -44,12 +53,35 @@ const ProjectCard = ({
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         <div className='mt-5'>
-          <h3 className='text-white text-[24px] font-bold'>{name}</h3>
-          <p className='mt-3 text-secondary text-[14px] italic'>{subtitle}</p>
-          <p className='mt-4 text-white-100 text-[14px] leading-relaxed'>{description}</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.3 }}
+            className="mb-6"
+          >
+            <h3 className='text-white text-[24px] font-bold'>{name}</h3>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.4 }}
+            className='mt-3 text-secondary text-[14px] italic'
+          >
+            {subtitle}
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.5 }}
+            className='mt-4 text-white-100 text-[14px] leading-relaxed'
+          >
+            {description}
+          </motion.p>
         </div>
       </motion.div>
     </motion.div>
@@ -59,7 +91,12 @@ const ProjectCard = ({
 const Products = () => {
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div 
+        variants={textVariant()}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         <p className={styles.sectionSubText}>製品</p>
         <h2 className={styles.sectionHeadText}>Products.</h2>
       </motion.div>
