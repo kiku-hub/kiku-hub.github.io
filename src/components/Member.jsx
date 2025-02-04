@@ -15,14 +15,14 @@ const MemberCard = ({ member, isExpanded, onClick, isOtherExpanded }) => {
       className={`relative ${
         isExpanded 
           ? 'fixed inset-0 z-50 flex items-center justify-center bg-primary/80'
-          : 'w-full min-w-[300px] md:min-w-[600px] flex-shrink-0 cursor-pointer px-4'
+          : 'w-full h-full cursor-pointer'
       }`}
       style={{ pointerEvents: isOtherExpanded ? 'none' : 'auto' }}
     >
       <motion.div
         layout
-        className={`bg-[#003973] rounded-2xl overflow-hidden ${
-          isExpanded ? 'w-[90%] max-w-4xl h-[80vh]' : 'w-full h-[500px]'
+        className={`bg-[#003973] ${
+          isExpanded ? 'w-[90%] max-w-4xl h-[80vh] rounded-3xl' : 'w-full h-full aspect-square rounded-full'
         }`}
       >
         <motion.div
@@ -40,7 +40,8 @@ const MemberCard = ({ member, isExpanded, onClick, isOtherExpanded }) => {
             <motion.div
               layout
               className={`relative ${
-                isExpanded ? 'w-full md:w-1/2 h-[300px] md:h-full' : 'w-full h-[300px]'
+                isExpanded ? 'w-full md:w-1/2 h-[300px] md:h-full rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden' 
+                : 'w-full h-full rounded-full overflow-hidden'
               }`}
             >
               <motion.img
@@ -50,26 +51,32 @@ const MemberCard = ({ member, isExpanded, onClick, isOtherExpanded }) => {
                 className="w-full h-full object-cover"
               />
               {!isExpanded && (
-                <div className="absolute inset-0 bg-gradient-to-t from-[#003973] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#003973] via-[#003973]/50 to-transparent" />
               )}
             </motion.div>
 
             {/* 基本情報セクション */}
             <motion.div
               layout
-              className={`relative p-6 ${
-                isExpanded ? 'w-full md:w-1/2 overflow-y-auto' : 'flex-1'
+              className={`relative ${
+                isExpanded 
+                  ? 'w-full md:w-1/2 p-6 overflow-y-auto' 
+                  : 'absolute bottom-0 left-0 right-0 p-4 text-center'
               }`}
             >
               <motion.h3
                 layout
-                className="text-white text-[24px] font-bold"
+                className={`text-white font-bold ${
+                  isExpanded ? 'text-[24px]' : 'text-[18px]'
+                }`}
               >
                 {member.name}
               </motion.h3>
               <motion.p
                 layout
-                className="text-secondary text-[16px] mt-1"
+                className={`text-secondary ${
+                  isExpanded ? 'text-[16px] mt-2' : 'text-[14px] mt-1'
+                }`}
               >
                 {member.position}
               </motion.p>
@@ -111,7 +118,7 @@ const MemberCard = ({ member, isExpanded, onClick, isOtherExpanded }) => {
                   </div>
 
                   {/* 実績 */}
-                  {member.achievements && (
+                  {member.achievements && member.achievements.length > 0 && (
                     <div>
                       <h4 className="text-white text-[18px] font-semibold mb-3">実績</h4>
                       <ul className="space-y-2">
@@ -155,7 +162,7 @@ const Member = () => {
 
   const handleScroll = (direction) => {
     const container = document.getElementById('members-container');
-    const scrollAmount = direction === 'left' ? -600 : 600;
+    const scrollAmount = direction === 'left' ? -300 : 300;
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     setScrollPosition(container.scrollLeft + scrollAmount);
   };
@@ -163,37 +170,22 @@ const Member = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={styles.sectionSubText}>チームメンバー</p>
-        <h2 className={styles.sectionHeadText}>Members.</h2>
+        <p className={`${styles.sectionSubText} text-[#80d0c7]`}>チームメンバー</p>
+        <h2 className={styles.sectionHeadText}>Members</h2>
       </motion.div>
 
-      <div className="mt-20 relative">
-        {/* スクロールボタン */}
-        <button
-          onClick={() => handleScroll('left')}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-200"
-        >
-          <IoIosArrowBack className="w-6 h-6 text-white" />
-        </button>
-        <button
-          onClick={() => handleScroll('right')}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors duration-200"
-        >
-          <IoIosArrowForward className="w-6 h-6 text-white" />
-        </button>
-
+      <div className="mt-20 relative px-4">
         {/* カードコンテナ */}
         <div
           id="members-container"
-          className="overflow-x-auto flex gap-8 pb-4 px-4 snap-x snap-mandatory hide-scrollbar"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 pb-4"
         >
           <AnimatePresence>
             {members.map((member, index) => (
-              <div key={member.id} className="snap-center">
+              <div 
+                key={member.id} 
+                className="w-full aspect-square max-w-[280px] mx-auto sm:max-w-none"
+              >
                 <MemberCard
                   member={member}
                   isExpanded={expandedId === member.id}
