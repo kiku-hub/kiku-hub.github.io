@@ -1,5 +1,4 @@
 import React from "react";
-import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
@@ -47,13 +46,10 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
       viewport={{ once: true, amount: 0.25 }}
       className='w-full'
     >
-      <Tilt
-        options={{
-          max: 25,
-          scale: 1,
-          speed: 450,
-        }}
-        className='bg-[#003973] hover:bg-[#004483] transition-colors duration-300 p-7 rounded-2xl w-full shadow-xl'
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className='bg-[#003973] hover:bg-[#004483] transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl'
       >
         <div className="flex flex-col items-center gap-8">
           <motion.div
@@ -124,7 +120,7 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.45 }}
-                className='text-secondary/80 text-[15px] leading-relaxed italic'
+                className='text-white text-[15px] leading-relaxed italic'
               >
                 {subDescription}
               </motion.p>
@@ -144,7 +140,7 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 + pointIndex * 0.1 }}
-                  className="flex items-start gap-3 group bg-[#004483]/30 p-4 rounded-lg hover:bg-[#004483]/50 transition-colors duration-300"
+                  className="flex items-start gap-3 group bg-[#004483]/30 p-4 rounded-lg transition-colors duration-300"
                 >
                   <motion.span
                     initial={{ scale: 1 }}
@@ -154,11 +150,11 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
                     ▹
                   </motion.span>
                   <div className="flex flex-col gap-1">
-                    <p className="text-white-100 text-[15px] tracking-wider group-hover:text-[#80d0c7] transition-colors duration-300 leading-relaxed">
+                    <p className="text-white-100 text-[15px] tracking-wider leading-relaxed">
                       {point.ja || point}
                     </p>
                     {point.en && (
-                      <p className="text-secondary/80 text-[13px] tracking-wider italic leading-relaxed">
+                      <p className="text-secondary text-[13px] tracking-wider italic leading-relaxed">
                         {point.en}
                       </p>
                     )}
@@ -168,7 +164,7 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
             </motion.div>
           )}
         </div>
-      </Tilt>
+      </motion.div>
     </motion.div>
   );
 };
@@ -188,7 +184,7 @@ const About = () => {
         {aboutContent.description}
       </motion.p>
 
-      <div className='mt-20 flex flex-col gap-8 max-w-7xl mx-auto'>
+      <div className='mt-20 flex flex-wrap gap-10'>
         {aboutContent.cards.map((card, index) => (
           <ServiceCard key={card.title} index={index} {...card} />
         ))}
