@@ -5,7 +5,6 @@ import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
-import { Tilt } from "react-tilt";
 import { github } from "../assets";
 
 const ProjectCard = ({
@@ -13,20 +12,16 @@ const ProjectCard = ({
   name,
   subtitle,
   description,
-  tags,
   image,
   source_code_link,
 }) => {
   return (
     <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}
       className='w-full'>
-      <Tilt
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className='bg-[#003973] p-5 rounded-2xl w-full max-w-[800px] mx-auto'
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className='bg-[#003973] p-5 rounded-2xl w-full max-w-[800px] mx-auto shadow-lg hover:shadow-xl hover:bg-[#004483] transition-all duration-300'
       >
         <div className='relative w-full h-[400px]'>
           <img
@@ -52,22 +47,11 @@ const ProjectCard = ({
         </div>
 
         <div className='mt-5'>
-          <h3 className='text-white font-bold text-[32px]'>{name}</h3>
-          <p className='mt-1 text-[#80d0c7] text-[18px] italic'>{subtitle}</p>
-          <p className='mt-2 text-secondary text-[18px]'>{description}</p>
+          <h3 className='text-white text-[24px] font-bold'>{name}</h3>
+          <p className='mt-3 text-secondary text-[14px] italic'>{subtitle}</p>
+          <p className='mt-4 text-white-100 text-[14px] leading-relaxed'>{description}</p>
         </div>
-
-        <div className='mt-4 flex flex-wrap gap-2'>
-          {tags.map((tag) => (
-            <p
-              key={`${name}-${tag.name}`}
-              className={`text-[16px] ${tag.color}`}
-            >
-              #{tag.name}
-            </p>
-          ))}
-        </div>
-      </Tilt>
+      </motion.div>
     </motion.div>
   );
 };
@@ -76,9 +60,8 @@ const Products = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={styles.sectionSubText}>製品
-        </p>
-        <h2 className={`${styles.sectionHeadText}`}>Products.</h2>
+        <p className={styles.sectionSubText}>製品</p>
+        <h2 className={styles.sectionHeadText}>Products.</h2>
       </motion.div>
 
       <div className='w-full flex'>

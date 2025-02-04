@@ -4,7 +4,6 @@ import { styles } from "../styles";
 import { services } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
-import { Tilt } from "react-tilt";
 import ITsolution from "../assets/ITsolution.jpeg";
 import CompanyServices from "../assets/CompanyServices.jpeg";
 import Teameng from "../assets/Teameng.jpeg";
@@ -19,13 +18,10 @@ const ServiceCard = ({ index, title, description, points, icon, image }) => {
       viewport={{ once: true, amount: 0.25 }}
       className="w-full md:w-[48%]"
     >
-      <Tilt
-        options={{
-          max: 25,
-          scale: 1,
-          speed: 450,
-        }}
-        className="bg-[#003973] hover:bg-[#004483] transition-colors duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-xl"
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="bg-[#003973] hover:bg-[#004483] transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -65,12 +61,8 @@ const ServiceCard = ({ index, title, description, points, icon, image }) => {
           transition={{ duration: 0.5, delay: index * 0.3 }}
           className="mb-6"
         >
-          <h3 className="text-white text-[28px] font-bold tracking-wider leading-tight">
-            {title.length > 20 ? (
-              <span className="text-[24px]">{title}</span>
-            ) : (
-              title
-            )}
+          <h3 className="text-white text-[24px] font-bold text-center">
+            {title}
           </h3>
         </motion.div>
 
@@ -79,7 +71,7 @@ const ServiceCard = ({ index, title, description, points, icon, image }) => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.4 }}
-            className="text-[#bfdbfe] text-[18px] leading-relaxed font-medium"
+            className="text-secondary text-[14px] text-center"
           >
             {description}
           </motion.p>
@@ -90,29 +82,16 @@ const ServiceCard = ({ index, title, description, points, icon, image }) => {
             transition={{ duration: 0.5, delay: index * 0.5 }}
             className="space-y-4"
           >
-            {points.map((point, pointIndex) => (
-              <motion.div
-                key={pointIndex}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 + pointIndex * 0.1 }}
-                className="flex items-start gap-3 group"
-              >
-                <motion.span
-                  initial={{ scale: 1 }}
-                  whileHover={{ scale: 1.2 }}
-                  className="text-[#0093E9] mt-1 text-lg font-bold"
-                >
-                  ▹
-                </motion.span>
-                <p className="text-white-100 text-[15px] tracking-wider group-hover:text-[#80d0c7] transition-colors duration-300 leading-relaxed">
+            <ul className="list-disc ml-5">
+              {points.map((point, pointIndex) => (
+                <li key={pointIndex} className="text-white-100 text-[14px] pl-1 tracking-wider">
                   {point}
-                </p>
-              </motion.div>
-            ))}
+                </li>
+              ))}
+            </ul>
           </motion.div>
         </div>
-      </Tilt>
+      </motion.div>
     </motion.div>
   );
 };
