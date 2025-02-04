@@ -12,22 +12,25 @@ import Datacenter from "../assets/Datacenter.jpeg";
 const ServiceCard = ({ index, title, description, points, icon, image }) => {
   return (
     <motion.div
-      variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+      variants={fadeIn("right", "spring", index * 0.5, 0.75)}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.25 }}
-      className="w-full md:w-[48%]"
+      className="w-full md:w-[550px]"
     >
       <motion.div
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ 
+          scale: 1.02,
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-[#003973] hover:bg-[#004483] transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl"
+        className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
-          className="w-full h-[280px] bg-gradient-to-br from-[#003973] to-[#0093E9] rounded-xl overflow-hidden relative group shadow-lg mb-8"
+          className="w-full h-[280px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8"
         >
           {image ? (
             <div className="w-full h-full relative overflow-hidden">

@@ -47,9 +47,12 @@ const ServiceCard = ({ index, title, icon, description, subDescription, points }
       className='w-full'
     >
       <motion.div
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ 
+          scale: 1.02,
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className='bg-[#003973] hover:bg-[#004483] transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl'
+        className='bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col'
       >
         <div className="flex flex-col items-center gap-8">
           <motion.div
