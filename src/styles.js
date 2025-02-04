@@ -15,6 +15,7 @@ const styles = {
   
   sectionWrapper: "w-full h-screen flex justify-center items-center relative z-0",
   sectionContainer: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16",
+  hideScrollbar: "scrollbar-width: none; -ms-overflow-style: none;",
 };
 
 export { styles };

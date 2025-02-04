@@ -93,31 +93,41 @@ const ProjectCard = ({
 
 const Products = () => {
   return (
-    <>
-      <motion.div 
-        variants={textVariant()}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-      >
-        <p className={styles.sectionSubText}>製品</p>
-        <h2 className={styles.sectionHeadText}>Products.</h2>
-      </motion.div>
+    <section className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}>
+      <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+      
+      <motion.div
+        className="absolute inset-0 from-[#00a8ff]/5 via-transparent to-transparent"
+        animate={{
+          opacity: [0.3, 1, 0.3],
+          filter: ["blur(4px)", "blur(2px)", "blur(4px)"],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
 
-      <div className='w-full flex'>
-        <motion.p
-          variants={fadeIn("", "", 0.1, 1)}
-          className='mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]'
+      <div className={`absolute inset-0 top-1/2 -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-col items-center justify-center`}>
+        <motion.div 
+          variants={textVariant()}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="text-center"
         >
-        </motion.p>
-      </div>
+          <p className={styles.sectionSubText}>製品</p>
+          <h2 className={styles.sectionHeadText}>Products.</h2>
+        </motion.div>
 
-      <div className='mt-20 flex flex-wrap gap-7'>
-        {projects.map((project, index) => (
-          <ProjectCard key={`project-${index}`} index={index} {...project} />
-        ))}
+        <div className='mt-20 flex flex-wrap gap-7 justify-center'>
+          {projects.map((project, index) => (
+            <ProjectCard key={`project-${index}`} index={index} {...project} />
+          ))}
+        </div>
       </div>
-    </>
+    </section>
   );
 };
 
