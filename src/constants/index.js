@@ -259,19 +259,69 @@ const aboutContent = {
 
 const members = [
   {
-    message: "大手SIerでのシステム開発経験を経て、AI開発ベンチャーにて技術責任者を務める。機械学習やデータ分析の専門知識を活かし、革新的なAIソリューションの開発をリード。",
-    name: "吉田 翔一朗",
-    role: "代表取締役社長",
-    company: "ORCX",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    id: "yoshida",
+    name: "吉田 大輝",
+    position: "代表取締役社長 / CEO",
+    image: "/yoshida.jpg",
+    history: [
+      {
+        year: "2020",
+        description: "東京大学大学院 工学系研究科 修了"
+      },
+      {
+        year: "2020-23",
+        description: "大手IT企業でソフトウェアエンジニアとして従事"
+      },
+      {
+        year: "2023",
+        description: "ORCX株式会社を設立"
+      }
+    ],
+    skills: [
+      "事業戦略",
+      "プロジェクトマネジメント",
+      "ソフトウェア開発",
+      "AI/ML",
+      "クラウドアーキテクチャ"
+    ],
+    achievements: [
+      "複数のエンタープライズシステムの設計・開発を主導",
+      "AIを活用した業務効率化プロジェクトを成功に導く",
+      "技術特許の取得実績あり"
+    ]
   },
   {
-    message: "クラウドインフラ構築のスペシャリスト。大規模システムの設計・運用経験を持ち、技術戦略の立案から実装まで幅広く対応。AWSソリューションアーキテクト認定資格保有。",
-    name: "菊池 恭輔",
-    role: "取締役COO",
-    company: "ORCX",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
+    id: "kikuchi",
+    name: "菊池 隆太",
+    position: "取締役 / CTO",
+    image: "/kikuchi.jpg",
+    history: [
+      {
+        year: "2019",
+        description: "早稲田大学 基幹理工学部 情報理工学科 卒業"
+      },
+      {
+        year: "2019-23",
+        description: "大手SIerでシステムアーキテクトとして従事"
+      },
+      {
+        year: "2023",
+        description: "ORCX株式会社に参画"
+      }
+    ],
+    skills: [
+      "システムアーキテクチャ",
+      "クラウドインフラ",
+      "DevOps",
+      "セキュリティ",
+      "データベース設計"
+    ],
+    achievements: [
+      "大規模基幹システムのクラウド移行プロジェクトを成功に導く",
+      "セキュリティ基盤の構築・運用経験",
+      "技術ブログの執筆・登壇実績多数"
+    ]
+  }
 ];
 
 export {
