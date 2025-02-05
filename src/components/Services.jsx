@@ -103,13 +103,14 @@ const Services = () => {
     }));
   }, []);
 
-  React.useEffect(() => {
-    if (scrollRef.current && !initialized) {
+  React.useLayoutEffect(() => {
+    if (!initialized && scrollRef.current) {
       const firstCard = scrollRef.current.querySelector('.snap-center');
       if (firstCard) {
         cardWidth.current = firstCard.offsetWidth;
         setActiveIndex(0);
         setInitialized(true);
+        scrollRef.current.scrollLeft = 0;
       }
     }
   }, [initialized]);
@@ -146,6 +147,9 @@ const Services = () => {
     });
   };
 
+  const handleMouseEnter = () => setAutoScroll(false);
+  const handleMouseLeave = () => setAutoScroll(true);
+
   React.useEffect(() => {
     let intervalId;
     if (autoScroll && initialized && !scrolling.current) {
@@ -156,9 +160,6 @@ const Services = () => {
     }
     return () => clearInterval(intervalId);
   }, [activeIndex, autoScroll, initialized, sortedServices.length]);
-
-  const handleMouseEnter = () => setAutoScroll(false);
-  const handleMouseLeave = () => setAutoScroll(true);
 
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden">
