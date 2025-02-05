@@ -84,13 +84,8 @@ const Services = () => {
   const cardWidth = React.useRef(0);
   const [initialized, setInitialized] = React.useState(false);
   const scrolling = React.useRef(false);
-  const lastScrollTime = React.useRef(Date.now());
-  const scrollVelocity = React.useRef(0);
   const scrollTimeout = React.useRef(null);
-  const lastScrollLeft = React.useRef(0);
-  const totalCards = 7; // より広い範囲でスクロール可能に
 
-  // ITソリューションを先頭に配置
   const sortedServices = React.useMemo(() => {
     const itSolution = services.find(service => service.title.includes('ITソリューション'));
     const otherServices = services.filter(service => !service.title.includes('ITソリューション'));
@@ -108,80 +103,28 @@ const Services = () => {
     }));
   }, []);
 
-  // 表示用の配列を生成
-  const displayServices = React.useMemo(() => {
-    const repeated = Array(totalCards).fill(sortedServices).flat();
-    return repeated;
-  }, [sortedServices]);
-
-  // 初期位置の設定
   React.useEffect(() => {
     if (scrollRef.current && !initialized) {
       const firstCard = scrollRef.current.querySelector('.snap-center');
       if (firstCard) {
         cardWidth.current = firstCard.offsetWidth;
-        const middleSet = Math.floor(totalCards / 2);
-        const initialScroll = cardWidth.current * (middleSet * sortedServices.length);
-        scrollRef.current.scrollLeft = initialScroll;
-        lastScrollLeft.current = initialScroll;
         setActiveIndex(0);
         setInitialized(true);
       }
     }
-  }, [initialized, sortedServices.length]);
-
-  const calculateMomentum = (currentScroll) => {
-    const now = Date.now();
-    const dt = Math.max(1, now - lastScrollTime.current);
-    const dx = currentScroll - lastScrollLeft.current;
-    
-    scrollVelocity.current = dx / dt;
-    lastScrollTime.current = now;
-    lastScrollLeft.current = currentScroll;
-  };
+  }, [initialized]);
 
   const handleScroll = (e) => {
     if (!scrollRef.current || !initialized) return;
     
     const container = scrollRef.current;
     const currentScroll = container.scrollLeft;
-    const setWidth = cardWidth.current * sortedServices.length;
-    const middleSet = Math.floor(totalCards / 2);
-    const middlePosition = setWidth * middleSet;
-    
-    calculateMomentum(currentScroll);
-
-    // スクロール位置の正規化
-    if (currentScroll < middlePosition - (setWidth * 2)) {
-      const offset = setWidth * 2;
-      const newScroll = currentScroll + offset;
-      requestAnimationFrame(() => {
-        container.style.scrollBehavior = 'auto';
-        container.scrollLeft = newScroll;
-        container.style.scrollBehavior = 'smooth';
-      });
-      lastScrollLeft.current = newScroll;
-    } else if (currentScroll > middlePosition + (setWidth * 2)) {
-      const offset = setWidth * 2;
-      const newScroll = currentScroll - offset;
-      requestAnimationFrame(() => {
-        container.style.scrollBehavior = 'auto';
-        container.scrollLeft = newScroll;
-        container.style.scrollBehavior = 'smooth';
-      });
-      lastScrollLeft.current = newScroll;
-    }
-
-    // アクティブインデックスの更新（強制リセットを防ぐ）
     const currentIndex = Math.round(currentScroll / cardWidth.current);
-    const normalizedIndex = currentIndex % sortedServices.length;
-    const adjustedIndex = normalizedIndex < 0 ? sortedServices.length + normalizedIndex : normalizedIndex;
     
-    if (adjustedIndex !== activeIndex) {
-      setActiveIndex(adjustedIndex);
+    if (currentIndex !== activeIndex && currentIndex >= 0 && currentIndex < sortedServices.length) {
+      setActiveIndex(currentIndex);
     }
 
-    // スクロール状態の管理
     if (scrollTimeout.current) {
       clearTimeout(scrollTimeout.current);
     }
@@ -189,47 +132,17 @@ const Services = () => {
     scrolling.current = true;
     scrollTimeout.current = setTimeout(() => {
       scrolling.current = false;
-      
-      // スクロール終了時の微調整（必要な場合のみ）
-      if (Math.abs(scrollVelocity.current) < 0.05) {
-        const nearestCard = Math.round(currentScroll / cardWidth.current);
-        const targetScroll = nearestCard * cardWidth.current;
-        if (Math.abs(currentScroll - targetScroll) > 2) {
-          container.scrollTo({
-            left: targetScroll,
-            behavior: 'smooth'
-          });
-        }
-      }
     }, 150);
   };
 
-  const scrollToCard = (index, smooth = true) => {
+  const scrollToCard = (index) => {
     if (!scrollRef.current || !initialized || scrolling.current) return;
-    
-    const currentScroll = scrollRef.current.scrollLeft;
-    const currentIndex = Math.round(currentScroll / cardWidth.current);
-    const middleSet = Math.floor(totalCards / 2);
-    const basePosition = middleSet * sortedServices.length;
-    
-    // 最短経路を計算
-    const targetIndex = basePosition + index;
-    const currentNormalizedIndex = currentIndex % sortedServices.length;
-    const forwardDistance = (index - currentNormalizedIndex + sortedServices.length) % sortedServices.length;
-    const backwardDistance = (currentNormalizedIndex - index + sortedServices.length) % sortedServices.length;
-    
-    let finalIndex;
-    if (forwardDistance <= backwardDistance) {
-      finalIndex = currentIndex + forwardDistance;
-    } else {
-      finalIndex = currentIndex - backwardDistance;
-    }
-    
-    const targetScroll = finalIndex * cardWidth.current;
-    
+    if (index < 0 || index >= sortedServices.length) return;
+
+    const targetScroll = index * cardWidth.current;
     scrollRef.current.scrollTo({
       left: targetScroll,
-      behavior: smooth ? 'smooth' : 'auto'
+      behavior: 'smooth'
     });
   };
 
@@ -272,23 +185,65 @@ const Services = () => {
             className="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             style={{ 
               scrollBehavior: 'smooth',
-              WebkitOverflowScrolling: 'touch'
+              WebkitOverflowScrolling: 'touch',
+              paddingLeft: 'calc(50% - 250px)',
+              paddingRight: 'calc(50% - 250px)'
             }}
           >
-            <div className="flex px-[15%] space-x-8 items-center py-4">
-              {displayServices.map((service, index) => (
-                <div
-                  key={`${service.title}-${index}`}
-                  className="relative transition-all duration-500 ease-in-out cursor-pointer snap-center"
-                  onClick={() => scrollToCard(index % sortedServices.length)}
-                >
-                  <ServiceCard 
-                    index={index} 
-                    {...service} 
-                    isActive={index % sortedServices.length === activeIndex}
-                  />
-                </div>
-              ))}
+            <div className="flex space-x-8 items-center py-4">
+              {sortedServices.map((service, index) => {
+                const isActive = index === activeIndex;
+                const isPrev = index === activeIndex - 1;
+                const isNext = index === activeIndex + 1;
+                const isClickable = isPrev || isNext;
+                
+                return (
+                  <motion.div
+                    key={service.title}
+                    className={`relative snap-center group ${isClickable ? 'cursor-pointer' : ''}`}
+                    animate={{
+                      scale: isActive ? 1.05 : 0.95,
+                      opacity: isActive ? 1 : 0.8,
+                      filter: isActive ? 'brightness(1)' : 'brightness(0.9)',
+                      transition: { duration: 0.3 }
+                    }}
+                    style={{
+                      zIndex: isActive ? 10 : 1
+                    }}
+                    whileHover={isClickable ? {
+                      scale: 1.05,
+                      opacity: 1,
+                      filter: 'brightness(1.1)',
+                      transition: { duration: 0.2 }
+                    } : undefined}
+                    onClick={() => isClickable && scrollToCard(index)}
+                  >
+                    {isClickable && (
+                      <div className="absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className={`w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center ${
+                            isPrev ? 'mr-auto ml-4' : 'ml-auto mr-4'
+                          }`}>
+                            <motion.span
+                              className="text-white text-2xl"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            >
+                              {isPrev ? '←' : '→'}
+                            </motion.span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <ServiceCard 
+                      index={index} 
+                      {...service} 
+                      isActive={isActive}
+                    />
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
           
