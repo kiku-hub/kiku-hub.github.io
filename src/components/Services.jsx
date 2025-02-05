@@ -11,22 +11,17 @@ import Datacenter from "../assets/Datacenter.jpeg";
 
 const ServiceCard = ({ index, title, description, points, icon, image, isActive }) => {
   return (
-    <motion.div
-      variants={fadeIn("right", "spring", index * 0.5, 0.75)}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.25 }}
-      className="min-w-[300px] md:min-w-[400px] lg:min-w-[500px] snap-center"
-    >
+    <div className={`min-w-[300px] md:min-w-[400px] lg:min-w-[500px] snap-center transition-all duration-500 ${
+      isActive ? 'scale-110 z-10' : 'scale-90 opacity-70'
+    }`}>
       <motion.div
         whileHover={{ 
           scale: 1.02,
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
         }}
         animate={{
-          scale: isActive ? 1 : 0.7,
-          opacity: isActive ? 1 : 0.5,
-          filter: isActive ? 'blur(0px)' : 'blur(1px)',
+          scale: isActive ? 1 : 0.85,
+          opacity: isActive ? 1 : 0.7,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-7 rounded-2xl w-full h-full flex flex-col shadow-lg hover:shadow-xl mx-4"
@@ -34,12 +29,7 @@ const ServiceCard = ({ index, title, description, points, icon, image, isActive 
           zIndex: isActive ? 10 : 1,
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: index * 0.2 }}
-          className="w-full h-[200px] from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8"
-        >
+        <div className="w-full h-[200px] rounded-xl overflow-hidden relative group shadow-lg mb-8">
           {image ? (
             <div className="w-full h-full relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent z-10" />
@@ -52,47 +42,27 @@ const ServiceCard = ({ index, title, description, points, icon, image, isActive 
           ) : (
             <>
               <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-              <motion.div
-                initial={{ y: 0 }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-full flex items-center justify-center"
-              >
+              <div className="w-full h-full flex items-center justify-center">
                 <div className="text-7xl text-white/90 drop-shadow-lg transform transition-transform group-hover:scale-110 duration-300">
                   🚀
                 </div>
-              </motion.div>
+              </div>
             </>
           )}
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.3 }}
-          className="mb-6"
-        >
+        <div className="mb-6">
           <h3 className="text-white text-[24px] font-bold text-center">
             {title}
           </h3>
-        </motion.div>
+        </div>
 
         <div className="space-y-6 flex-grow">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.4 }}
-            className="text-secondary text-[14px] text-center"
-          >
+          <p className="text-secondary text-[14px] text-center">
             {description}
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: index * 0.5 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <ul className="list-disc ml-5">
               {points.map((point, pointIndex) => (
                 <li key={pointIndex} className="text-white-100 text-[14px] pl-1 tracking-wider">
@@ -100,10 +70,10 @@ const ServiceCard = ({ index, title, description, points, icon, image, isActive 
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -111,89 +81,176 @@ const Services = () => {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const scrollRef = React.useRef(null);
   const [autoScroll, setAutoScroll] = React.useState(true);
+  const cardWidth = React.useRef(0);
+  const [initialized, setInitialized] = React.useState(false);
+  const scrolling = React.useRef(false);
+  const lastScrollTime = React.useRef(Date.now());
+  const scrollVelocity = React.useRef(0);
+  const scrollTimeout = React.useRef(null);
+  const lastScrollLeft = React.useRef(0);
+  const totalCards = 7; // より広い範囲でスクロール可能に
 
-  const servicesWithImages = services.map(service => ({
-    ...service,
-    image: service.title.includes('ITソリューション') 
-      ? ITsolution 
-      : service.title.includes('自社サービス') 
-        ? CompanyServices 
-        : service.title.includes('システム受託開発')
-          ? Teameng
-          : service.title.includes('AI サーバー')
-            ? Datacenter
-            : null
-  }));
+  // ITソリューションを先頭に配置
+  const sortedServices = React.useMemo(() => {
+    const itSolution = services.find(service => service.title.includes('ITソリューション'));
+    const otherServices = services.filter(service => !service.title.includes('ITソリューション'));
+    return [itSolution, ...otherServices].map(service => ({
+      ...service,
+      image: service.title.includes('ITソリューション') 
+        ? ITsolution 
+        : service.title.includes('自社サービス') 
+          ? CompanyServices 
+          : service.title.includes('システム受託開発')
+            ? Teameng
+            : service.title.includes('AI サーバー')
+              ? Datacenter
+              : null
+    }));
+  }, []);
 
-  // 無限スクロール用に配列を3倍に複製
-  const infiniteServices = [
-    ...servicesWithImages,
-    ...servicesWithImages,
-    ...servicesWithImages
-  ];
+  // 表示用の配列を生成
+  const displayServices = React.useMemo(() => {
+    const repeated = Array(totalCards).fill(sortedServices).flat();
+    return repeated;
+  }, [sortedServices]);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const cardWidth = scrollRef.current.offsetWidth;
-      const newIndex = Math.round(scrollLeft / cardWidth);
-      
-      // 中央のセットにいる場合のインデックスを計算
-      const normalizedIndex = newIndex % servicesWithImages.length;
-      setActiveIndex(normalizedIndex);
-
-      // 端に到達した場合、中央のセットにジャンプ
-      if (scrollLeft < cardWidth) {
-        // 左端に到達した場合
-        scrollRef.current.scrollLeft = cardWidth * servicesWithImages.length;
-      } else if (scrollLeft > cardWidth * (infiniteServices.length - servicesWithImages.length - 1)) {
-        // 右端に到達した場合
-        scrollRef.current.scrollLeft = cardWidth * servicesWithImages.length;
+  // 初期位置の設定
+  React.useEffect(() => {
+    if (scrollRef.current && !initialized) {
+      const firstCard = scrollRef.current.querySelector('.snap-center');
+      if (firstCard) {
+        cardWidth.current = firstCard.offsetWidth;
+        const middleSet = Math.floor(totalCards / 2);
+        const initialScroll = cardWidth.current * (middleSet * sortedServices.length);
+        scrollRef.current.scrollLeft = initialScroll;
+        lastScrollLeft.current = initialScroll;
+        setActiveIndex(0);
+        setInitialized(true);
       }
     }
+  }, [initialized, sortedServices.length]);
+
+  const calculateMomentum = (currentScroll) => {
+    const now = Date.now();
+    const dt = Math.max(1, now - lastScrollTime.current);
+    const dx = currentScroll - lastScrollLeft.current;
+    
+    scrollVelocity.current = dx / dt;
+    lastScrollTime.current = now;
+    lastScrollLeft.current = currentScroll;
   };
 
-  // 自動スクロール
+  const handleScroll = (e) => {
+    if (!scrollRef.current || !initialized) return;
+    
+    const container = scrollRef.current;
+    const currentScroll = container.scrollLeft;
+    const setWidth = cardWidth.current * sortedServices.length;
+    const middleSet = Math.floor(totalCards / 2);
+    const middlePosition = setWidth * middleSet;
+    
+    calculateMomentum(currentScroll);
+
+    // スクロール位置の正規化
+    if (currentScroll < middlePosition - (setWidth * 2)) {
+      const offset = setWidth * 2;
+      const newScroll = currentScroll + offset;
+      requestAnimationFrame(() => {
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = newScroll;
+        container.style.scrollBehavior = 'smooth';
+      });
+      lastScrollLeft.current = newScroll;
+    } else if (currentScroll > middlePosition + (setWidth * 2)) {
+      const offset = setWidth * 2;
+      const newScroll = currentScroll - offset;
+      requestAnimationFrame(() => {
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = newScroll;
+        container.style.scrollBehavior = 'smooth';
+      });
+      lastScrollLeft.current = newScroll;
+    }
+
+    // アクティブインデックスの更新（強制リセットを防ぐ）
+    const currentIndex = Math.round(currentScroll / cardWidth.current);
+    const normalizedIndex = currentIndex % sortedServices.length;
+    const adjustedIndex = normalizedIndex < 0 ? sortedServices.length + normalizedIndex : normalizedIndex;
+    
+    if (adjustedIndex !== activeIndex) {
+      setActiveIndex(adjustedIndex);
+    }
+
+    // スクロール状態の管理
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+    }
+
+    scrolling.current = true;
+    scrollTimeout.current = setTimeout(() => {
+      scrolling.current = false;
+      
+      // スクロール終了時の微調整（必要な場合のみ）
+      if (Math.abs(scrollVelocity.current) < 0.05) {
+        const nearestCard = Math.round(currentScroll / cardWidth.current);
+        const targetScroll = nearestCard * cardWidth.current;
+        if (Math.abs(currentScroll - targetScroll) > 2) {
+          container.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+          });
+        }
+      }
+    }, 150);
+  };
+
+  const scrollToCard = (index, smooth = true) => {
+    if (!scrollRef.current || !initialized || scrolling.current) return;
+    
+    const currentScroll = scrollRef.current.scrollLeft;
+    const currentIndex = Math.round(currentScroll / cardWidth.current);
+    const middleSet = Math.floor(totalCards / 2);
+    const basePosition = middleSet * sortedServices.length;
+    
+    // 最短経路を計算
+    const targetIndex = basePosition + index;
+    const currentNormalizedIndex = currentIndex % sortedServices.length;
+    const forwardDistance = (index - currentNormalizedIndex + sortedServices.length) % sortedServices.length;
+    const backwardDistance = (currentNormalizedIndex - index + sortedServices.length) % sortedServices.length;
+    
+    let finalIndex;
+    if (forwardDistance <= backwardDistance) {
+      finalIndex = currentIndex + forwardDistance;
+    } else {
+      finalIndex = currentIndex - backwardDistance;
+    }
+    
+    const targetScroll = finalIndex * cardWidth.current;
+    
+    scrollRef.current.scrollTo({
+      left: targetScroll,
+      behavior: smooth ? 'smooth' : 'auto'
+    });
+  };
+
   React.useEffect(() => {
     let intervalId;
-    if (autoScroll && scrollRef.current) {
+    if (autoScroll && initialized && !scrolling.current) {
       intervalId = setInterval(() => {
-        const nextIndex = (activeIndex + 1) % servicesWithImages.length;
-        const cardWidth = scrollRef.current.offsetWidth;
-        const targetScroll = (servicesWithImages.length + nextIndex) * cardWidth;
-        
-        scrollRef.current.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth'
-        });
-      }, 3000); // 3秒ごとにスクロール
+        const nextIndex = (activeIndex + 1) % sortedServices.length;
+        scrollToCard(nextIndex);
+      }, 5000);
     }
     return () => clearInterval(intervalId);
-  }, [activeIndex, autoScroll, servicesWithImages.length]);
+  }, [activeIndex, autoScroll, initialized, sortedServices.length]);
 
-  // マウスイベントで自動スクロールを制御
   const handleMouseEnter = () => setAutoScroll(false);
   const handleMouseLeave = () => setAutoScroll(true);
 
   return (
-    <section className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a] overflow-hidden`}>
-      <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-      
-      <motion.div
-        className="absolute inset-0 from-[#00a8ff]/5 via-transparent to-transparent"
-        animate={{
-          opacity: [0.3, 1, 0.3],
-          filter: ["blur(4px)", "blur(2px)", "blur(4px)"],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-
-      <div className="absolute inset-0 flex flex-col justify-center items-center">
-        <div className="w-full max-w-7xl mx-auto px-8 mb-20">
+    <section className="relative w-full h-screen mx-auto overflow-hidden">
+      <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '2vh' }}>
+        <div className="w-full max-w-7xl mx-auto px-8 mb-4">
           <motion.div 
             variants={textVariant()}
             initial="hidden"
@@ -204,14 +261,6 @@ const Services = () => {
             <p className={styles.sectionSubText}>事業内容</p>
             <h2 className={styles.sectionHeadText}>Services.</h2>
           </motion.div>
-
-          <motion.p
-            variants={fadeIn("", "", 0.1, 1)}
-            className="mt-4 text-secondary text-[18px] max-w-3xl mx-auto text-center leading-[30px]"
-          >
-            私たちは、最新のテクノロジーと専門知識を活用して、
-            お客様のビジネスの成長と成功をサポートします。
-          </motion.p>
         </div>
 
         <div className="relative w-full overflow-hidden">
@@ -220,33 +269,39 @@ const Services = () => {
             onScroll={handleScroll}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar scroll-smooth"
+            className="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            style={{ 
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch'
+            }}
           >
-            <div className="flex px-[10%] space-x-4 items-center">
-              {infiniteServices.map((service, index) => (
+            <div className="flex px-[15%] space-x-8 items-center py-4">
+              {displayServices.map((service, index) => (
                 <div
                   key={`${service.title}-${index}`}
-                  className="relative transition-all duration-500 ease-in-out"
+                  className="relative transition-all duration-500 ease-in-out cursor-pointer snap-center"
+                  onClick={() => scrollToCard(index % sortedServices.length)}
                 >
                   <ServiceCard 
                     index={index} 
                     {...service} 
-                    isActive={index % servicesWithImages.length === activeIndex}
+                    isActive={index % sortedServices.length === activeIndex}
                   />
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-gradient-to-r from-[#0a0a0a] to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-[10%] bg-gradient-to-l from-[#0a0a0a] to-transparent pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[15%] bg-gradient-to-r from-primary to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-[15%] bg-gradient-to-l from-primary to-transparent pointer-events-none" />
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-          {servicesWithImages.map((_, index) => (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+          {sortedServices.map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              onClick={() => scrollToCard(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 index === activeIndex ? 'bg-white' : 'bg-white/30'
               }`}
             />
