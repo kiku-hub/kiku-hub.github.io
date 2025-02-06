@@ -102,10 +102,11 @@ const Services = () => {
     loop: true,
     slidesPerView: "auto",
     speed: 800,
-    spaceBetween: 0,
+    spaceBetween: -50,
+    initialSlide: 2,
     coverflowEffect: {
-      rotate: 0,
-      stretch: 0,
+      rotate: 5,
+      stretch: 20,
       depth: 100,
       modifier: 1,
       slideShadows: false,
@@ -121,27 +122,30 @@ const Services = () => {
     breakpoints: {
       320: {
         slidesPerView: 1,
+        spaceBetween: 0,
       },
       768: {
         slidesPerView: 2,
+        spaceBetween: -30,
       },
       1024: {
-        slidesPerView: 3,
+        slidesPerView: "auto",
+        spaceBetween: -50,
       },
     }
   };
 
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden">
-      <div className="absolute inset-0 flex flex-col items-center">
+      <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '2vh' }}>
         {/* ヘッダーセクション */}
-        <div className="w-full max-w-7xl mx-auto px-8 mb-12">
+        <div className="w-full max-w-7xl mx-auto px-8 mb-16">
           <motion.div 
             variants={textVariant()}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="text-center pt-16"
+            className="text-center"
           >
             <p className={styles.sectionSubText}>事業内容</p>
             <h2 className={styles.sectionHeadText}>Services.</h2>
@@ -151,7 +155,7 @@ const Services = () => {
         {/* スライダーセクション */}
         <div className="flex-1 w-full relative flex items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full max-w-[1400px] mx-auto px-4">
+            <div className="relative w-full max-w-[1800px] mx-auto px-4">
               {/* グラデーションオーバーレイ */}
               <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[15%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none" />
               <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[15%] h-full bg-gradient-to-l from-primary to-transparent pointer-events-none" />
@@ -160,9 +164,9 @@ const Services = () => {
                 {tripleServices.map((service, index) => (
                   <SwiperSlide
                     key={`${service.title}-${index}`}
-                    className="!w-[500px] flex items-center justify-center"
+                    className="!w-[580px] flex items-center justify-center py-12"
                   >
-                    <div className="transform transition-transform duration-300 py-12 px-6">
+                    <div className="transform transition-all duration-300 w-full">
                       <ServiceCard {...service} />
                     </div>
                   </SwiperSlide>
@@ -174,32 +178,40 @@ const Services = () => {
       </div>
 
       <style jsx global>{`
-        .services-swiper {
-          padding: 20px 0;
-        }
         .services-swiper .swiper-slide {
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          opacity: 0.4;
-          transform: scale(0.8);
+          transition: all 0.4s ease;
+          opacity: 0.3;
+          transform: scale(0.75);
         }
+        
         .services-swiper .swiper-slide-active {
           opacity: 1;
           transform: scale(1);
+          z-index: 2;
         }
+
         .services-swiper .swiper-slide-prev,
         .services-swiper .swiper-slide-next {
           opacity: 0.6;
           transform: scale(0.85);
         }
+
         .services-swiper .swiper-button-next,
         .services-swiper .swiper-button-prev {
           color: rgba(255, 255, 255, 0.8);
           transition: all 0.3s ease;
         }
+
         .services-swiper .swiper-button-next:hover,
         .services-swiper .swiper-button-prev:hover {
           color: white;
           transform: scale(1.1);
+        }
+
+        .services-swiper .swiper-button-next:after,
+        .services-swiper .swiper-button-prev:after {
+          font-size: 1.5rem;
+          font-weight: bold;
         }
       `}</style>
     </section>
