@@ -28,13 +28,13 @@ const ProjectCard = ({
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className='bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent p-5 rounded-2xl w-full max-w-[800px] mx-auto transition-all duration-300'
+        className='bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent p-5 rounded-2xl w-full sm:w-[550px] md:w-[650px] lg:w-[800px] mx-auto transition-all duration-300'
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
-          className='w-full h-[400px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
+          className='w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
         >
           <img
             src={image}
@@ -65,14 +65,14 @@ const ProjectCard = ({
             transition={{ duration: 0.5, delay: index * 0.3 }}
             className="mb-6"
           >
-            <h3 className='text-white text-[24px] font-bold'>{name}</h3>
+            <h3 className='text-white text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-bold'>{name}</h3>
           </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.4 }}
-            className='mt-3 text-secondary text-[14px] italic'
+            className='mt-3 text-secondary text-[12px] sm:text-[13px] md:text-[14px] italic'
           >
             {subtitle}
           </motion.p>
@@ -81,7 +81,7 @@ const ProjectCard = ({
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.5 }}
-            className='mt-4 text-white-100 text-[14px] leading-relaxed'
+            className='mt-4 text-white-100 text-[12px] sm:text-[13px] md:text-[14px] leading-relaxed'
           >
             {description}
           </motion.p>
@@ -109,7 +109,7 @@ const Products = () => {
         }}
       />
 
-      <div className={`absolute inset-0 top-1/2 -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-col items-center justify-center`}>
+      <div className={`absolute inset-0 top-[40%] -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-col items-center justify-center`}>
         <motion.div 
           variants={textVariant()}
           initial="hidden"
@@ -121,7 +121,7 @@ const Products = () => {
           <h2 className={styles.sectionHeadText}>Products.</h2>
         </motion.div>
 
-        <div className='mt-20 flex flex-wrap gap-7 justify-center'>
+        <div className='mt-12 flex flex-wrap gap-7 justify-center'>
           {projects.map((project, index) => (
             <ProjectCard key={`project-${index}`} index={index} {...project} />
           ))}
