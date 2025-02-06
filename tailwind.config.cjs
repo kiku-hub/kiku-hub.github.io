@@ -23,5 +23,25 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.perspective-1000': {
+          'perspective': '1000px',
+        },
+        '.rotate-x-12': {
+          'transform': 'rotateX(12deg)',
+        },
+        '.clip-path-pyramid-top': {
+          'clip-path': 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
+        },
+        '.clip-path-pyramid-middle': {
+          'clip-path': 'polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)',
+        },
+        '.clip-path-pyramid-bottom': {
+          'clip-path': 'polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%)',
+        },
+      });
+    },
+  ],
 };
