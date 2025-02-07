@@ -2,7 +2,7 @@ import React, { useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible, isHighlighted, highlightedLayer }) => {
+const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible, isHighlighted, highlightedLayer, onHover }) => {
   const meshRef = useRef();
   const materialRef = useRef();
   const scaleRef = useRef(visible ? 1 : 0);
@@ -46,6 +46,16 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible,
       ref={meshRef}
       position={position}
       rotation={[0, Math.PI / 6, 0]}
+      onPointerEnter={(e) => {
+        // イベントの伝播を停止
+        e.stopPropagation();
+        onHover && onHover(true);
+      }}
+      onPointerLeave={(e) => {
+        // イベントの伝播を停止
+        e.stopPropagation();
+        onHover && onHover(false);
+      }}
     >
       <cylinderGeometry args={[topScale, bottomScale, height, 3]} />
       <meshPhongMaterial
@@ -62,7 +72,7 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible,
   );
 };
 
-const PyramidGroup = ({ visibleLayers, highlightedLayer }) => {
+const PyramidGroup = ({ visibleLayers, highlightedLayer, onLayerHover }) => {
   const groupRef = useRef();
 
   // レイヤーを下から上の順に定義
@@ -100,7 +110,15 @@ const PyramidGroup = ({ visibleLayers, highlightedLayer }) => {
   });
 
   return (
-    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0, 0]}>
+    <group 
+      ref={groupRef} 
+      rotation={[0, Math.PI / 6, 0]} 
+      position={[0, 0, 0]}
+      onPointerMissed={() => {
+        // ピラミッド外のクリックでハイライトをクリア
+        onLayerHover && onLayerHover(null);
+      }}
+    >
       {pyramidLayers.map((layer) => (
         <PyramidLayer
           key={layer.id}
@@ -112,13 +130,14 @@ const PyramidGroup = ({ visibleLayers, highlightedLayer }) => {
           visible={visibleLayers.includes(layer.id)}
           isHighlighted={highlightedLayer === layer.id}
           highlightedLayer={highlightedLayer}
+          onHover={(isHovered) => onLayerHover && onLayerHover(isHovered ? layer.id : null)}
         />
       ))}
     </group>
   );
 };
 
-const ThreePyramid = ({ visibleLayers = ['value'], highlightedLayer = null }) => {
+const ThreePyramid = ({ visibleLayers = ['value'], highlightedLayer = null, onLayerHover }) => {
   return (
     <div className="w-full h-[600px]">
       <Canvas
@@ -131,7 +150,7 @@ const ThreePyramid = ({ visibleLayers = ['value'], highlightedLayer = null }) =>
       >
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <ambientLight color={0x404040} />
-        <PyramidGroup visibleLayers={visibleLayers} highlightedLayer={highlightedLayer} />
+        <PyramidGroup visibleLayers={visibleLayers} highlightedLayer={highlightedLayer} onLayerHover={onLayerHover} />
       </Canvas>
     </div>
   );

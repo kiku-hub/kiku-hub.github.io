@@ -7,7 +7,7 @@ import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramid";
 
-const MVVDescription = ({ title, description, isVisible, onHover }) => {
+const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedFromPyramid }) => {
   // MVVに応じて色を設定
   const getColorByTitle = (title) => {
     switch (title.toLowerCase()) {
@@ -27,6 +27,14 @@ const MVVDescription = ({ title, description, isVisible, onHover }) => {
   const textColor = getColorByTitle(title);
   const [isHovered, setIsHovered] = useState(false);
   
+  useEffect(() => {
+    if (isHighlightedFromPyramid) {
+      setIsHovered(true);
+    } else {
+      setIsHovered(false);
+    }
+  }, [isHighlightedFromPyramid]);
+
   const handleMouseEnter = () => {
     setIsHovered(true);
     onHover(title.toLowerCase());
@@ -104,6 +112,7 @@ const MVVDescription = ({ title, description, isVisible, onHover }) => {
 const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
   const [highlightedLayer, setHighlightedLayer] = useState(null);
+  const [hoveredFromPyramid, setHoveredFromPyramid] = useState(null);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
   const animationRef = useRef(null);
@@ -203,6 +212,10 @@ const About = () => {
           <ThreePyramid 
             visibleLayers={visibleLayers} 
             highlightedLayer={highlightedLayer}
+            onLayerHover={(layerId) => {
+              setHoveredFromPyramid(layerId);
+              setHighlightedLayer(layerId);
+            }}
           />
         </div>
 
@@ -214,6 +227,7 @@ const About = () => {
               description={card.description}
               isVisible={visibleLayers.includes(card.id.toLowerCase())}
               onHover={handleHover}
+              isHighlightedFromPyramid={hoveredFromPyramid === card.id.toLowerCase()}
             />
           ))}
         </div>
