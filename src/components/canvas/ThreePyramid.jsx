@@ -7,13 +7,27 @@ import * as THREE from 'three';
  * - 3D形状、マテリアル、アニメーション、インタラクションを管理
  * - 各層のホバー効果とハイライト効果を制御
  */
-const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible, isHighlighted, highlightedLayer, onHover }) => {
+const PyramidLayer = ({ position, bottomScale, topScale, height, visible, isHighlighted, highlightedLayer, onHover, layerId }) => {
   // レイヤーの状態を管理するref
   const meshRef = useRef();           // 3Dメッシュ全体の参照
   const materialRef = useRef();       // マテリアル（見た目）の参照
   const scaleRef = useRef(visible ? 1 : 0);      // 表示/非表示のスケール
   const opacityRef = useRef(visible ? 0.7 : 0);  // 透明度
   const baseOpacity = 0.7;  // 基本の透明度
+
+  // 各層の色を設定
+  const getLayerColor = () => {
+    switch (layerId) {
+      case 'mission':
+        return new THREE.Color(0x48c9b0).multiplyScalar(1.2);  // エメラルド
+      case 'vision':
+        return new THREE.Color(0x5ca5d9).multiplyScalar(1.2);  // サファイア
+      case 'value':
+        return new THREE.Color(0x9b6b9e).multiplyScalar(1.2);  // アメジスト
+      default:
+        return new THREE.Color(0xffffff);
+    }
+  };
 
   // 表示/非表示の切り替え時の処理
   useEffect(() => {
@@ -62,26 +76,34 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible,
       rotation={[0, Math.PI / 6, 0]}
       onPointerEnter={(e) => {
         e.stopPropagation();
-        onHover && onHover(true);
+        onHover(layerId);
       }}
       onPointerLeave={(e) => {
         e.stopPropagation();
-        onHover && onHover(false);
+        onHover(null);
       }}
     >
-      {/* 三角柱のジオメトリ（形状）定義 */}
       <cylinderGeometry args={[topScale, bottomScale, height, 3]} />
-      
-      {/* マテリアル（見た目）定義 */}
-      <meshPhongMaterial
+      <meshPhysicalMaterial
         ref={materialRef}
-        color={color}
-        transparent
-        opacity={0}
-        side={THREE.DoubleSide}
-        emissive={color}
-        emissiveIntensity={isHighlighted ? 0.5 : 0}
-        shininess={isHighlighted ? 100 : 30}
+        color={getLayerColor()}
+        transparent={true}
+        opacity={baseOpacity}
+        metalness={0.2}
+        roughness={0.3}
+        transmission={0.4}  // 透過性を追加
+        thickness={1.0}     // 厚みを追加
+        attenuationDistance={0.5}  // 光の減衰距離
+        attenuationColor={getLayerColor()}  // 減衰色
+        envMapIntensity={1.5}  // 環境マップの強度
+        clearcoat={0.3}        // クリアコート
+        clearcoatRoughness={0.25}  // クリアコートの粗さ
+        ior={1.5}              // 屈折率
+        reflectivity={0.2}     // 反射率
+        sheen={0.1}            // 光沢
+        sheenRoughness={0.3}   // 光沢の粗さ
+        sheenColor={getLayerColor()}  // 光沢の色
+        side={THREE.DoubleSide}  // 両面を表示
       />
     </mesh>
   );
@@ -144,11 +166,13 @@ const PyramidGroup = ({ visibleLayers, highlightedLayer, onLayerHover }) => {
           bottomScale={layer.bottomScale}
           topScale={layer.topScale}
           height={layer.height}
-          color={layer.color}
           visible={visibleLayers.includes(layer.id)}
           isHighlighted={highlightedLayer === layer.id}
           highlightedLayer={highlightedLayer}
-          onHover={(isHovered) => onLayerHover && onLayerHover(isHovered ? layer.id : null)}
+          onHover={(layerId) => {
+            onLayerHover(layerId);
+          }}
+          layerId={layer.id}
         />
       ))}
     </group>

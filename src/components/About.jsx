@@ -44,12 +44,30 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
     setIsHovered(false);
     onHover(null);
   };
+
+  // タイトルに応じてアニメーションの遅延を設定
+  const getDelay = () => {
+    switch (title.toLowerCase()) {
+      case 'value':
+        return 0.5;  // ピラミッドの最初の層と同じタイミング
+      case 'vision':
+        return 2.5;  // 2番目の層と同じタイミング
+      case 'mission':
+        return 4.5;  // 3番目の層と同じタイミング
+      default:
+        return 0;
+    }
+  };
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, x: 200 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ 
+        duration: 1.2,
+        delay: getDelay(),
+        ease: [0.25, 0.1, 0.25, 1],  // カスタムイージング
+      }}
       className="border-2 border-transparent transition-all duration-300 p-5 rounded-xl mb-3 last:mb-0 flex flex-col shadow-lg hover:shadow-xl relative"
       style={{
         backgroundColor: isHovered 
@@ -219,8 +237,16 @@ const About = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2 -mt-4">
-          {orderedCards.map((card) => (
+        <motion.div 
+          className="w-full md:w-1/2 -mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ 
+            duration: 0.8,
+            ease: [0.25, 0.1, 0.25, 1]
+          }}
+        >
+          {orderedCards.map((card, index) => (
             <MVVDescription
               key={card.id}
               title={card.title}
@@ -230,7 +256,7 @@ const About = () => {
               isHighlightedFromPyramid={hoveredFromPyramid === card.id.toLowerCase()}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
