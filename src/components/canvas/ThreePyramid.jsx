@@ -63,28 +63,28 @@ const PyramidGroup = ({ visibleLayers }) => {
   // レイヤーを下から上の順に定義
   const pyramidLayers = [
     {
-      id: 'value',
+      id: 'value',    // 最下層
       y: 0,
       bottomScale: 3.0,
       topScale: 2.2,
       height: 1.4,
-      color: 0xb4a7d6
+      color: 0xb4a7d6  // Value: 落ち着いた紫
     },
     {
-      id: 'vision',
+      id: 'vision',   // 中間層
       y: 1.6,
       bottomScale: 2.2,
       topScale: 1.4,
       height: 1.4,
-      color: 0xa4c9e3
+      color: 0xa4c9e3  // Vision: 柔らかい青
     },
     {
-      id: 'mission',
+      id: 'mission',  // 最上層
       y: 3.2,
       bottomScale: 1.4,
       topScale: 0,
       height: 1.4,
-      color: 0x8dd3c7
+      color: 0x8dd3c7  // Mission: 爽やかな青緑
     }
   ];
 
@@ -96,6 +96,7 @@ const PyramidGroup = ({ visibleLayers }) => {
 
   return (
     <group ref={groupRef} rotation={[0, Math.PI / 6, 0]}>
+      {/* 配列をそのまま使用（下から上の順） */}
       {pyramidLayers.map((layer) => (
         <PyramidLayer
           key={layer.id}

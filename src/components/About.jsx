@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { styles } from "../styles";
@@ -12,7 +12,7 @@ const MVVDescription = ({ title, description, icon, isVisible }) => {
     <AnimatePresence mode="wait">
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
@@ -36,35 +36,86 @@ const MVVDescription = ({ title, description, icon, isVisible }) => {
 };
 
 const About = () => {
-  const [visibleLayers, setVisibleLayers] = useState(['value']);
-  
-  useEffect(() => {
-    // Value → Vision → Mission の順で表示
-    const sequence = [
-      ['value'],
-      ['value', 'vision'],
-      ['value', 'vision', 'mission']
-    ];
-    
-    let currentIndex = 0;
-    
-    const timer = setInterval(() => {
-      currentIndex++;
-      if (currentIndex < sequence.length) {
-        setVisibleLayers(sequence[currentIndex]);
-      } else {
-        clearInterval(timer);
-      }
-    }, 2000);
+  const [visibleLayers, setVisibleLayers] = useState([]);
+  const [isInView, setIsInView] = useState(false);
+  const sectionRef = useRef(null);
+  const animationRef = useRef(null);
 
-    return () => clearInterval(timer);
+  // Intersection Observerの設定
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // 要素が表示領域に入った時
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          startAnimation();
+        } else {
+          // 要素が表示領域から出た時
+          setIsInView(false);
+          setVisibleLayers([]);
+        }
+      },
+      {
+        threshold: 0.3 // 30%見えたら開始
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
   }, []);
 
-  // カードを逆順にして、Valueを最初に表示
-  const orderedCards = [...aboutContent.cards].reverse();
+  // アニメーションの開始
+  const startAnimation = () => {
+    // 前回のアニメーションをクリア
+    if (animationRef.current) {
+      Object.values(animationRef.current).forEach(timer => clearTimeout(timer));
+    }
+
+    // 新しいアニメーションを開始
+    setVisibleLayers([]); // リセット
+
+    const sequence = [
+      ['value'],                    // 最下層
+      ['value', 'vision'],          // 中間層を追加
+      ['value', 'vision', 'mission'] // 最上層を追加
+    ];
+
+    animationRef.current = {
+      timer1: setTimeout(() => {
+        setVisibleLayers(sequence[0]);
+      }, 500),
+
+      timer2: setTimeout(() => {
+        setVisibleLayers(sequence[1]);
+      }, 2500),
+
+      timer3: setTimeout(() => {
+        setVisibleLayers(sequence[2]);
+      }, 4500)
+    };
+  };
+
+  // コンポーネントのクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        Object.values(animationRef.current).forEach(timer => clearTimeout(timer));
+      }
+    };
+  }, []);
+
+  // カードを下から上の順に表示
+  const orderedCards = aboutContent.cards.slice().reverse();
 
   return (
-    <>
+    <div ref={sectionRef}>
       <motion.div variants={textVariant()}>
         <p className={styles.sectionSubText}>{aboutContent.title}</p>
         <h2 className={styles.sectionHeadText}>{aboutContent.subtitle}</h2>
@@ -96,7 +147,7 @@ const About = () => {
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
