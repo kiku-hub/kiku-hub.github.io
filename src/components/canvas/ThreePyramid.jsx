@@ -58,26 +58,26 @@ const PyramidGroup = ({ visibleLayers }) => {
   const pyramidLayers = [
     {
       id: 'value',    // 最下層
-      y: -2,
-      bottomScale: 5.8,  // 少し小さく
-      topScale: 4.4,     // 少し小さく
-      height: 2.5,       // 少し小さく
+      y: -3,
+      bottomScale: 6.2,  // 少し小さく
+      topScale: 4.7,     // 少し小さく
+      height: 2.8,       // 少し小さく
       color: 0xb4a7d6    // Value: 落ち着いた紫
     },
     {
       id: 'vision',   // 中間層
-      y: 0.7,
-      bottomScale: 4.4,  // 少し小さく
-      topScale: 3.0,     // 少し小さく
-      height: 2.5,       // 少し小さく
+      y: 0.0,
+      bottomScale: 4.7,  // 少し小さく
+      topScale: 3.2,     // 少し小さく
+      height: 2.8,       // 少し小さく
       color: 0xa4c9e3    // Vision: 柔らかい青
     },
     {
       id: 'mission',  // 最上層
-      y: 3.4,
-      bottomScale: 3.0,  // 少し小さく
+      y: 3.0,
+      bottomScale: 3.2,  // 少し小さく
       topScale: 0,
-      height: 2.5,       // 少し小さく
+      height: 2.8,       // 少し小さく
       color: 0x8dd3c7    // Mission: 爽やかな青緑
     }
   ];
@@ -89,7 +89,7 @@ const PyramidGroup = ({ visibleLayers }) => {
   });
 
   return (
-    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0.5, 0]}>  
+    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0, 0]}>  
       {pyramidLayers.map((layer) => (
         <PyramidLayer
           key={layer.id}
@@ -110,7 +110,7 @@ const ThreePyramid = ({ visibleLayers = ['value'] }) => {
     <div className="w-full h-[600px]">
       <Canvas
         camera={{
-          position: [0, 1.8, 18],  // カメラのY位置をさらに少し下げる
+          position: [0, 1.5, 20],  // カメラを少し近づける
           fov: 45,
           near: 0.1,
           far: 1000
