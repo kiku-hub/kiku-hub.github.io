@@ -259,6 +259,43 @@ const aboutContent = {
   ]
 };
 
+const companyInfo = {
+  title: "会社概要",
+  subtitle: "Company Profile",
+  details: [
+    {
+      label: "社名",
+      value: "ORCX株式会社",
+      icon: "building"
+    },
+    {
+      label: "設立",
+      value: "2025年2月1日",
+      icon: "calendar"
+    },
+    {
+      label: "所在地",
+      value: "東京都世田谷区",
+      icon: "location"
+    },
+    {
+      label: "代表者",
+      value: "吉田 翔一朗",
+      icon: "user"
+    },
+    {
+      label: "資本金",
+      value: "300万円",
+      icon: "money"
+    },
+    {
+      label: "従業員数",
+      value: "2名（フリーランス含め10名以上）",
+      icon: "users"
+    }
+  ]
+};
+
 export {
   navLinks,
   services,
@@ -266,4 +303,5 @@ export {
   experiences,
   projects,
   aboutContent,
+  companyInfo,
 };
