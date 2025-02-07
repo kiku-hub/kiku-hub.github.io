@@ -7,7 +7,7 @@ import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramid";
 
-const MVVDescription = ({ title, description, icon, isVisible }) => {
+const MVVDescription = ({ title, description, isVisible }) => {
   return (
     <AnimatePresence mode="wait">
       {isVisible && (
@@ -15,20 +15,42 @@ const MVVDescription = ({ title, description, icon, isVisible }) => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col mb-12 last:mb-0"
+          transition={{ 
+            duration: 0.7,
+            ease: [0.43, 0.13, 0.23, 0.96]
+          }}
+          whileHover={{ 
+            scale: 1.02,
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+          }}
+          className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl"
         >
-          <div className="flex items-center gap-4 mb-2">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{icon}</span>
-              <span className="text-3xl font-bold text-white">{title}</span>
-            </div>
-          </div>
-          <div className="ml-14">
-            <p className="text-white/80 text-sm max-w-md leading-relaxed">
+          <motion.div
+            className="relative mb-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h3 className="text-white text-[24px] font-bold bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent">
+              {title}
+            </h3>
+          </motion.div>
+          
+          <motion.div 
+            className="space-y-4 flex-grow"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <p className="text-white text-[16px] tracking-wide leading-relaxed font-medium">
               {description}
             </p>
-          </div>
+            {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase())?.subDescription && (
+              <p className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l border-[#4a4a8f]/30">
+                {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase()).subDescription}
+              </p>
+            )}
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
@@ -41,22 +63,20 @@ const About = () => {
   const sectionRef = useRef(null);
   const animationRef = useRef(null);
 
-  // Intersection Observerの設定
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // 要素が表示領域に入った時
         if (entry.isIntersecting) {
           setIsInView(true);
           startAnimation();
         } else {
-          // 要素が表示領域から出た時
           setIsInView(false);
           setVisibleLayers([]);
         }
       },
       {
-        threshold: 0.3 // 30%見えたら開始
+        threshold: 0.3,
+        rootMargin: '-10% 0px'
       }
     );
 
@@ -71,20 +91,17 @@ const About = () => {
     };
   }, []);
 
-  // アニメーションの開始
   const startAnimation = () => {
-    // 前回のアニメーションをクリア
     if (animationRef.current) {
       Object.values(animationRef.current).forEach(timer => clearTimeout(timer));
     }
 
-    // 新しいアニメーションを開始
-    setVisibleLayers([]); // リセット
+    setVisibleLayers([]);
 
     const sequence = [
-      ['value'],                    // 最下層
-      ['value', 'vision'],          // 中間層を追加
-      ['value', 'vision', 'mission'] // 最上層を追加
+      ['value'],
+      ['value', 'vision'],
+      ['value', 'vision', 'mission']
     ];
 
     animationRef.current = {
@@ -102,7 +119,6 @@ const About = () => {
     };
   };
 
-  // コンポーネントのクリーンアップ
   useEffect(() => {
     return () => {
       if (animationRef.current) {
@@ -111,30 +127,37 @@ const About = () => {
     };
   }, []);
 
-  // カードを下から上の順に表示
   const orderedCards = aboutContent.cards.slice().reverse();
 
   return (
     <div ref={sectionRef}>
-      <div className="text-center mb-20">
-        <p className={styles.sectionSubText}>{aboutContent.title}</p>
-        <h2 className={styles.sectionHeadText}>{aboutContent.subtitle}</h2>
+      <div className="text-center mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <p className={`${styles.sectionSubText} bg-gradient-to-r from-white/90 via-white/80 to-white/70 bg-clip-text text-transparent`}>
+            {aboutContent.title}
+          </p>
+          <h2 className={`${styles.sectionHeadText} bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent`}>
+            {aboutContent.subtitle}
+          </h2>
+        </motion.div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-20 items-center justify-center">
-        {/* Three.jsピラミッド */}
         <div className="relative w-full md:w-1/2">
           <ThreePyramid visibleLayers={visibleLayers} />
         </div>
 
-        {/* 説明部分 */}
         <div className="w-full md:w-1/2">
           {orderedCards.map((card) => (
             <MVVDescription
               key={card.id}
               title={card.title}
               description={card.description}
-              icon={card.icon}
               isVisible={visibleLayers.includes(card.id.toLowerCase())}
             />
           ))}
