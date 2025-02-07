@@ -215,18 +215,21 @@ const aboutContent = {
   description: "私たちは、技術革新と創造的思考を通じて、社会に新たな価値を創造することを目指しています。常に本質を追求し、固定観念にとらわれない視点で、より良い未来を築くためのソリューションを提供します。",
   cards: [
     {
+      id: "mission",
       title: "Mission",
       icon: "🎯",
       description: "先端技術と革新的な思考を融合し、実用的な価値を社会に届ける",
       subDescription: "Integrate cutting-edge technology with critical thinking to deliver innovative and valuable outcomes for people.",
     },
     {
+      id: "vision",
       title: "Vision",
       icon: "👁️",
       description: "固定観念を覆し、本質を見据えた新たな可能性を広げる",
       subDescription: "Transform conventional wisdom and expand new possibilities by focusing on the essence.",
     },
     {
+      id: "value",
       title: "Value",
       icon: "💫",
       description: "本質を追求する技術と革新的思考で、より良い未来を創造する",
