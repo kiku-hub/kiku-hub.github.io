@@ -264,24 +264,29 @@ const companyInfo = {
   subtitle: "Company Profile",
   details: [
     {
-      label: "社名",
+      label: "会社名",
       value: "ORCX株式会社",
       icon: "building"
-    },
-    {
-      label: "設立",
-      value: "2025年2月1日",
-      icon: "calendar"
-    },
-    {
-      label: "所在地",
-      value: "東京都世田谷区",
-      icon: "location"
     },
     {
       label: "代表者",
       value: "吉田 翔一朗",
       icon: "user"
+    },
+    {
+      label: "事業内容",
+      value: "ITコンサルティング・システム開発",
+      icon: "service"
+    },
+    {
+      label: "所在地",
+      value: "東京都世田谷区4-18-7",
+      icon: "location"
+    },
+    {
+      label: "設立",
+      value: "2025年3月1日",
+      icon: "calendar"
     },
     {
       label: "資本金",
@@ -290,8 +295,18 @@ const companyInfo = {
     },
     {
       label: "従業員数",
-      value: "2名（フリーランス含め10名以上）",
+      value: "2名（フリーランス含め10名）",
       icon: "users"
+    },
+    {
+      label: "メール",
+      value: "contact@orcx.co.jp",
+      icon: "email"
+    },
+    {
+      label: "ウェブサイト",
+      value: "https://orcx.co.jp",
+      icon: "website"
     }
   ]
 };
