@@ -134,7 +134,7 @@ const PyramidGroup = ({ visibleLayers, highlightedLayer, onLayerHover }) => {
     <group 
       ref={groupRef} 
       rotation={[0, Math.PI / 6, 0]} 
-      position={[0, 1.5, 0]}
+      position={[0, 0.6, 0]}
       onPointerMissed={() => onLayerHover && onLayerHover(null)}
     >
       {pyramidLayers.map((layer) => (

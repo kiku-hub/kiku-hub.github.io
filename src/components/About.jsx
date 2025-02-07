@@ -50,7 +50,7 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl relative"
+      className="border-2 border-transparent transition-all duration-300 p-5 rounded-xl mb-3 last:mb-0 flex flex-col shadow-lg hover:shadow-xl relative"
       style={{
         backgroundColor: isHovered 
           ? `color-mix(in srgb, ${textColor} 15%, #232631)`
@@ -66,7 +66,7 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
     >
       {isHovered && (
         <div 
-          className="absolute inset-0 rounded-2xl"
+          className="absolute inset-0 rounded-xl"
           style={{
             background: `radial-gradient(circle at center, ${textColor}10 0%, transparent 70%)`,
             mixBlendMode: 'overlay'
@@ -74,7 +74,7 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
         />
       )}
       <h3 
-        className="text-[24px] font-bold mb-5 transition-all duration-300 relative z-10"
+        className="text-[20px] font-bold mb-4 transition-all duration-300 relative z-10"
         style={{ 
           color: textColor,
           textShadow: isHovered ? `0 0 15px ${textColor}99` : 'none',
@@ -84,9 +84,9 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
         {title}
       </h3>
       
-      <div className="space-y-4 flex-grow relative z-10">
+      <div className="space-y-3 flex-grow relative z-10">
         <p 
-          className="text-white text-[16px] tracking-wide leading-relaxed font-medium transition-colors duration-300"
+          className="text-white text-[15px] tracking-wide leading-relaxed font-medium transition-colors duration-300"
           style={{
             color: isHovered ? 'white' : undefined,
             textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none'
@@ -96,7 +96,7 @@ const MVVDescription = ({ title, description, isVisible, onHover, isHighlightedF
         </p>
         {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase())?.subDescription && (
           <p 
-            className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l transition-colors duration-300"
+            className="text-white/40 text-[12px] tracking-wide italic leading-relaxed pl-3 border-l transition-colors duration-300"
             style={{
               borderColor: isHovered ? textColor + '40' : '#4a4a8f30'
             }}
@@ -191,7 +191,7 @@ const About = () => {
 
   return (
     <div ref={sectionRef}>
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -207,7 +207,7 @@ const About = () => {
         </motion.div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-20 items-center justify-center">
+      <div className="flex flex-col md:flex-row gap-16 items-center justify-center -mt-8">
         <div className="relative w-full md:w-1/2">
           <ThreePyramid 
             visibleLayers={visibleLayers} 
@@ -219,7 +219,7 @@ const About = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 -mt-4">
           {orderedCards.map((card) => (
             <MVVDescription
               key={card.id}
