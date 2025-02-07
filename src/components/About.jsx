@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { styles } from "../styles";
 import { fadeIn, textVariant } from "../utils/motion";
@@ -8,52 +8,30 @@ import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramid";
 
 const MVVDescription = ({ title, description, isVisible }) => {
+  if (!isVisible) return null;
+  
   return (
-    <AnimatePresence mode="wait">
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ 
-            duration: 0.7,
-            ease: [0.43, 0.13, 0.23, 0.96]
-          }}
-          whileHover={{ 
-            scale: 1.02,
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
-          }}
-          className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl"
-        >
-          <motion.div
-            className="relative mb-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-          >
-            <h3 className="text-white text-[24px] font-bold bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent">
-              {title}
-            </h3>
-          </motion.div>
-          
-          <motion.div 
-            className="space-y-4 flex-grow"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <p className="text-white text-[16px] tracking-wide leading-relaxed font-medium">
-              {description}
-            </p>
-            {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase())?.subDescription && (
-              <p className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l border-[#4a4a8f]/30">
-                {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase()).subDescription}
-              </p>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl"
+    >
+      <h3 className="text-white text-[24px] font-bold bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent mb-5">
+        {title}
+      </h3>
+      
+      <div className="space-y-4 flex-grow">
+        <p className="text-white text-[16px] tracking-wide leading-relaxed font-medium">
+          {description}
+        </p>
+        {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase())?.subDescription && (
+          <p className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l border-[#4a4a8f]/30">
+            {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase()).subDescription}
+          </p>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

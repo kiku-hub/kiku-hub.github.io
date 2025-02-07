@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -17,24 +17,18 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible 
 
   useFrame(() => {
     if (meshRef.current && materialRef.current) {
-      // 回転アニメーション（これは常に維持）
       meshRef.current.rotation.y += 0.005;
 
       if (visible) {
-        // 表示アニメーション
         scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 1, 0.1);
         opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0.7, 0.1);
       } else {
-        // 非表示アニメーション
         scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 0, 0.1);
         opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0, 0.1);
       }
 
-      // スケールと不透明度を適用
       meshRef.current.scale.setScalar(scaleRef.current);
       materialRef.current.opacity = opacityRef.current;
-
-      // 完全に透明になったら非表示に
       meshRef.current.visible = opacityRef.current > 0.01;
     }
   });
@@ -64,39 +58,38 @@ const PyramidGroup = ({ visibleLayers }) => {
   const pyramidLayers = [
     {
       id: 'value',    // 最下層
-      y: 0,
-      bottomScale: 3.0,
-      topScale: 2.2,
-      height: 1.4,
-      color: 0xb4a7d6  // Value: 落ち着いた紫
+      y: -2,
+      bottomScale: 5.8,  // 少し小さく
+      topScale: 4.4,     // 少し小さく
+      height: 2.5,       // 少し小さく
+      color: 0xb4a7d6    // Value: 落ち着いた紫
     },
     {
       id: 'vision',   // 中間層
-      y: 1.6,
-      bottomScale: 2.2,
-      topScale: 1.4,
-      height: 1.4,
-      color: 0xa4c9e3  // Vision: 柔らかい青
+      y: 0.7,
+      bottomScale: 4.4,  // 少し小さく
+      topScale: 3.0,     // 少し小さく
+      height: 2.5,       // 少し小さく
+      color: 0xa4c9e3    // Vision: 柔らかい青
     },
     {
       id: 'mission',  // 最上層
-      y: 3.2,
-      bottomScale: 1.4,
+      y: 3.4,
+      bottomScale: 3.0,  // 少し小さく
       topScale: 0,
-      height: 1.4,
-      color: 0x8dd3c7  // Mission: 爽やかな青緑
+      height: 2.5,       // 少し小さく
+      color: 0x8dd3c7    // Mission: 爽やかな青緑
     }
   ];
 
   useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.005;
+      groupRef.current.rotation.y += 0.002;
     }
   });
 
   return (
-    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]}>
-      {/* 配列をそのまま使用（下から上の順） */}
+    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0.5, 0]}>  
       {pyramidLayers.map((layer) => (
         <PyramidLayer
           key={layer.id}
@@ -114,10 +107,10 @@ const PyramidGroup = ({ visibleLayers }) => {
 
 const ThreePyramid = ({ visibleLayers = ['value'] }) => {
   return (
-    <div className="w-full h-[500px]">
+    <div className="w-full h-[600px]">
       <Canvas
         camera={{
-          position: [0, 4, 10],
+          position: [0, 1.8, 18],  // カメラのY位置をさらに少し下げる
           fov: 45,
           near: 0.1,
           far: 1000
