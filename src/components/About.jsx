@@ -116,17 +116,10 @@ const About = () => {
 
   return (
     <div ref={sectionRef}>
-      <motion.div variants={textVariant()}>
+      <div className="text-center mb-20">
         <p className={styles.sectionSubText}>{aboutContent.title}</p>
         <h2 className={styles.sectionHeadText}>{aboutContent.subtitle}</h2>
-      </motion.div>
-
-      <motion.p
-        variants={fadeIn("", "", 0.1, 1)}
-        className='mt-4 text-white text-[17px] max-w-3xl leading-[30px] mb-20'
-      >
-        {aboutContent.description}
-      </motion.p>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-20 items-center justify-center">
         {/* Three.jsピラミッド */}
