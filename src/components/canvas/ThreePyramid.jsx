@@ -19,11 +19,11 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, visible, isHigh
   const getLayerColor = () => {
     switch (layerId) {
       case 'mission':
-        return new THREE.Color(0x48c9b0).multiplyScalar(1.2);  // エメラルド
+        return new THREE.Color(0x48c9b0).multiplyScalar(1.3);  // エメラルド
       case 'vision':
-        return new THREE.Color(0x5ca5d9).multiplyScalar(1.2);  // サファイア
+        return new THREE.Color(0x5ca5d9).multiplyScalar(1.3);  // サファイア
       case 'value':
-        return new THREE.Color(0x9b6b9e).multiplyScalar(1.2);  // アメジスト
+        return new THREE.Color(0x9b6b9e).multiplyScalar(1.3);  // アメジスト
       default:
         return new THREE.Color(0xffffff);
     }
@@ -90,20 +90,25 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, visible, isHigh
         transparent={true}
         opacity={baseOpacity}
         metalness={0.2}
-        roughness={0.3}
-        transmission={0.4}  // 透過性を追加
-        thickness={1.0}     // 厚みを追加
-        attenuationDistance={0.5}  // 光の減衰距離
-        attenuationColor={getLayerColor()}  // 減衰色
-        envMapIntensity={1.5}  // 環境マップの強度
-        clearcoat={0.3}        // クリアコート
-        clearcoatRoughness={0.25}  // クリアコートの粗さ
-        ior={1.5}              // 屈折率
-        reflectivity={0.2}     // 反射率
-        sheen={0.1}            // 光沢
-        sheenRoughness={0.3}   // 光沢の粗さ
-        sheenColor={getLayerColor()}  // 光沢の色
-        side={THREE.DoubleSide}  // 両面を表示
+        roughness={0.15}
+        transmission={0.7}         // 透過性をさらに増加
+        thickness={3.0}           // 厚みをさらに増加
+        attenuationDistance={2.0} // 光の減衰距離を増加
+        attenuationColor={getLayerColor()}
+        envMapIntensity={2.5}     // 環境マップの強度を増加
+        clearcoat={0.5}           // クリアコートを増加
+        clearcoatRoughness={0.15}
+        ior={1.8}                 // 屈折率をさらに増加
+        reflectivity={0.4}        // 反射率を増加
+        sheen={0.3}               // 光沢を増加
+        sheenRoughness={0.2}
+        sheenColor={getLayerColor()}
+        side={THREE.DoubleSide}
+        blending={THREE.CustomBlending}  // カスタムブレンディングに変更
+        blendEquation={THREE.AddEquation}  // 加算
+        blendSrc={THREE.OneFactor}         // ソースファクター
+        blendDst={THREE.OneMinusSrcAlphaFactor}  // デスティネーションファクター
+        depthWrite={false}
       />
     </mesh>
   );
@@ -189,15 +194,17 @@ const ThreePyramid = ({ visibleLayers = ['value'], highlightedLayer = null, onLa
     <div className="w-full h-[600px]">
       <Canvas
         camera={{
-          position: [0, 4.0, 20],  // カメラの高さを上げる
-          fov: 45,                 // 画角
+          position: [0, 4.0, 20],
+          fov: 45,
           near: 0.1,
           far: 1000
         }}
       >
         {/* ライティング設定 */}
-        <directionalLight position={[5, 5, 5]} intensity={1} />
-        <ambientLight color={0x404040} />
+        <directionalLight position={[5, 5, 5]} intensity={1.3} />
+        <ambientLight intensity={0.7} />
+        <pointLight position={[-5, 5, -5]} intensity={0.9} color={0xffffff} />
+        <pointLight position={[5, -5, 5]} intensity={0.6} color={0xffffff} />
         
         {/* ピラミッドグループの配置 */}
         <PyramidGroup 
