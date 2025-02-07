@@ -8,7 +8,23 @@ import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramid";
 
 const MVVDescription = ({ title, description, isVisible }) => {
+  // MVVに応じて色を設定
+  const getColorByTitle = (title) => {
+    switch (title.toLowerCase()) {
+      case 'mission':
+        return '#8dd3c7';  // Mission: 爽やかな青緑
+      case 'vision':
+        return '#a4c9e3';  // Vision: 柔らかい青
+      case 'value':
+        return '#b4a7d6';  // Value: 落ち着いた紫
+      default:
+        return '#ffffff';
+    }
+  };
+
   if (!isVisible) return null;
+  
+  const textColor = getColorByTitle(title);
   
   return (
     <motion.div
@@ -17,7 +33,10 @@ const MVVDescription = ({ title, description, isVisible }) => {
       transition={{ duration: 0.4 }}
       className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl"
     >
-      <h3 className="text-white text-[24px] font-bold bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent mb-5">
+      <h3 
+        className="text-[24px] font-bold mb-5"
+        style={{ color: textColor }}
+      >
         {title}
       </h3>
       
