@@ -7,7 +7,7 @@ import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramid";
 
-const MVVDescription = ({ title, description, isVisible }) => {
+const MVVDescription = ({ title, description, isVisible, onHover }) => {
   // MVVに応じて色を設定
   const getColorByTitle = (title) => {
     switch (title.toLowerCase()) {
@@ -25,27 +25,74 @@ const MVVDescription = ({ title, description, isVisible }) => {
   if (!isVisible) return null;
   
   const textColor = getColorByTitle(title);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    onHover(title.toLowerCase());
+  };
+  
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    onHover(null);
+  };
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl"
+      className="border-2 border-transparent transition-all duration-300 p-6 rounded-2xl mb-4 last:mb-0 flex flex-col shadow-lg hover:shadow-xl relative"
+      style={{
+        backgroundColor: isHovered 
+          ? `color-mix(in srgb, ${textColor} 15%, #232631)`
+          : '#1d1836',
+        borderColor: isHovered ? textColor : 'transparent',
+        boxShadow: isHovered 
+          ? `0 0 30px ${textColor}40, inset 0 0 50px ${textColor}20`
+          : undefined,
+        transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
+      {isHovered && (
+        <div 
+          className="absolute inset-0 rounded-2xl"
+          style={{
+            background: `radial-gradient(circle at center, ${textColor}10 0%, transparent 70%)`,
+            mixBlendMode: 'overlay'
+          }}
+        />
+      )}
       <h3 
-        className="text-[24px] font-bold mb-5"
-        style={{ color: textColor }}
+        className="text-[24px] font-bold mb-5 transition-all duration-300 relative z-10"
+        style={{ 
+          color: textColor,
+          textShadow: isHovered ? `0 0 15px ${textColor}99` : 'none',
+          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+        }}
       >
         {title}
       </h3>
       
-      <div className="space-y-4 flex-grow">
-        <p className="text-white text-[16px] tracking-wide leading-relaxed font-medium">
+      <div className="space-y-4 flex-grow relative z-10">
+        <p 
+          className="text-white text-[16px] tracking-wide leading-relaxed font-medium transition-colors duration-300"
+          style={{
+            color: isHovered ? 'white' : undefined,
+            textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none'
+          }}
+        >
           {description}
         </p>
         {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase())?.subDescription && (
-          <p className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l border-[#4a4a8f]/30">
+          <p 
+            className="text-white/40 text-[13px] tracking-wide italic leading-relaxed pl-4 border-l transition-colors duration-300"
+            style={{
+              borderColor: isHovered ? textColor + '40' : '#4a4a8f30'
+            }}
+          >
             {aboutContent.cards.find(card => card.id.toLowerCase() === title.toLowerCase()).subDescription}
           </p>
         )}
@@ -56,9 +103,16 @@ const MVVDescription = ({ title, description, isVisible }) => {
 
 const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
+  const [highlightedLayer, setHighlightedLayer] = useState(null);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
   const animationRef = useRef(null);
+
+  const handleHover = (layerId) => {
+    if (visibleLayers.includes(layerId) || layerId === null) {
+      setHighlightedLayer(layerId);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -146,7 +200,10 @@ const About = () => {
 
       <div className="flex flex-col md:flex-row gap-20 items-center justify-center">
         <div className="relative w-full md:w-1/2">
-          <ThreePyramid visibleLayers={visibleLayers} />
+          <ThreePyramid 
+            visibleLayers={visibleLayers} 
+            highlightedLayer={highlightedLayer}
+          />
         </div>
 
         <div className="w-full md:w-1/2">
@@ -156,6 +213,7 @@ const About = () => {
               title={card.title}
               description={card.description}
               isVisible={visibleLayers.includes(card.id.toLowerCase())}
+              onHover={handleHover}
             />
           ))}
         </div>

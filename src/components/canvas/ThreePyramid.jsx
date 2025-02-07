@@ -2,11 +2,12 @@ import React, { useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible }) => {
+const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible, isHighlighted, highlightedLayer }) => {
   const meshRef = useRef();
   const materialRef = useRef();
   const scaleRef = useRef(visible ? 1 : 0);
   const opacityRef = useRef(visible ? 0.7 : 0);
+  const baseOpacity = 0.7;
 
   useEffect(() => {
     if (!visible) {
@@ -20,8 +21,15 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible 
       meshRef.current.rotation.y += 0.005;
 
       if (visible) {
-        scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 1, 0.1);
-        opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0.7, 0.1);
+        const targetScale = isHighlighted ? 1.05 : 1;
+        scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, targetScale, 0.1);
+        const targetOpacity = isHighlighted ? 0.95 : baseOpacity;
+        opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, targetOpacity, 0.1);
+
+        // 非ハイライト層を暗く
+        if (!isHighlighted && highlightedLayer !== null) {
+          opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0.3, 0.1);
+        }
       } else {
         scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 0, 0.1);
         opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0, 0.1);
@@ -46,12 +54,15 @@ const PyramidLayer = ({ position, bottomScale, topScale, height, color, visible 
         transparent
         opacity={0}
         side={THREE.DoubleSide}
+        emissive={color}
+        emissiveIntensity={isHighlighted ? 0.5 : 0}
+        shininess={isHighlighted ? 100 : 30}
       />
     </mesh>
   );
 };
 
-const PyramidGroup = ({ visibleLayers }) => {
+const PyramidGroup = ({ visibleLayers, highlightedLayer }) => {
   const groupRef = useRef();
 
   // レイヤーを下から上の順に定義
@@ -59,26 +70,26 @@ const PyramidGroup = ({ visibleLayers }) => {
     {
       id: 'value',    // 最下層
       y: -3,
-      bottomScale: 6.2,  // 少し小さく
-      topScale: 4.7,     // 少し小さく
-      height: 2.8,       // 少し小さく
-      color: 0xb4a7d6    // Value: 落ち着いた紫
+      bottomScale: 6.2,
+      topScale: 4.7,
+      height: 2.8,
+      color: 0xb4a7d6
     },
     {
       id: 'vision',   // 中間層
       y: 0.0,
-      bottomScale: 4.7,  // 少し小さく
-      topScale: 3.2,     // 少し小さく
-      height: 2.8,       // 少し小さく
-      color: 0xa4c9e3    // Vision: 柔らかい青
+      bottomScale: 4.7,
+      topScale: 3.2,
+      height: 2.8,
+      color: 0xa4c9e3
     },
     {
       id: 'mission',  // 最上層
       y: 3.0,
-      bottomScale: 3.2,  // 少し小さく
+      bottomScale: 3.2,
       topScale: 0,
-      height: 2.8,       // 少し小さく
-      color: 0x8dd3c7    // Mission: 爽やかな青緑
+      height: 2.8,
+      color: 0x8dd3c7
     }
   ];
 
@@ -89,7 +100,7 @@ const PyramidGroup = ({ visibleLayers }) => {
   });
 
   return (
-    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0, 0]}>  
+    <group ref={groupRef} rotation={[0, Math.PI / 6, 0]} position={[0, 0, 0]}>
       {pyramidLayers.map((layer) => (
         <PyramidLayer
           key={layer.id}
@@ -99,18 +110,20 @@ const PyramidGroup = ({ visibleLayers }) => {
           height={layer.height}
           color={layer.color}
           visible={visibleLayers.includes(layer.id)}
+          isHighlighted={highlightedLayer === layer.id}
+          highlightedLayer={highlightedLayer}
         />
       ))}
     </group>
   );
 };
 
-const ThreePyramid = ({ visibleLayers = ['value'] }) => {
+const ThreePyramid = ({ visibleLayers = ['value'], highlightedLayer = null }) => {
   return (
     <div className="w-full h-[600px]">
       <Canvas
         camera={{
-          position: [0, 1.5, 20],  // カメラを少し近づける
+          position: [0, 1.5, 20],
           fov: 45,
           near: 0.1,
           far: 1000
@@ -118,7 +131,7 @@ const ThreePyramid = ({ visibleLayers = ['value'] }) => {
       >
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <ambientLight color={0x404040} />
-        <PyramidGroup visibleLayers={visibleLayers} />
+        <PyramidGroup visibleLayers={visibleLayers} highlightedLayer={highlightedLayer} />
       </Canvas>
     </div>
   );
