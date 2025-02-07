@@ -275,7 +275,7 @@ const companyInfo = {
     },
     {
       label: "事業内容",
-      value: "ITコンサルティング・システム開発",
+      value: "ITソリューション・自社サービス・システム受託開発・AIサーバー構築",
       icon: "service"
     },
     {
@@ -294,13 +294,8 @@ const companyInfo = {
       icon: "money"
     },
     {
-      label: "従業員数",
-      value: "2名（フリーランス含め10名）",
-      icon: "users"
-    },
-    {
       label: "メール",
-      value: "contact@orcx.co.jp",
+      value: "info@orcx.co.jp",
       icon: "email"
     },
     {
