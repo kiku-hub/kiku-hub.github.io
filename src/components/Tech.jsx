@@ -4,7 +4,9 @@ import { BallCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { technologies } from "../constants";
 
-const Tech = () => {
+const Tech = ({ isVisible = true }) => {
+  if (!isVisible) return null;
+
   return (
     <div className='flex flex-row flex-wrap justify-center gap-10'>
       {technologies.map((technology) => (
@@ -16,4 +18,10 @@ const Tech = () => {
   );
 };
 
-export default SectionWrapper(Tech, "");
+// SectionWrapperにisVisibleを渡すように修正
+const WrappedTech = (props) => {
+  if (!props.isVisible) return null;
+  return <Tech {...props} />;
+};
+
+export default SectionWrapper(WrappedTech, "");

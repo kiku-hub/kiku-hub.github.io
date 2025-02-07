@@ -22,9 +22,12 @@ const App = () => {
         <div className="snap-start min-h-screen">
           <About />
         </div>
-        <div className="snap-start min-h-screen">
-          <Tech />
-        </div>
+        {/* Techセクションを完全に非表示 */}
+        {false && (
+          <div className="snap-start min-h-screen">
+            <Tech isVisible={false} />
+          </div>
+        )}
         <div className="snap-start min-h-screen">
           <Experience />
         </div>

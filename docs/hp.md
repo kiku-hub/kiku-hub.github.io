@@ -72,18 +72,6 @@ Pursue excellence through technology and innovative thinking to create a better 
 - **Empowering Collaboration**: 独自の視点を持ち寄り、相乗効果を重視する
   Bring unique perspectives together to create synergistic effects
 
-## メンバー紹介(team)
-
-### 代表取締役社長 CEO 吉田 翔一朗
-
-大手 SIer でのシステム開発経験を経て、AI 開発ベンチャーにて技術責任者を務める。
-機械学習やデータ分析の専門知識を活かし、革新的な AI ソリューションの開発をリード。
-
-### 取締役 COO 菊池　恭輔
-
-クラウドインフラ構築のスペシャリスト。大規模システムの設計・運用経験を持ち、
-技術戦略の立案から実装まで幅広く対応。AWS ソリューションアーキテクト認定資格保有。
-
 ## 会社概要(company)
 
 - 社名：ORCX 株式会社
