@@ -21,7 +21,7 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
           return (
             <div
               key={card.id}
-              className="absolute w-full transition-all duration-700"
+              className="absolute w-full"
               style={{
                 bottom: isVisible ? `${getPosition()}px` : '0px',
                 opacity: isVisible ? 1 : 0,
@@ -29,6 +29,7 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
                   ? 'none' 
                   : 'translateX(120%) translateY(50px)',
                 zIndex: getPosition() / 200, // zIndexも調整
+                transition: 'transform 0.5s ease, opacity 0.5s ease',
               }}
             >
               <MVVDescription

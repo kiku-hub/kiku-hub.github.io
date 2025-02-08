@@ -56,8 +56,8 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
         ? `0 0 15px ${textColor}40`
         : 'none',
       transitionDelay: `${getDelay() * 0.7}s`,
-      transitionProperty: 'all',
-      transitionDuration: '0.7s',
+      transitionProperty: 'transform, opacity',
+      transitionDuration: '0.5s',
       transitionTimingFunction: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
       willChange: 'transform, opacity, background-color, box-shadow',
       position: 'relative',
@@ -65,33 +65,40 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
     },
     hoverScale: {
       transform: isHovered ? 'scale(1.01)' : 'scale(1)',
-      transition: 'transform 0.3s ease',
+      transition: 'transform 0.2s ease',
     },
     title: {
       color: textColor,
       textShadow: isHovered ? `0 0 15px ${textColor}99` : 'none',
+      transition: 'all 0.2s ease',
     },
     description: {
       color: isHovered ? 'white' : '#e0e0e0',
-      textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none'
+      textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none',
+      transition: 'all 0.2s ease',
     },
     subDescription: {
       borderColor: isHovered ? textColor + '40' : '#4a4a8f30'
     },
     overlay: {
       opacity: isHovered ? 1 : 0,
-      background: `radial-gradient(circle at center, ${textColor}08 0%, transparent 60%)`
+      background: `radial-gradient(circle at center, ${textColor}08 0%, transparent 60%)`,
+      transition: 'opacity 0.2s ease',
     }
   }), [isHovered, textColor, isAnimationVisible, getDelay]);
 
   const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-    onHover(title.toLowerCase());
+    requestAnimationFrame(() => {
+      setIsHovered(true);
+      onHover(title.toLowerCase());
+    });
   }, [onHover, title]);
   
   const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    onHover(null);
+    requestAnimationFrame(() => {
+      setIsHovered(false);
+      onHover(null);
+    });
   }, [onHover]);
 
   useEffect(() => {
