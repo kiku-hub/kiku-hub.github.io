@@ -6,7 +6,7 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   const meshRef = useRef();
   const materialRef = useRef();
   const scaleRef = useRef(visible ? 1 : 0);
-  const opacityRef = useRef(visible ? 0.7 : 0);
+  const brightnessRef = useRef(1);
   const baseOpacity = 0.7;
 
   const getLayerColor = () => {
@@ -29,35 +29,27 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
     
     if (visible) {
       const targetScale = isHighlighted ? 1.05 : 1;
-      const targetOpacity = isHighlighted ? 0.95 : baseOpacity;
+      const targetBrightness = highlightedLayer === null || isHighlighted ? 1 : 0.05;
       
       const hoverSpeed = 0.05;
       const visibilitySpeed = 0.010;
       
-      if (isHighlighted || !visible) {
-        scaleRef.current += (targetScale - scaleRef.current) * hoverSpeed;
-        opacityRef.current += (targetOpacity - opacityRef.current) * hoverSpeed;
-      } else {
-        scaleRef.current += (targetScale - scaleRef.current) * visibilitySpeed;
-        opacityRef.current += (targetOpacity - opacityRef.current) * visibilitySpeed;
-      }
+      scaleRef.current += (targetScale - scaleRef.current) * (isHighlighted ? hoverSpeed : visibilitySpeed);
+      brightnessRef.current += (targetBrightness - brightnessRef.current) * hoverSpeed;
       
-      if (!isHighlighted && highlightedLayer !== null) {
-        opacityRef.current += (0.3 - opacityRef.current) * hoverSpeed;
-      }
     } else {
       scaleRef.current *= 0.95;
-      opacityRef.current *= 0.95;
+      brightnessRef.current = 1;
     }
 
     if (Math.abs(meshRef.current.scale.x - scaleRef.current) > 0.001) {
       meshRef.current.scale.setScalar(scaleRef.current);
     }
-    if (Math.abs(materialRef.current.opacity - opacityRef.current) > 0.001) {
-      materialRef.current.opacity = opacityRef.current;
-    }
+
+    materialRef.current.opacity = baseOpacity;
+    materialRef.current.color.copy(getLayerColor()).multiplyScalar(brightnessRef.current);
     
-    meshRef.current.visible = opacityRef.current > 0.01;
+    meshRef.current.visible = scaleRef.current > 0.01;
   });
 
   return (
