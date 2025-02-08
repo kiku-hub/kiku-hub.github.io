@@ -8,6 +8,7 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   const scaleRef = useRef(visible ? 1 : 0);
   const brightnessRef = useRef(1);
   const baseOpacity = 0.7;
+  const initialYOffset = useRef(layerId === 'value' ? 0 : 20);
 
   const getLayerColor = () => {
     switch (layerId) {
@@ -37,9 +38,15 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
       scaleRef.current += (targetScale - scaleRef.current) * (isHighlighted ? hoverSpeed : visibilitySpeed);
       brightnessRef.current += (targetBrightness - brightnessRef.current) * hoverSpeed;
       
+      if (initialYOffset.current > 0) {
+        initialYOffset.current *= 0.95;
+        meshRef.current.position.y = position[1] + initialYOffset.current;
+      }
+      
     } else {
       scaleRef.current *= 0.95;
       brightnessRef.current = 1;
+      initialYOffset.current = layerId === 'value' ? 0 : 20;
     }
 
     if (Math.abs(meshRef.current.scale.x - scaleRef.current) > 0.001) {
@@ -55,7 +62,7 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   return (
     <mesh
       ref={meshRef}
-      position={position}
+      position={[position[0], position[1] + initialYOffset.current, position[2]]}
       rotation={[0, Math.PI / 6, 0]}
       onPointerEnter={(e) => {
         e.stopPropagation();
