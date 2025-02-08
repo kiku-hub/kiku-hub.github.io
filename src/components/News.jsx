@@ -8,11 +8,11 @@ import { motion } from "framer-motion";
 import "react-vertical-timeline-component/style.min.css";
 
 import { styles } from "../styles";
-import { experiences } from "../constants";
+import { news, newsContent } from "../constants";
 import { SectionWrapper } from "../hoc";
 import { textVariant } from "../utils/motion";
 
-const ExperienceCard = ({ experience }) => {
+const NewsCard = ({ news }) => {
   return (
     <VerticalTimelineElement
       contentStyle={{
@@ -29,32 +29,32 @@ const ExperienceCard = ({ experience }) => {
         }
       }}
       contentArrowStyle={{ borderRight: "7px solid #232631" }}
-      date={experience.date}
-      iconStyle={{ background: experience.iconBg }}
+      date={news.date}
+      iconStyle={{ background: news.iconBg }}
       icon={
         <div className='flex justify-center items-center w-full h-full'>
           <img
-            src={experience.icon}
-            alt={experience.company_name}
+            src={news.icon}
+            alt={news.title}
             className='w-[60%] h-[60%] object-contain'
           />
         </div>
       }
     >
       <div>
-        <h3 className='text-white text-[24px] font-bold'>{experience.title}</h3>
+        <h3 className='text-white text-[24px] font-bold'>{news.title}</h3>
         <p
           className='text-secondary text-[16px] font-semibold'
           style={{ margin: 0 }}
         >
-          {experience.company_name}
+          {news.category}
         </p>
       </div>
 
       <ul className='mt-5 list-disc ml-5 space-y-2'>
-        {experience.points.map((point, index) => (
+        {news.description.map((point, index) => (
           <li
-            key={`experience-point-${index}`}
+            key={`news-point-${index}`}
             className='text-white-100 text-[14px] pl-1 tracking-wider'
           >
             {point}
@@ -65,24 +65,24 @@ const ExperienceCard = ({ experience }) => {
   );
 };
 
-const Experience = () => {
+const News = () => {
   return (
     <>
       <motion.div variants={textVariant()}>
         <p className={`${styles.sectionSubText} text-center`}>
-          What I have done so far
+          {newsContent.title}
         </p>
         <h2 className={`${styles.sectionHeadText} text-center`}>
-          Work Experience.
+          {newsContent.subtitle}
         </h2>
       </motion.div>
 
       <div className='mt-20 flex flex-col'>
         <VerticalTimeline>
-          {experiences.map((experience, index) => (
-            <ExperienceCard
-              key={`experience-${index}`}
-              experience={experience}
+          {news.map((item, index) => (
+            <NewsCard
+              key={`news-${index}`}
+              news={item}
             />
           ))}
         </VerticalTimeline>
@@ -91,4 +91,4 @@ const Experience = () => {
   );
 };
 
-export default SectionWrapper(Experience, "work");
+export default SectionWrapper(News, "news"); 

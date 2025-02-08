@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import { About, Contact, Experience, Hero, Navbar, Tech, Products, StarsCanvas, Services, Company } from "./components";
+import { About, Contact, News, Hero, Navbar, Tech, Products, StarsCanvas, Services, Company } from "./components";
 import CursorEffect from "./components/CursorEffect";
 import InitialLoader from "./components/InitialLoader";
 
@@ -32,7 +32,7 @@ const App = () => {
           </div>
         )}
         <div className="snap-start min-h-screen">
-          <Experience />
+          <News />
         </div>
         <div className="snap-start min-h-screen">
           <Contact />

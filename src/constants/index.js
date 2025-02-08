@@ -301,6 +301,27 @@ const companyInfo = {
   ]
 };
 
+export const newsContent = {
+  title: "ニュース",
+  subtitle: "Tech News.",
+};
+
+export const news = [
+  {
+    title: "AIの進化が加速",
+    category: "人工知能",
+    icon: "/tech/ai.png",
+    iconBg: "#383E56",
+    date: "2024年3月",
+    description: [
+      "GPT-4の新機能が発表",
+      "画像生成AIの精度が向上",
+      "企業でのAI活用事例が増加",
+    ],
+  },
+  // ... 他のニュース記事
+];
+
 export {
   navLinks,
   services,
