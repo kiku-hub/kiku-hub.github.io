@@ -76,6 +76,12 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       color: isHovered ? 'white' : '#e0e0e0',
       textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none',
       transition: 'all 0.2s ease',
+      fontSize: '16.5px',
+      fontWeight: 'bold',
+      '& strong': {
+        color: 'white',
+        fontWeight: '600',
+      }
     },
     subDescription: {
       borderColor: isHovered ? textColor + '40' : '#4a4a8f30'
@@ -133,9 +139,8 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
           <p 
             className="text-[15px] tracking-wide leading-relaxed font-medium transition-all duration-300"
             style={styles.description}
-          >
-            {description}
-          </p>
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
           {cardDetails?.subDescription && (
             <p 
               className="text-white/40 text-[12px] tracking-wide italic leading-relaxed pl-3 border-l transition-all duration-300"
