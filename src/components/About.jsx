@@ -70,11 +70,11 @@ const About = () => {
 
       timer2: setTimeout(() => {
         setVisibleLayers(sequence[1]);
-      }, 1800),
+      }, 1000),
 
       timer3: setTimeout(() => {
         setVisibleLayers(sequence[2]);
-      }, 3600)
+      }, 2000)
     };
   };
 

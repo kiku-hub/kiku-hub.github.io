@@ -33,12 +33,12 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
     }
   }, [isVisibleProp]);
 
-  // 遅延時間を調整（ピラミッドと完全に同期）
+  // 遅延時間を調整（より短い遅延に変更）
   const getDelay = useCallback(() => {
     switch (title.toLowerCase()) {
       case 'value': return 0;    // 最初の層
-      case 'vision': return 2;   // 2番目の層
-      case 'mission': return 4;  // 3番目の層
+      case 'vision': return 1;   // 2番目の層（2から1に変更）
+      case 'mission': return 2;  // 3番目の層（4から2に変更）
       default: return 0;
     }
   }, [title]);
@@ -47,7 +47,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
   const styles = useMemo(() => ({
     container: {
       opacity: isAnimationVisible ? 1 : 0,
-      transform: `translateX(${isAnimationVisible ? '0' : '120%'})`, // スケールを分離
+      transform: `translateX(${isAnimationVisible ? '0' : '120%'})`,
       backgroundColor: isHovered 
         ? `color-mix(in srgb, ${textColor} 15%, #232631)`
         : '#1d1836',
@@ -55,11 +55,11 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       boxShadow: isHovered 
         ? `0 0 15px ${textColor}40`
         : 'none',
-      transitionDelay: `${getDelay()}s`,
-      transitionProperty: 'transform, opacity',
-      transitionDuration: '0.8s',
-      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      willChange: 'transform, opacity',
+      transitionDelay: `${getDelay() * 0.4}s`,
+      transitionProperty: 'all',
+      transitionDuration: '0.5s',
+      transitionTimingFunction: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
+      willChange: 'transform, opacity, background-color, box-shadow',
       position: 'relative',
       width: '100%',
     },
