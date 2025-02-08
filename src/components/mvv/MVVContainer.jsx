@@ -11,9 +11,9 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
           // カードの位置を計算（Valueが一番下になるように）
           const getPosition = () => {
             switch (card.id.toLowerCase()) {
-              case 'value': return 0;    // 一番下
-              case 'vision': return 1;   // 真ん中
-              case 'mission': return 2;  // 一番上
+              case 'value': return 0;      // 一番下
+              case 'vision': return 175;   // 真ん中 (200px上)
+              case 'mission': return 350;  // 一番上 (400px上)
               default: return 0;
             }
           };
@@ -23,12 +23,12 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
               key={card.id}
               className="absolute w-full transition-all duration-700"
               style={{
-                bottom: isVisible ? `${getPosition() * 120}px` : '0px',
+                bottom: isVisible ? `${getPosition()}px` : '0px',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible 
                   ? 'none' 
                   : 'translateX(120%) translateY(50px)',
-                zIndex: getPosition(), // 重なり順も位置に合わせる
+                zIndex: getPosition() / 200, // zIndexも調整
               }}
             >
               <MVVDescription

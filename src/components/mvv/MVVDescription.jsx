@@ -55,9 +55,9 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       boxShadow: isHovered 
         ? `0 0 15px ${textColor}40`
         : 'none',
-      transitionDelay: `${getDelay() * 0.4}s`,
+      transitionDelay: `${getDelay() * 0.7}s`,
       transitionProperty: 'all',
-      transitionDuration: '0.5s',
+      transitionDuration: '0.7s',
       transitionTimingFunction: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
       willChange: 'transform, opacity, background-color, box-shadow',
       position: 'relative',

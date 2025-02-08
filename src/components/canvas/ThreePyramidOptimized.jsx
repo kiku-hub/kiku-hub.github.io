@@ -31,15 +31,23 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
       const targetScale = isHighlighted ? 1.05 : 1;
       const targetOpacity = isHighlighted ? 0.95 : baseOpacity;
       
-      scaleRef.current += (targetScale - scaleRef.current) * 0.15;
-      opacityRef.current += (targetOpacity - opacityRef.current) * 0.15;
+      const hoverSpeed = 0.05;
+      const visibilitySpeed = 0.010;
+      
+      if (isHighlighted || !visible) {
+        scaleRef.current += (targetScale - scaleRef.current) * hoverSpeed;
+        opacityRef.current += (targetOpacity - opacityRef.current) * hoverSpeed;
+      } else {
+        scaleRef.current += (targetScale - scaleRef.current) * visibilitySpeed;
+        opacityRef.current += (targetOpacity - opacityRef.current) * visibilitySpeed;
+      }
       
       if (!isHighlighted && highlightedLayer !== null) {
-        opacityRef.current += (0.3 - opacityRef.current) * 0.15;
+        opacityRef.current += (0.3 - opacityRef.current) * hoverSpeed;
       }
     } else {
-      scaleRef.current *= 0.9;
-      opacityRef.current *= 0.9;
+      scaleRef.current *= 0.95;
+      opacityRef.current *= 0.95;
     }
 
     if (Math.abs(meshRef.current.scale.x - scaleRef.current) > 0.001) {
