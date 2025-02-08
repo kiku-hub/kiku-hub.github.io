@@ -280,7 +280,7 @@ const companyInfo = {
     },
     {
       label: "所在地",
-      value: "東京都世田谷区4-18-7",
+      value: "東京都世田谷区用賀4-18-7",
       icon: "location"
     },
     {
@@ -298,11 +298,6 @@ const companyInfo = {
       value: "info@orcx.co.jp",
       icon: "email"
     },
-    {
-      label: "ウェブサイト",
-      value: "https://orcx.co.jp",
-      icon: "website"
-    }
   ]
 };
 

@@ -15,6 +15,7 @@ const About = () => {
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
   const animationRef = useRef(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const handleHover = useCallback((layerId) => {
     if (visibleLayers.includes(layerId) || layerId === null) {
@@ -91,6 +92,10 @@ const About = () => {
     []
   );
 
+  useEffect(() => {
+    setHasAnimated(true);
+  }, []);
+
   return (
     <div ref={sectionRef}>
       <div className="text-center mb-8">
@@ -99,6 +104,8 @@ const About = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, ease: "easeOut" }}
+          variants={textVariant()}
+          animate={hasAnimated ? "show" : "hidden"}
         >
           <p className={`${styles.sectionSubText} bg-gradient-to-r from-white/90 via-white/80 to-white/70 bg-clip-text text-transparent`}>
             {aboutContent.title}
