@@ -20,19 +20,16 @@ import { fadeIn, textVariant } from "../utils/motion";
 const GoogleMap = () => {
   const mapRef = React.useRef(null);
   const [map, setMap] = React.useState(null);
+  const infoWindowRef = React.useRef(null);
+  const markersRef = React.useRef({ base: null, logo: null });
 
   React.useEffect(() => {
-    // 正確な住所
     const address = companyInfo.details.find(detail => detail.icon === 'location')?.value;
 
-    // Google Maps APIの初期化
     window.initMap = () => {
       if (!mapRef.current) return;
 
-      // Geocoderの初期化
       const geocoder = new google.maps.Geocoder();
-
-      // 住所から座標を取得
       geocoder.geocode({ address: address }, (results, status) => {
         if (status === 'OK') {
           const location = results[0].geometry.location;
@@ -190,8 +187,8 @@ const GoogleMap = () => {
             anchor: new google.maps.Point(27.5, 65) // アンカーポイントを新しいサイズに合わせて調整（55/2 = 27.5）
           };
 
-          // マーカーを追加（白いピン）
-          const baseMarker = new google.maps.Marker({
+          // マーカーを作成
+          markersRef.current.base = new google.maps.Marker({
             position: location,
             map: newMap,
             icon: markerIcon,
@@ -199,14 +196,126 @@ const GoogleMap = () => {
             zIndex: 1
           });
 
-          // ロゴを重ねて表示
-          const logoMarker = new google.maps.Marker({
+          markersRef.current.logo = new google.maps.Marker({
             position: location,
             map: newMap,
             icon: markerLabel,
             title: "ORCX株式会社 用賀オフィス",
             animation: google.maps.Animation.DROP,
-            zIndex: 2 // ベースマーカーの上に表示
+            zIndex: 2
+          });
+
+          // InfoWindowを作成
+          infoWindowRef.current = new google.maps.InfoWindow({
+            content: `
+              <div style="
+                position: relative;
+                min-width: 320px;
+                background: rgba(26, 29, 41, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 16px;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                overflow: visible;
+              ">
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  padding: 16px;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                  background: linear-gradient(to right, rgba(255, 255, 255, 0.05), transparent);
+                ">
+                  <img src="/orcx-logo.png" style="width: 24px; height: 24px; object-fit: contain;" />
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 500; color: #ffffff; letter-spacing: 0.5px; flex-grow: 1;">
+                    ORCX株式会社
+                  </h3>
+                </div>
+                <div style="padding: 16px;">
+                  <div style="font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.8);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                      <svg style="width: 16px; height: 16px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span style="font-size: 13px;">〒158-0097</span>
+                    </div>
+                    <p style="margin: 0 0 16px 24px; color: rgba(255, 255, 255, 0.9); font-size: 14px;">
+                      東京都世田谷区用賀4-18-7
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-left: 24px;">
+                      <svg style="width: 16px; height: 16px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                      </svg>
+                      <a href="https://maps.google.com/?q=東京都世田谷区用賀4-18-7" 
+                        target="_blank"
+                        style="color: #00ADB5; text-decoration: none; font-size: 14px; transition: color 0.2s;"
+                        onmouseover="this.style.color='#00c4cc'"
+                        onmouseout="this.style.color='#00ADB5'"
+                      >
+                        Google Mapで見る
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div style="
+                  position: absolute;
+                  bottom: -10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 0;
+                  height: 0;
+                  border-left: 10px solid transparent;
+                  border-right: 10px solid transparent;
+                  border-top: 10px solid rgba(26, 29, 41, 0.95);
+                  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.1));
+                "></div>
+              </div>
+            `,
+            pixelOffset: new google.maps.Size(0, -10),
+            disableAutoPan: false,
+            maxWidth: 360
+          });
+
+          // マーカーのクリックイベントを設定
+          const handleMarkerClick = () => {
+            infoWindowRef.current.open({
+              anchor: markersRef.current.logo,
+              map: newMap
+            });
+
+            // スタイルのカスタマイズ
+            setTimeout(() => {
+              const iwOuter = document.querySelector('.gm-style-iw-c');
+              const iwBackground = document.querySelector('.gm-style-iw-tc');
+              const iwCloseBtn = document.querySelector('.gm-style-iw-d');
+              
+              if (iwBackground) {
+                iwBackground.style.display = 'none';
+              }
+              
+              if (iwOuter) {
+                iwOuter.style.padding = '0';
+                iwOuter.style.background = 'none';
+                iwOuter.style.boxShadow = 'none';
+                iwOuter.style.overflow = 'visible'; // スクロールを無効化
+              }
+              
+              if (iwCloseBtn) {
+                iwCloseBtn.style.overflow = 'visible'; // スクロールを無効化
+                const closeButton = iwCloseBtn.parentElement.querySelector('button');
+                if (closeButton) {
+                  closeButton.style.top = '8px';
+                  closeButton.style.right = '8px';
+                  closeButton.style.opacity = '1';
+                }
+              }
+            }, 10);
+          };
+
+          // 両方のマーカーにクリックイベントを追加
+          [markersRef.current.base, markersRef.current.logo].forEach(marker => {
+            marker.addListener('click', handleMarkerClick);
           });
 
           setMap(newMap);
