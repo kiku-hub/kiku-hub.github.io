@@ -185,8 +185,16 @@ const InitialLoader = () => {
                         }}
                       />
                     </svg>
+                    {/* ORCX Logo */}
+                    <div className="absolute w-[50px] h-[50px] flex items-center justify-center bg-white rounded-full">
+                      <img
+                        src="/orcx-logo.png"
+                        alt="ORCX"
+                        className="w-[40px] h-[40px] object-contain"
+                      />
+                    </div>
                     {/* Progress Text */}
-                    <span className="text-white text-base font-light tracking-wider">
+                    <span className="absolute bottom-[-35px] text-white text-base font-light tracking-wider">
                       {Math.round(displayProgress)}
                     </span>
                   </div>
