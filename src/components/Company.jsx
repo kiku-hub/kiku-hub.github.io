@@ -403,8 +403,7 @@ const CompanyDetail = ({ label, value, icon, index }) => {
   return (
     <motion.div
       variants={fadeIn("right", "spring", index * 0.1, 0.75)}
-      className={`w-full bg-tertiary/20 backdrop-blur-sm p-3 rounded-lg border border-white/5
-        ${isClickable ? 'hover:bg-tertiary/30 cursor-pointer' : ''}`}
+      className="w-full bg-[#1d1836] backdrop-blur-sm p-3 rounded-lg border border-white/5 transition-all duration-300"
     >
       {isClickable ? (
         <a href={href} target="_blank" rel="noopener noreferrer" className="block">
