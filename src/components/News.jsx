@@ -4,11 +4,12 @@ import {
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 import { motion } from "framer-motion";
+import { BallCanvas } from "./canvas";
 
 import "react-vertical-timeline-component/style.min.css";
 
 import { styles } from "../styles";
-import { news, newsContent } from "../constants";
+import { news, newsContent, technologies } from "../constants";
 import { SectionWrapper } from "../hoc";
 import { textVariant } from "../utils/motion";
 
@@ -70,6 +71,16 @@ const NewsCard = ({ news }) => {
   );
 };
 
+const TechSection = () => (
+  <div className='flex flex-row flex-wrap justify-center gap-10 mt-20'>
+    {technologies.map((technology) => (
+      <div className='w-28 h-28' key={technology.name}>
+        <BallCanvas icon={technology.icon} />
+      </div>
+    ))}
+  </div>
+);
+
 const News = () => {
   return (
     <>
@@ -92,8 +103,10 @@ const News = () => {
           ))}
         </VerticalTimeline>
       </div>
+
+      <TechSection />
     </>
   );
 };
 
-export default SectionWrapper(News, "news"); 
+export default SectionWrapper(News, "news");

@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import { About, Contact, News, Hero, Navbar, Tech, Products, StarsCanvas, Services, Company } from "./components";
+import { About, Contact, News, Hero, Navbar, Products, StarsCanvas, Services, Company } from "./components";
 import CursorEffect from "./components/CursorEffect";
 import InitialLoader from "./components/InitialLoader";
 
@@ -25,12 +25,6 @@ const App = () => {
         <div className="snap-start min-h-screen">
           <Company />
         </div>
-        {/* Techセクションを完全に非表示 */}
-        {false && (
-          <div className="snap-start min-h-screen">
-            <Tech isVisible={false} />
-          </div>
-        )}
         <div className="snap-start min-h-screen">
           <News />
         </div>
