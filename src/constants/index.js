@@ -20,7 +20,7 @@ import {
   tesla,
   shopify,
   comingsoon,
-  threejs,
+  nextjs,
 } from "../assets";
 
 const navLinks = [
@@ -112,8 +112,8 @@ const technologies = [
     icon: mongodb,
   },
   {
-    name: "Three JS",
-    icon: threejs,
+    name: "Next.js",
+    icon: nextjs,
   },
   {
     name: "git",
