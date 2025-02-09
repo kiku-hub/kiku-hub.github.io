@@ -113,11 +113,13 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   );
 });
 
-const OrcaModel = React.memo(({ position }) => {
+const OrcaModel = React.memo(({ position, visible }) => {
   const modelRef = useRef();
   const orca = useGLTF("/orca/Animation_Skill_01_withSkin.glb");
   const { animations } = orca;
   const { actions, names } = useAnimations(animations, orca.scene);
+  const scaleRef = useRef(visible ? 1 : 0);
+  const initialYOffset = useRef(20);
 
   useEffect(() => {
     orca.scene.traverse((object) => {
@@ -144,12 +146,30 @@ const OrcaModel = React.memo(({ position }) => {
     };
   }, [actions, names, orca.scene]);
 
+  useFrame(() => {
+    if (!modelRef.current) return;
+    
+    if (visible) {
+      scaleRef.current += (1 - scaleRef.current) * 0.03;
+      if (initialYOffset.current > 0) {
+        initialYOffset.current *= 0.8;
+      }
+    } else {
+      scaleRef.current *= 0.96;
+      initialYOffset.current = 20;
+    }
+    
+    modelRef.current.scale.setScalar(scaleRef.current * 1.0);
+    modelRef.current.position.y = position[1] + initialYOffset.current;
+    modelRef.current.visible = scaleRef.current > 0.02;
+  });
+
   return (
     <primitive
       ref={modelRef}
       object={orca.scene}
-      scale={1.0}
-      position={[position[0], position[1] - 7.5, position[2]]}
+      scale={0}
+      position={[position[0], position[1], position[2]]}
       rotation={[0, Math.PI / 2, 0]}
     />
   );
@@ -185,12 +205,6 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
     }
   ], []);
 
-  const orcaPosition = useMemo(() => [
-    0,
-    pyramidLayers[2].y + pyramidLayers[2].height + 0.5,
-    0
-  ], [pyramidLayers]);
-
   useFrame((state, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * 0.1;
@@ -218,9 +232,10 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
           layerId={layer.id}
         />
       ))}
-      {visibleLayers.includes('mission') && (
-        <OrcaModel position={orcaPosition} />
-      )}
+      <OrcaModel 
+        position={[0, pyramidLayers[2].y - 2.1, 0]}
+        visible={visibleLayers.includes('mission')}
+      />
     </group>
   );
 });
