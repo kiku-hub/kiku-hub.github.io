@@ -33,7 +33,7 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
       const targetScale = isHighlighted ? 1.05 : 1;
       const targetBrightness = highlightedLayer === null || isHighlighted ? 1 : 0.05;
       
-      const hoverSpeed = 0.05;
+      const hoverSpeed = 0.15;
       const visibilitySpeed = 0.03;
       
       scaleRef.current += (targetScale - scaleRef.current) * (isHighlighted ? hoverSpeed : visibilitySpeed);
@@ -118,8 +118,9 @@ const OrcaModel = React.memo(({ position, visible }) => {
   const orca = useGLTF("/orca/Animation_Skill_01_withSkin.glb");
   const { animations } = orca;
   const { actions, names } = useAnimations(animations, orca.scene);
-  const scaleRef = useRef(visible ? 1 : 0);
+  const scaleRef = useRef(0);
   const initialYOffset = useRef(20);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
     orca.scene.traverse((object) => {
@@ -150,13 +151,22 @@ const OrcaModel = React.memo(({ position, visible }) => {
     if (!modelRef.current) return;
     
     if (visible) {
-      scaleRef.current += (1 - scaleRef.current) * 0.03;
-      if (initialYOffset.current > 0) {
-        initialYOffset.current *= 0.8;
+      if (!hasStartedRef.current) {
+        setTimeout(() => {
+          hasStartedRef.current = true;
+        }, 100);
+      }
+      
+      if (hasStartedRef.current) {
+        scaleRef.current += (1 - scaleRef.current) * 0.03;
+        if (initialYOffset.current > 0) {
+          initialYOffset.current *= 0.8;
+        }
       }
     } else {
       scaleRef.current *= 0.96;
       initialYOffset.current = 20;
+      hasStartedRef.current = false;
     }
     
     modelRef.current.scale.setScalar(scaleRef.current * 1.0);
