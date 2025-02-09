@@ -308,18 +308,17 @@ export const newsContent = {
 
 export const news = [
   {
-    title: "AIの進化が加速",
-    category: "人工知能",
-    icon: "/tech/ai.png",
-    iconBg: "#383E56",
-    date: "2024年3月",
+    title: "ORCX株式会社設立",
+    category: "会社情報",
+    icon: "/orcx-logo.png",
+    iconBg: "#1a1d29",
+    date: "2025年3月",
     description: [
-      "GPT-4の新機能が発表",
-      "画像生成AIの精度が向上",
-      "企業でのAI活用事例が増加",
+      "テクノロジーで未来を創造する会社として設立",
+      "ITソリューション・自社サービス・システム受託開発事業を開始",
+      "AIサーバー構築事業の展開を予定",
     ],
   },
-  // ... 他のニュース記事
 ];
 
 export {

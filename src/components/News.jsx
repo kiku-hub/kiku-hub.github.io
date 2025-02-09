@@ -30,7 +30,12 @@ const NewsCard = ({ news }) => {
       }}
       contentArrowStyle={{ borderRight: "7px solid #232631" }}
       date={news.date}
-      iconStyle={{ background: news.iconBg }}
+      iconStyle={{ 
+        background: news.icon === "/orcx-logo.png" ? "#ffffff" : news.iconBg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
       icon={
         <div className='flex justify-center items-center w-full h-full'>
           <img
