@@ -15,22 +15,22 @@ const CAMERA_CONFIG = {
   fov: 45,
   near: 0.1,
   far: 200,
-  position: [20, 3, 5],
+  position: [15, 3, 5],
 };
 
-const MODEL_SCALE = {
-  mobile: 4.5,
-  desktop: 5.0,
-};
+const MODEL_SCALE = 6.5;
 
 // Orcaコンポーネント
-const Orca = ({ isMobile }) => {
+const Orca = () => {
   const modelRef = useRef();
   const orca = useGLTF(MODEL_PATH);
-  const { animations } = orca;
-  const { actions, names } = useAnimations(animations, orca.scene);
+  const { actions, names } = useAnimations(orca.animations, orca.scene);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
+
     // シーンの最適化
     orca.scene.traverse((object) => {
       if (object.isMesh) {
@@ -39,20 +39,24 @@ const Orca = ({ isMobile }) => {
       }
     });
 
-    // アニメーションの設定
-    names.forEach((name) => {
-      const action = actions[name];
-      action
-        .reset()
-        .setLoop(THREE.LoopOnce, 1)
-        .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
-        .fadeIn(ANIMATION_CONFIG.fadeInDuration)
-        .play();
+    // 5秒待ってからアニメーション開始
+    const timer = setTimeout(() => {
+      names.forEach((name) => {
+        const action = actions[name];
+        action.reset();
+        action.time = 0;
+        action
+          .setLoop(THREE.LoopOnce, 1)
+          .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
+          .fadeIn(ANIMATION_CONFIG.fadeInDuration)
+          .play();
 
-      action.clampWhenFinished = true;
-    });
+        action.clampWhenFinished = true;
+      });
+    }, 4000); // 5秒の遅延
 
     return () => {
+      clearTimeout(timer);
       names.forEach((name) => {
         actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
       });
@@ -73,8 +77,8 @@ const Orca = ({ isMobile }) => {
       <pointLight intensity={1} />
       <primitive
         object={orca.scene}
-        scale={isMobile ? MODEL_SCALE.mobile : MODEL_SCALE.desktop}
-        position={[0, -2.5, -2.0]}
+        scale={MODEL_SCALE}
+        position={[-9, -2.5, -2.0]}
         rotation={[0, 0, 0]}
       />
     </mesh>
@@ -82,46 +86,28 @@ const Orca = ({ isMobile }) => {
 };
 
 // Canvas コンポーネント
-const OrcaCanvas = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 500px)");
-    setIsMobile(mediaQuery.matches);
-
-    const handleMediaQueryChange = (event) => {
-      setIsMobile(event.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
-    };
-  }, []);
-
-  return (
-    <Canvas
-      shadows
-      frameloop='always'
-      dpr={[1, 2]}
-      gl={{ 
-        preserveDrawingBuffer: true,
-        antialias: true,
-      }}
-      camera={CAMERA_CONFIG}
-    >
-      <Suspense>
-        <OrbitControls
-          enableZoom={false}
-          enableRotate={false}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
-        />
-        <Orca isMobile={isMobile} />
-      </Suspense>
-      <Preload all />
-    </Canvas>
-  );
-};
+const OrcaCanvas = () => (
+  <Canvas
+    shadows
+    frameloop='always'
+    dpr={[1, 2]}
+    gl={{ 
+      preserveDrawingBuffer: true,
+      antialias: true,
+    }}
+    camera={CAMERA_CONFIG}
+  >
+    <Suspense fallback={null}>
+      <OrbitControls
+        enableZoom={false}
+        enableRotate={false}
+        maxPolarAngle={Math.PI / 2}
+        minPolarAngle={Math.PI / 2}
+      />
+      <Orca />
+    </Suspense>
+    <Preload all />
+  </Canvas>
+);
 
 export default OrcaCanvas; 
