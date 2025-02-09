@@ -1,6 +1,7 @@
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useRef, useCallback, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useGLTF, useAnimations } from "@react-three/drei";
 
 const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visible, isHighlighted, highlightedLayer, onHover, layerId }) => {
   const meshRef = useRef();
@@ -112,6 +113,48 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   );
 });
 
+const OrcaModel = React.memo(({ position }) => {
+  const modelRef = useRef();
+  const orca = useGLTF("/orca/Animation_Skill_01_withSkin.glb");
+  const { animations } = orca;
+  const { actions, names } = useAnimations(animations, orca.scene);
+
+  useEffect(() => {
+    orca.scene.traverse((object) => {
+      if (object.isMesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+
+    names.forEach((name) => {
+      const action = actions[name];
+      action
+        .reset()
+        .setLoop(THREE.LoopRepeat, Infinity)
+        .setEffectiveTimeScale(0.6)
+        .fadeIn(0.5)
+        .play();
+    });
+
+    return () => {
+      names.forEach((name) => {
+        actions[name].fadeOut(0.5);
+      });
+    };
+  }, [actions, names, orca.scene]);
+
+  return (
+    <primitive
+      ref={modelRef}
+      object={orca.scene}
+      scale={1.0}
+      position={[position[0], position[1] - 7.5, position[2]]}
+      rotation={[0, Math.PI / 2, 0]}
+    />
+  );
+});
+
 const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover }) => {
   const groupRef = useRef();
 
@@ -134,13 +177,19 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
     },
     {
       id: 'mission',
-      y: 4.4,
-      bottomScale: 2.95,
+      y: 4.9,
+      bottomScale: 2.9,
       topScale: 0,
-      height: 4.0,
+      height: 4.9,
       color: 0x8dd3c7
     }
   ], []);
+
+  const orcaPosition = useMemo(() => [
+    0,
+    pyramidLayers[2].y + pyramidLayers[2].height + 0.5,
+    0
+  ], [pyramidLayers]);
 
   useFrame((state, delta) => {
     if (groupRef.current) {
@@ -169,6 +218,9 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
           layerId={layer.id}
         />
       ))}
+      {visibleLayers.includes('mission') && (
+        <OrcaModel position={orcaPosition} />
+      )}
     </group>
   );
 });
@@ -184,16 +236,18 @@ const ThreePyramid = React.memo(({ visibleLayers = ['value'], highlightedLayer =
           far: 1000
         }}
       >
-        <directionalLight position={[5, 5, 5]} intensity={1.3} />
-        <ambientLight intensity={0.7} />
-        <pointLight position={[-5, 5, -5]} intensity={0.9} color={0xffffff} />
-        <pointLight position={[5, -5, 5]} intensity={0.6} color={0xffffff} />
-        
-        <PyramidGroup 
-          visibleLayers={visibleLayers} 
-          highlightedLayer={highlightedLayer} 
-          onLayerHover={onLayerHover} 
-        />
+        <Suspense fallback={null}>
+          <directionalLight position={[5, 5, 5]} intensity={1.3} />
+          <ambientLight intensity={0.7} />
+          <pointLight position={[-5, 5, -5]} intensity={0.9} color={0xffffff} />
+          <pointLight position={[5, -5, 5]} intensity={0.6} color={0xffffff} />
+          
+          <PyramidGroup 
+            visibleLayers={visibleLayers} 
+            highlightedLayer={highlightedLayer} 
+            onLayerHover={onLayerHover} 
+          />
+        </Suspense>
       </Canvas>
     </div>
   );
