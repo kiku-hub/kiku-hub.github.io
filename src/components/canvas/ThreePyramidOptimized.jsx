@@ -34,13 +34,13 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
       const targetBrightness = highlightedLayer === null || isHighlighted ? 1 : 0.05;
       
       const hoverSpeed = 0.05;
-      const visibilitySpeed = 0.008;
+      const visibilitySpeed = 0.03;
       
       scaleRef.current += (targetScale - scaleRef.current) * (isHighlighted ? hoverSpeed : visibilitySpeed);
       brightnessRef.current += (targetBrightness - brightnessRef.current) * hoverSpeed;
       
       if (initialYOffset.current > 0) {
-        initialYOffset.current *= 0.96;
+        initialYOffset.current *= 0.8;
         meshRef.current.position.y = position[1] + initialYOffset.current;
       }
       
