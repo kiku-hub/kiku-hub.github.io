@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
@@ -13,80 +13,48 @@ import { news, newsContent, technologies } from "../constants";
 import { SectionWrapper } from "../hoc";
 import { textVariant } from "../utils/motion";
 
-const NewsCard = ({ news }) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [velocity, setVelocity] = useState({
-    vx: (Math.random() - 0.5) * 2,
-    vy: (Math.random() - 0.5) * 2
-  });
-  const elementRef = useRef(null);
+// 定数を分離
+const ANIMATION_CONFIG = {
+  BALL_SIZE: 64,
+  BOUNCE_DAMPING: 0.8,
+  EDGE_BUFFER: 5,
+  MIN_SPEED: 0.8,
+  INITIAL_VELOCITY_RANGE: 2,
+  ROTATION_SPEED_RANGE: 0.5,
+};
 
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
+const TIMELINE_ELEMENT_STYLE = {
+  background: "#1d1836",
+  color: "#fff",
+  border: "2px solid transparent",
+  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  transition: "all 0.3s ease",
+};
 
-    const parentRect = element.parentElement.getBoundingClientRect();
-    const elementRect = element.getBoundingClientRect();
-    
-    setPosition({
-      x: Math.random() * (parentRect.width - elementRect.width),
-      y: Math.random() * (parentRect.height - elementRect.height)
-    });
-  }, []);
+const TIMELINE_ELEMENT_HOVER = {
+  background: "#232631",
+  borderColor: "#4a4a8f",
+  transform: "scale(1.02)",
+  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+};
 
-  useEffect(() => {
-    let animationFrameId;
-    const element = elementRef.current;
-    if (!element) return;
+// 改行用のユーティリティ関数を追加
+const formatText = (text) => {
+  return text.split('\n').map((line, i) => (
+    <React.Fragment key={i}>
+      {line}
+      {i !== text.split('\n').length - 1 && <br />}
+    </React.Fragment>
+  ));
+};
 
-    const parentRect = element.parentElement.getBoundingClientRect();
-    const elementRect = element.getBoundingClientRect();
-
-    const animate = () => {
-      setPosition(prev => {
-        let newX = prev.x + velocity.vx;
-        let newY = prev.y + velocity.vy;
-        let newVx = velocity.vx;
-        let newVy = velocity.vy;
-
-        if (newX <= 0 || newX >= parentRect.width - elementRect.width) {
-          newVx = -newVx;
-          setVelocity(v => ({ ...v, vx: newVx }));
-        }
-        if (newY <= 0 || newY >= parentRect.height - elementRect.height) {
-          newVy = -newVy;
-          setVelocity(v => ({ ...v, vy: newVy }));
-        }
-
-        return {
-          x: newX,
-          y: newY
-        };
-      });
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [velocity]);
-
+// メモ化したNewsCardコンポーネントを修正
+const NewsCard = memo(({ news }) => {
   return (
     <VerticalTimelineElement
-      ref={elementRef}
       contentStyle={{
-        background: "#1d1836",
-        color: "#fff",
-        border: "2px solid transparent",
-        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-        transition: "all 0.3s ease",
-        transform: `translate(${position.x}px, ${position.y}px)`,
-        "&:hover": {
-          background: "#232631",
-          borderColor: "#4a4a8f",
-          transform: "scale(1.02)",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
-        }
+        ...TIMELINE_ELEMENT_STYLE,
+        "&:hover": TIMELINE_ELEMENT_HOVER
       }}
       contentArrowStyle={{ borderRight: "7px solid #232631" }}
       date={news.date}
@@ -108,133 +76,100 @@ const NewsCard = ({ news }) => {
     >
       <div>
         <h3 className='text-white text-[24px] font-bold'>{news.title}</h3>
-        <p
-          className='text-secondary text-[16px] font-semibold'
-          style={{ margin: 0 }}
-        >
+        <p className='text-secondary text-[16px] font-semibold' style={{ margin: 0 }}>
           {news.category}
         </p>
       </div>
 
-      <ul className='mt-5 list-disc ml-5 space-y-2'>
+      <div className='mt-5 space-y-2'>
         {news.description.map((point, index) => (
-          <li
+          <p
             key={`news-point-${index}`}
-            className='text-white-100 text-[14px] pl-1 tracking-wider'
+            className='text-white-100 text-[14px] tracking-wider'
           >
-            {point}
-          </li>
+            {formatText(point)}
+          </p>
         ))}
-      </ul>
+      </div>
     </VerticalTimelineElement>
   );
-};
+});
+
+// メモ化したBallコンポーネント
+const Ball = memo(({ position, icon }) => (
+  <div
+    className='absolute w-16 h-16'
+    style={{
+      transform: `translate(${position.x}px, ${position.y}px) rotate(${position.rotation}deg)`,
+      transition: 'transform 0.016s linear',
+      opacity: 0.8,
+      pointerEvents: 'none'
+    }}
+  >
+    <BallCanvas icon={icon} />
+  </div>
+));
+
+// 初期位置と速度の生成関数
+const createInitialState = () => ({
+  x: 0,
+  y: 0,
+  vx: (Math.random() - 0.5) * ANIMATION_CONFIG.INITIAL_VELOCITY_RANGE,
+  vy: (Math.random() - 0.5) * ANIMATION_CONFIG.INITIAL_VELOCITY_RANGE,
+  rotation: Math.random() * 360,
+  rotationSpeed: (Math.random() - 0.5) * ANIMATION_CONFIG.ROTATION_SPEED_RANGE
+});
 
 const TechSection = () => {
   const containerRef = useRef(null);
+  const animationFrameRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const [positions, setPositions] = useState(
-    technologies.map(() => ({
-      x: 0,
-      y: 0,
-      vx: (Math.random() - 0.5) * 2,
-      vy: (Math.random() - 0.5) * 2,
-      rotation: Math.random() * 360,
-      rotationSpeed: (Math.random() - 0.5) * 0.5
-    }))
-  );
+  const positionsRef = useRef(technologies.map(createInitialState));
+  const [positions, setPositions] = useState(positionsRef.current);
 
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setContainerSize({
-          width: rect.width,
-          height: rect.height
-        });
-        setPositions(prev => prev.map(pos => ({
-          ...pos,
-          x: Math.random() * (rect.width - 80),
-          y: Math.random() * (rect.height - 80)
-        })));
-      }
-    };
+  const handleResize = useCallback(() => {
+    if (!containerRef.current) return;
 
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    const rect = containerRef.current.getBoundingClientRect();
+    setContainerSize({
+      width: rect.width,
+      height: rect.height
+    });
+    
+    positionsRef.current = positionsRef.current.map(pos => ({
+      ...pos,
+      x: Math.random() * (rect.width - ANIMATION_CONFIG.BALL_SIZE),
+      y: Math.random() * (rect.height - ANIMATION_CONFIG.BALL_SIZE)
+    }));
+    setPositions(positionsRef.current);
   }, []);
 
-  const getRandomVelocity = () => {
-    const speed = 1 + Math.random() * 7;
-    const angle = Math.random() * Math.PI * 2;
-    return {
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      rotationSpeed: (Math.random() - 0.5) * 0.5
-    };
-  };
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
 
   useEffect(() => {
     if (containerSize.width === 0 || containerSize.height === 0) return;
 
-    let animationFrameId;
+    let lastTime = performance.now();
     
-    const animate = () => {
-      setPositions(prevPositions => 
-        prevPositions.map(pos => {
-          let newX = pos.x + pos.vx;
-          let newY = pos.y + pos.vy;
-          let newVx = pos.vx;
-          let newVy = pos.vy;
-          let newRotation = (pos.rotation + pos.rotationSpeed) % 360;
-          
-          const BALL_SIZE = 64; // w-16 = 64px
-          const BOUNCE_DAMPING = 0.8; // 跳ね返り時の減衰
-          const EDGE_BUFFER = 5; // 端からの余白
+    const animate = (currentTime) => {
+      const deltaTime = (currentTime - lastTime) / 16;
+      lastTime = currentTime;
 
-          // 横方向の跳ね返り
-          if (newX <= EDGE_BUFFER) {
-            newX = EDGE_BUFFER;
-            newVx = Math.abs(newVx) * BOUNCE_DAMPING; // 右向きに跳ね返る
-          } else if (newX >= containerSize.width - BALL_SIZE - EDGE_BUFFER) {
-            newX = containerSize.width - BALL_SIZE - EDGE_BUFFER;
-            newVx = -Math.abs(newVx) * BOUNCE_DAMPING; // 左向きに跳ね返る
-          }
-
-          // 縦方向の跳ね返り
-          if (newY <= EDGE_BUFFER) {
-            newY = EDGE_BUFFER;
-            newVy = Math.abs(newVy) * BOUNCE_DAMPING; // 下向きに跳ね返る
-          } else if (newY >= containerSize.height - BALL_SIZE - EDGE_BUFFER) {
-            newY = containerSize.height - BALL_SIZE - EDGE_BUFFER;
-            newVy = -Math.abs(newVy) * BOUNCE_DAMPING; // 上向きに跳ね返る
-          }
-
-          // 最小速度を上げる
-          const MIN_SPEED = 0.8;
-          const currentSpeed = Math.sqrt(newVx * newVx + newVy * newVy);
-          if (currentSpeed < MIN_SPEED) {
-            const angle = Math.random() * Math.PI * 2;
-            newVx = Math.cos(angle) * MIN_SPEED;
-            newVy = Math.sin(angle) * MIN_SPEED;
-          }
-
-          return {
-            x: newX,
-            y: newY,
-            vx: newVx,
-            vy: newVy,
-            rotation: newRotation,
-            rotationSpeed: pos.rotationSpeed
-          };
-        })
-      );
-      animationFrameId = requestAnimationFrame(animate);
+      positionsRef.current = positionsRef.current.map(updateBallPosition(containerSize, deltaTime));
+      setPositions([...positionsRef.current]);
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
-    return () => cancelAnimationFrame(animationFrameId);
+    animationFrameRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, [containerSize]);
 
   return (
@@ -246,21 +181,58 @@ const TechSection = () => {
         marginTop: '2rem'
       }}
     >
-      {technologies.map((technology, index) => (
-        <div
-          className='absolute w-16 h-16'
-          key={technology.name}
-          style={{
-            transform: `translate(${positions[index]?.x}px, ${positions[index]?.y}px) rotate(${positions[index]?.rotation}deg)`,
-            transition: 'transform 0.016s linear',
-            opacity: 0.8
-          }}
-        >
-          <BallCanvas icon={technology.icon} />
-        </div>
+      {positions.map((position, index) => (
+        <Ball
+          key={technologies[index].name}
+          position={position}
+          icon={technologies[index].icon}
+        />
       ))}
     </div>
   );
+};
+
+// ボールの位置更新ロジックを分離
+const updateBallPosition = (containerSize, deltaTime) => (pos) => {
+  let newX = pos.x + pos.vx * deltaTime;
+  let newY = pos.y + pos.vy * deltaTime;
+  let newVx = pos.vx;
+  let newVy = pos.vy;
+  let newRotation = (pos.rotation + pos.rotationSpeed * deltaTime) % 360;
+
+  // 境界チェックと跳ね返り
+  if (newX <= ANIMATION_CONFIG.EDGE_BUFFER) {
+    newX = ANIMATION_CONFIG.EDGE_BUFFER;
+    newVx = Math.abs(newVx) * ANIMATION_CONFIG.BOUNCE_DAMPING;
+  } else if (newX >= containerSize.width - ANIMATION_CONFIG.BALL_SIZE - ANIMATION_CONFIG.EDGE_BUFFER) {
+    newX = containerSize.width - ANIMATION_CONFIG.BALL_SIZE - ANIMATION_CONFIG.EDGE_BUFFER;
+    newVx = -Math.abs(newVx) * ANIMATION_CONFIG.BOUNCE_DAMPING;
+  }
+
+  if (newY <= ANIMATION_CONFIG.EDGE_BUFFER) {
+    newY = ANIMATION_CONFIG.EDGE_BUFFER;
+    newVy = Math.abs(newVy) * ANIMATION_CONFIG.BOUNCE_DAMPING;
+  } else if (newY >= containerSize.height - ANIMATION_CONFIG.BALL_SIZE - ANIMATION_CONFIG.EDGE_BUFFER) {
+    newY = containerSize.height - ANIMATION_CONFIG.BALL_SIZE - ANIMATION_CONFIG.EDGE_BUFFER;
+    newVy = -Math.abs(newVy) * ANIMATION_CONFIG.BOUNCE_DAMPING;
+  }
+
+  // 最小速度の保証
+  const currentSpeed = Math.sqrt(newVx * newVx + newVy * newVy);
+  if (currentSpeed < ANIMATION_CONFIG.MIN_SPEED) {
+    const angle = Math.random() * Math.PI * 2;
+    newVx = Math.cos(angle) * ANIMATION_CONFIG.MIN_SPEED;
+    newVy = Math.sin(angle) * ANIMATION_CONFIG.MIN_SPEED;
+  }
+
+  return {
+    x: newX,
+    y: newY,
+    vx: newVx,
+    vy: newVy,
+    rotation: newRotation,
+    rotationSpeed: pos.rotationSpeed
+  };
 };
 
 const News = () => {
