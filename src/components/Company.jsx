@@ -39,6 +39,16 @@ const GoogleMap = () => {
             zoom: 17,
             styles: [
               {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
+              },
+              {
+                featureType: "transit",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
+              },
+              {
                 "elementType": "geometry",
                 "stylers": [
                   {
@@ -175,16 +185,16 @@ const GoogleMap = () => {
             fillOpacity: 1,
             strokeColor: '#FFFFFF',
             strokeWeight: 2,
-            scale: 0.6, // スケールを0.4から0.6に大きく
-            anchor: new google.maps.Point(32, 100)
+            scale: 0.6,
+            anchor: new google.maps.Point(32, 85)
           };
 
           // ラベル（ロゴ）のスタイルを設定
           const markerLabel = {
             url: '/orcx-logo.png',
-            scaledSize: new google.maps.Size(55, 55), // サイズを40から55に大きく
+            scaledSize: new google.maps.Size(55, 55),
             origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(27.5, 65) // アンカーポイントを新しいサイズに合わせて調整（55/2 = 27.5）
+            anchor: new google.maps.Point(27.5, 55)
           };
 
           // マーカーを作成
@@ -226,7 +236,23 @@ const GoogleMap = () => {
                   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                   background: linear-gradient(to right, rgba(255, 255, 255, 0.05), transparent);
                 ">
-                  <img src="/orcx-logo.png" style="width: 24px; height: 24px; object-fit: contain;" />
+                  <div style="
+                    width: 24px;
+                    height: 24px;
+                    background: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  ">
+                    <img src="/orcx-logo.png" 
+                      style="
+                        width: 20px;
+                        height: 20px;
+                        object-fit: contain;
+                      "
+                    />
+                  </div>
                   <h3 style="margin: 0; font-size: 16px; font-weight: 500; color: #ffffff; letter-spacing: 0.5px; flex-grow: 1;">
                     ORCX株式会社
                   </h3>
@@ -272,7 +298,7 @@ const GoogleMap = () => {
                 "></div>
               </div>
             `,
-            pixelOffset: new google.maps.Size(0, -10),
+            pixelOffset: new google.maps.Size(0, -25),
             disableAutoPan: false,
             maxWidth: 360
           });
