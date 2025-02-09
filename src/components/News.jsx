@@ -137,8 +137,10 @@ const TechSection = () => {
     technologies.map(() => ({
       x: 0,
       y: 0,
-      vx: (Math.random() - 0.5) * 4,
-      vy: (Math.random() - 0.5) * 4
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 0.5
     }))
   );
 
@@ -152,8 +154,8 @@ const TechSection = () => {
         });
         setPositions(prev => prev.map(pos => ({
           ...pos,
-          x: Math.random() * (rect.width - 112),
-          y: Math.random() * (rect.height - 112)
+          x: Math.random() * (rect.width - 80),
+          y: Math.random() * (rect.height - 80)
         })));
       }
     };
@@ -164,11 +166,12 @@ const TechSection = () => {
   }, []);
 
   const getRandomVelocity = () => {
-    const speed = 2 + Math.random() * 3;
+    const speed = 1 + Math.random() * 7;
     const angle = Math.random() * Math.PI * 2;
     return {
       vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed
+      vy: Math.sin(angle) * speed,
+      rotationSpeed: (Math.random() - 0.5) * 0.5
     };
   };
 
@@ -184,28 +187,46 @@ const TechSection = () => {
           let newY = pos.y + pos.vy;
           let newVx = pos.vx;
           let newVy = pos.vy;
-          let hasCollision = false;
+          let newRotation = (pos.rotation + pos.rotationSpeed) % 360;
+          
+          const BALL_SIZE = 64; // w-16 = 64px
+          const BOUNCE_DAMPING = 0.8; // 跳ね返り時の減衰
+          const EDGE_BUFFER = 5; // 端からの余白
 
-          if (newX <= 0 || newX >= containerSize.width - 112) {
-            hasCollision = true;
-            newX = newX <= 0 ? 0 : containerSize.width - 112;
-          }
-          if (newY <= 0 || newY >= containerSize.height - 112) {
-            hasCollision = true;
-            newY = newY <= 0 ? 0 : containerSize.height - 112;
+          // 横方向の跳ね返り
+          if (newX <= EDGE_BUFFER) {
+            newX = EDGE_BUFFER;
+            newVx = Math.abs(newVx) * BOUNCE_DAMPING; // 右向きに跳ね返る
+          } else if (newX >= containerSize.width - BALL_SIZE - EDGE_BUFFER) {
+            newX = containerSize.width - BALL_SIZE - EDGE_BUFFER;
+            newVx = -Math.abs(newVx) * BOUNCE_DAMPING; // 左向きに跳ね返る
           }
 
-          if (hasCollision) {
-            const newVelocity = getRandomVelocity();
-            newVx = newVelocity.vx;
-            newVy = newVelocity.vy;
+          // 縦方向の跳ね返り
+          if (newY <= EDGE_BUFFER) {
+            newY = EDGE_BUFFER;
+            newVy = Math.abs(newVy) * BOUNCE_DAMPING; // 下向きに跳ね返る
+          } else if (newY >= containerSize.height - BALL_SIZE - EDGE_BUFFER) {
+            newY = containerSize.height - BALL_SIZE - EDGE_BUFFER;
+            newVy = -Math.abs(newVy) * BOUNCE_DAMPING; // 上向きに跳ね返る
+          }
+
+          // 最小速度を上げる
+          const MIN_SPEED = 0.8;
+          const currentSpeed = Math.sqrt(newVx * newVx + newVy * newVy);
+          if (currentSpeed < MIN_SPEED) {
+            const angle = Math.random() * Math.PI * 2;
+            newVx = Math.cos(angle) * MIN_SPEED;
+            newVy = Math.sin(angle) * MIN_SPEED;
           }
 
           return {
             x: newX,
             y: newY,
             vx: newVx,
-            vy: newVy
+            vy: newVy,
+            rotation: newRotation,
+            rotationSpeed: pos.rotationSpeed
           };
         })
       );
@@ -227,11 +248,12 @@ const TechSection = () => {
     >
       {technologies.map((technology, index) => (
         <div
-          className='absolute w-28 h-28'
+          className='absolute w-16 h-16'
           key={technology.name}
           style={{
-            transform: `translate(${positions[index]?.x}px, ${positions[index]?.y}px)`,
-            transition: 'transform 0.016s linear'
+            transform: `translate(${positions[index]?.x}px, ${positions[index]?.y}px) rotate(${positions[index]?.rotation}deg)`,
+            transition: 'transform 0.016s linear',
+            opacity: 0.8
           }}
         >
           <BallCanvas icon={technology.icon} />
