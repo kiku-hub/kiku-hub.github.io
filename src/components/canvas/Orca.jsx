@@ -4,11 +4,11 @@ import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/dre
 import * as THREE from 'three';
 
 // 定数の定義
-const MODEL_PATH = "./orca/Animation_Skill_01_withSkin.glb";
+const MODEL_PATH = "./orca/Animation_Formal_Bow_withSkin.glb";
 const ANIMATION_CONFIG = {
-  timeScale: 0.6,
-  fadeInDuration: 0.5,
-  fadeOutDuration: 0.5,
+  timeScale: 0.7,
+  fadeInDuration: 1,
+  fadeOutDuration: 1,
 };
 
 const CAMERA_CONFIG = {
@@ -44,10 +44,12 @@ const Orca = ({ isMobile }) => {
       const action = actions[name];
       action
         .reset()
-        .setLoop(THREE.LoopRepeat, Infinity)
+        .setLoop(THREE.LoopOnce, 1)
         .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
         .fadeIn(ANIMATION_CONFIG.fadeInDuration)
         .play();
+
+      action.clampWhenFinished = true;
     });
 
     return () => {
