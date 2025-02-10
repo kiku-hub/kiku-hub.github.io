@@ -38,6 +38,47 @@ const TIMELINE_ELEMENT_HOVER = {
   boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
 };
 
+// アニメーション設定を分離
+const CARD_ANIMATION_CONFIG = {
+  VELOCITY_RANGE: 2,
+  BOUNCE_DAMPING: 0.8,
+  MIN_SPEED: 0.8,
+  FPS_NORMALIZE: 16
+};
+
+// 移動ロジックを分離
+const calculateNewPosition = (current, velocity, parentRect, elementRect, deltaTime) => {
+  let newX = current.x + velocity.vx * deltaTime;
+  let newY = current.y + velocity.vy * deltaTime;
+  let newVx = velocity.vx;
+  let newVy = velocity.vy;
+
+  // 境界チェックと跳ね返り
+  if (newX <= 0 || newX >= parentRect.width - elementRect.width) {
+    newVx = -newVx * CARD_ANIMATION_CONFIG.BOUNCE_DAMPING;
+    newX = newX <= 0 ? 0 : parentRect.width - elementRect.width;
+  }
+  if (newY <= 0 || newY >= parentRect.height - elementRect.height) {
+    newVy = -newVy * CARD_ANIMATION_CONFIG.BOUNCE_DAMPING;
+    newY = newY <= 0 ? 0 : parentRect.height - elementRect.height;
+  }
+
+  return { newX, newY, newVx, newVy };
+};
+
+// 最小速度を保証する関数
+const ensureMinimumSpeed = (vx, vy) => {
+  const currentSpeed = Math.sqrt(vx * vx + vy * vy);
+  if (currentSpeed < CARD_ANIMATION_CONFIG.MIN_SPEED) {
+    const angle = Math.random() * Math.PI * 2;
+    return {
+      vx: Math.cos(angle) * CARD_ANIMATION_CONFIG.MIN_SPEED,
+      vy: Math.sin(angle) * CARD_ANIMATION_CONFIG.MIN_SPEED
+    };
+  }
+  return { vx, vy };
+};
+
 // 改行用のユーティリティ関数を追加
 const formatText = (text) => {
   return text.split('\n').map((line, i) => (
@@ -50,11 +91,77 @@ const formatText = (text) => {
 
 // メモ化したNewsCardコンポーネントを修正
 const NewsCard = memo(({ news }) => {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [velocity, setVelocity] = useState({
+    vx: (Math.random() - 0.5) * CARD_ANIMATION_CONFIG.VELOCITY_RANGE,
+    vy: (Math.random() - 0.5) * CARD_ANIMATION_CONFIG.VELOCITY_RANGE
+  });
+  const elementRef = useRef(null);
+  const animationFrameRef = useRef(null);
+
+  // 初期位置の設定
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const parentRect = element.parentElement.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    
+    setPosition({
+      x: Math.random() * (parentRect.width - elementRect.width),
+      y: Math.random() * (parentRect.height - elementRect.height)
+    });
+  }, []);
+
+  // アニメーションの実行
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    let lastTime = performance.now();
+
+    const animate = (currentTime) => {
+      const deltaTime = (currentTime - lastTime) / CARD_ANIMATION_CONFIG.FPS_NORMALIZE;
+      lastTime = currentTime;
+
+      const parentRect = element.parentElement.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+
+      setPosition(prev => {
+        const { newX, newY, newVx, newVy } = calculateNewPosition(
+          prev,
+          velocity,
+          parentRect,
+          elementRect,
+          deltaTime
+        );
+
+        const { vx, vy } = ensureMinimumSpeed(newVx, newVy);
+        if (vx !== velocity.vx || vy !== velocity.vy) {
+          setVelocity({ vx, vy });
+        }
+
+        return { x: newX, y: newY };
+      });
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [velocity]);
+
   return (
     <VerticalTimelineElement
+      ref={elementRef}
       contentStyle={{
         ...TIMELINE_ELEMENT_STYLE,
-        "&:hover": TIMELINE_ELEMENT_HOVER
+        "&:hover": TIMELINE_ELEMENT_HOVER,
+        transform: `translate(${position.x}px, ${position.y}px)`
       }}
       contentArrowStyle={{ borderRight: "7px solid #232631" }}
       date={news.date}
