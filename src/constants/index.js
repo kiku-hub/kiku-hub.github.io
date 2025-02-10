@@ -301,12 +301,12 @@ const companyInfo = {
   ]
 };
 
-export const newsContent = {
+const newsContent = {
   title: "ニュース",
   subtitle: "Tech News.",
 };
 
-export const news = [
+const news = [
   {
     title: "ORCX株式会社設立",
     category: "会社名の由来",
@@ -320,6 +320,55 @@ export const news = [
   },
 ];
 
+const contactContent = {
+  title: "お問い合わせ",
+  subtitle: "Contact.",
+  form: {
+    type: {
+      label: "お問い合わせ種別",
+      placeholder: "お問い合わせ種別を選択してください",
+      options: [
+        { value: "service", label: "提供サービスについて" },
+        { value: "ses", label: "SES協業について" },
+        { value: "development", label: "システム開発の依頼について" },
+        { value: "other", label: "その他" }
+      ]
+    },
+    company: {
+      label: "会社名/組織名",
+      placeholder: "会社名/組織名をご入力ください"
+    },
+    name: {
+      label: "お名前",
+      placeholder: "お名前をご入力ください"
+    },
+    nameKana: {
+      label: "フリガナ",
+      placeholder: "フリガナをご入力ください"
+    },
+    phone: {
+      label: "電話番号",
+      placeholder: "電話番号をご入力ください"
+    },
+    email: {
+      label: "メールアドレス",
+      placeholder: "メールアドレスをご入力ください"
+    },
+    message: {
+      label: "お問い合わせ内容",
+      placeholder: "お問い合わせ内容をご入力ください"
+    },
+    button: {
+      sending: "送信中...",
+      default: "送信"
+    }
+  },
+  alerts: {
+    success: "お問い合わせありがとうございます。内容を確認次第、ご連絡させていただきます。",
+    error: "エラーが発生しました。お手数ですが、再度お試しください。"
+  }
+};
+
 export {
   navLinks,
   services,
@@ -328,4 +377,7 @@ export {
   projects,
   aboutContent,
   companyInfo,
+  newsContent,
+  news,
+  contactContent,
 };
