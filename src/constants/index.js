@@ -358,6 +358,11 @@ const contactContent = {
       label: "お問い合わせ内容",
       placeholder: "お問い合わせ内容をご入力ください"
     },
+    privacy: {
+      label: "プライバシーポリシーに同意する",
+      link: "プライバシーポリシー",
+      url: "/privacy-policy"
+    },
     button: {
       sending: "送信中...",
       default: "送信"
