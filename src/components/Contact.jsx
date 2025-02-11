@@ -140,7 +140,7 @@ const Contact = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -149,40 +149,47 @@ const Contact = () => {
 
     setLoading(true);
 
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          from_name_kana: form.nameKana,
-          company_name: form.company,
-          phone_number: form.phone,
-          to_name: "JavaScript Mastery",
-          from_email: form.email,
-          to_email: "sujata@jsmastery.pro",
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: form.type,
+          company: form.company,
+          name: form.name,
+          nameKana: form.nameKana,
+          phone: form.phone,
+          email: form.email,
           message: form.message,
-          inquiry_type: form.type,
-        },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        () => {
-          setLoading(false);
-          alert(contactContent.alerts.success);
-
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          console.error(error);
-          alert(contactContent.alerts.error);
-        }
-      );
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || 'メール送信に失敗しました');
+      }
+  
+      setLoading(false);
+      alert(contactContent.alerts.success);
+  
+      setForm({
+        type: "",
+        company: "",
+        name: "",
+        nameKana: "",
+        phone: "",
+        email: "",
+        message: "",
+        privacy: false,
+      });
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+      alert(contactContent.alerts.error);
+    }
   };
 
   const ErrorMessage = ({ error }) => (

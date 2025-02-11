@@ -12,6 +12,7 @@
     "@emailjs/browser": "^3.10.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@react-email/components": "^0.0.33",
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.19.1",
@@ -24,6 +25,7 @@
     "react-router-dom": "^6.8.1",
     "react-tilt": "^1.0.2",
     "react-vertical-timeline-component": "^3.6.0",
+    "resend": "^4.1.2",
     "swiper": "^8.4.7",
     "three": "^0.149.0"
   },
