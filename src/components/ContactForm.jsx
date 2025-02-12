@@ -181,17 +181,17 @@ const ContactForm = () => {
 
   return (
     <motion.div
-      className='flex-[0.85] bg-black-100 p-8 rounded-2xl w-full'
+      className='flex-[0.85] bg-black-100 p-7 rounded-2xl w-full'
     >
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-8'
+        className='grid grid-cols-1 md:grid-cols-2 gap-6'
       >
         {/* 左列 */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.type.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -200,7 +200,7 @@ const ContactForm = () => {
               value={form.type}
               onChange={handleChange}
               required
-              className={`bg-tertiary py-4 px-6 text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 text-white rounded-lg outline-none border-2 font-medium
                 ${errors.type ? 'border-red-400' : 'border-transparent'}`}
             >
               <option value="" disabled>
@@ -216,7 +216,7 @@ const ContactForm = () => {
           </label>
 
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.company.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -227,14 +227,14 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               placeholder={contactContent.form.company.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.company ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.company} />
           </label>
 
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.name.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -245,14 +245,14 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               placeholder={contactContent.form.name.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.name ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.name} />
           </label>
 
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.nameKana.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -263,7 +263,7 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               placeholder={contactContent.form.nameKana.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.nameKana ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.nameKana} />
@@ -271,9 +271,9 @@ const ContactForm = () => {
         </div>
 
         {/* 右列 */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.phone.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -284,14 +284,14 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               placeholder={contactContent.form.phone.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.phone ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.phone} />
           </label>
 
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.email.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
@@ -302,25 +302,25 @@ const ContactForm = () => {
               onChange={handleChange}
               required
               placeholder={contactContent.form.email.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.email ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.email} />
           </label>
 
           <label className='flex flex-col'>
-            <span className='text-white font-medium mb-4'>
+            <span className='text-white font-medium mb-3'>
               {contactContent.form.message.label}
               <span className="text-red-400 ml-1">*</span>
             </span>
             <textarea
-              rows={7}
+              rows={6}
               name='message'
               value={form.message}
               onChange={handleChange}
               required
               placeholder={contactContent.form.message.placeholder}
-              className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
+              className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.message ? 'border-red-400' : 'border-transparent'}`}
             />
             <ErrorMessage error={errors.message} />
