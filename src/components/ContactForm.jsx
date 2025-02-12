@@ -1,191 +1,98 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import emailjs from '@emailjs/browser';
 import { contactContent } from "../constants";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
 
 const ContactForm = () => {
-  const formRef = useRef();
-  const [form, setForm] = useState({
-    type: "",
-    company: "",
-    name: "",
-    nameKana: "",
-    phone: "",
-    email: "",
-    message: "",
-    privacy: false,
-  });
+  useEffect(() => {
+    emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+  }, []);
 
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-
-    setForm(prev => ({
-      ...prev,
-      [name]: newValue
-    }));
-
-    // 入力時のエラーチェック
-    const newErrors = { ...errors };
-    delete newErrors[name];
-
-    // フィールドごとの個別バリデーション
-    switch (name) {
-      case 'nameKana':
-        if (value && !/^[ァ-ヶー\s]*$/.test(value)) {
-          newErrors[name] = 'フリガナは全角カタカナで入力してください';
-        }
-        break;
-      case 'phone':
-        if (value && !/^[0-9\-]*$/.test(value)) {
-          newErrors[name] = '電話番号は数字とハイフンのみ使用できます';
-        }
-        break;
-      case 'email':
-        if (value && !/^[a-zA-Z0-9.@\-_]*$/.test(value)) {
-          newErrors[name] = '使用できない文字が含まれています';
-        }
-        break;
-      case 'message':
-        if (value && value.length > 1000) {
-          newErrors[name] = 'お問い合わせ内容は1000文字以内で入力してください';
-        }
-        break;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch
+  } = useForm({
+    defaultValues: {
+      type: "",
+      company: "",
+      name: "",
+      nameKana: "",
+      phone: "",
+      email: "",
+      message: "",
+      privacy: false,
     }
+  });
 
-    setErrors(newErrors);
-  };
+  const privacy = watch("privacy");
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!form.type) {
-      newErrors.type = 'お問い合わせ種別を選択してください';
-    }
-
-    if (!form.company.trim()) {
-      newErrors.company = '会社名/組織名を入力してください';
-    } else if (form.company.length > 100) {
-      newErrors.company = '会社名/組織名は100文字以内で入力してください';
-    }
-
-    if (!form.name.trim()) {
-      newErrors.name = 'お名前を入力してください';
-    } else if (form.name.length > 50) {
-      newErrors.name = 'お名前は50文字以内で入力してください';
-    }
-
-    if (!form.nameKana.trim()) {
-      newErrors.nameKana = 'フリガナを入力してください';
-    } else if (!/^[ァ-ヶー\s]+$/.test(form.nameKana)) {
-      newErrors.nameKana = 'フリガナは全角カタカナで入力してください';
-    } else if (form.nameKana.length > 50) {
-      newErrors.nameKana = 'フリガナは50文字以内で入力してください';
-    }
-
-    if (!form.phone.trim()) {
-      newErrors.phone = '電話番号を入力してください';
-    } else {
-      const phoneNumber = form.phone.replace(/[-\s]/g, '');
-      if (!/^(0[0-9]{9,10})$/.test(phoneNumber)) {
-        newErrors.phone = '正しい電話番号の形式で入力してください（例：03-1234-5678）';
-      }
-    }
-
-    if (!form.email.trim()) {
-      newErrors.email = 'メールアドレスを入力してください';
-    } else {
-      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-      if (!emailRegex.test(form.email)) {
-        newErrors.email = '正しいメールアドレスの形式で入力してください';
-      } else if (form.email.length > 256) {
-        newErrors.email = 'メールアドレスは256文字以内で入力してください';
-      }
-    }
-
-    if (!form.message.trim()) {
-      newErrors.message = 'お問い合わせ内容を入力してください';
-    } else if (form.message.trim().length < 10) {
-      newErrors.message = 'お問い合わせ内容は10文字以上で入力してください';
-    } else if (form.message.length > 1000) {
-      newErrors.message = 'お問い合わせ内容は1000文字以内で入力してください';
-    }
-
-    if (!form.privacy) {
-      newErrors.privacy = 'プライバシーポリシーへの同意が必要です';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data) => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // 管理者向けメール送信
+      const adminResult = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          type: data.type,
+          company: data.company,
+          name: data.name,
+          nameKana: data.nameKana,
+          phone: data.phone,
+          email: data.email,
+          message: data.message,
+          reply_to: data.email, // 返信先を設定
         },
-        body: JSON.stringify({
-          type: form.type,
-          company: form.company,
-          name: form.name,
-          nameKana: form.nameKana,
-          phone: form.phone,
-          email: form.email,
-          message: form.message,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.error || 'メール送信に失敗しました');
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      // 入力者向け自動返信メール送信
+      const autoReplyResult = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_AUTOREPLY_TEMPLATE_ID,
+        {
+          to_email: data.email,
+          to_name: data.name,
+          type: data.type,
+          company: data.company,
+          name: data.name,
+          nameKana: data.nameKana,
+          phone: data.phone,
+          email: data.email,
+          message: data.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      if (adminResult.status === 200 && autoReplyResult.status === 200) {
+        alert(contactContent.alerts.success);
+        reset();
+      } else {
+        throw new Error('メール送信に失敗しました');
       }
-  
-      setLoading(false);
-      alert(contactContent.alerts.success);
-  
-      setForm({
-        type: "",
-        company: "",
-        name: "",
-        nameKana: "",
-        phone: "",
-        email: "",
-        message: "",
-        privacy: false,
-      });
     } catch (error) {
-      setLoading(false);
       console.error(error);
       alert(contactContent.alerts.error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const ErrorMessage = ({ error }) => (
-    error ? <p className="text-red-400 text-sm mt-1">{error}</p> : null
-  );
 
   return (
     <motion.div
       className='flex-[0.85] bg-black-100 p-7 rounded-2xl w-full'
     >
       <form
-        ref={formRef}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className='grid grid-cols-1 md:grid-cols-2 gap-6'
       >
         {/* 左列 */}
@@ -196,10 +103,7 @@ const ContactForm = () => {
               <span className="text-red-400 ml-1">*</span>
             </span>
             <select
-              name='type'
-              value={form.type}
-              onChange={handleChange}
-              required
+              {...register("type", { required: "お問い合わせ種別を選択してください" })}
               className={`bg-tertiary py-3 px-4 text-white rounded-lg outline-none border-2 font-medium
                 ${errors.type ? 'border-red-400' : 'border-transparent'}`}
             >
@@ -212,7 +116,7 @@ const ContactForm = () => {
                 </option>
               ))}
             </select>
-            <ErrorMessage error={errors.type} />
+            {errors.type && <p className="text-red-400 text-sm mt-1">{errors.type.message}</p>}
           </label>
 
           <label className='flex flex-col'>
@@ -222,15 +126,18 @@ const ContactForm = () => {
             </span>
             <input
               type='text'
-              name='company'
-              value={form.company}
-              onChange={handleChange}
-              required
+              {...register("company", {
+                required: "会社名/組織名を入力してください",
+                maxLength: {
+                  value: 100,
+                  message: "会社名/組織名は100文字以内で入力してください"
+                }
+              })}
               placeholder={contactContent.form.company.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.company ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.company} />
+            {errors.company && <p className="text-red-400 text-sm mt-1">{errors.company.message}</p>}
           </label>
 
           <label className='flex flex-col'>
@@ -240,15 +147,18 @@ const ContactForm = () => {
             </span>
             <input
               type='text'
-              name='name'
-              value={form.name}
-              onChange={handleChange}
-              required
+              {...register("name", {
+                required: "お名前を入力してください",
+                maxLength: {
+                  value: 50,
+                  message: "お名前は50文字以内で入力してください"
+                }
+              })}
               placeholder={contactContent.form.name.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.name ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.name} />
+            {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
           </label>
 
           <label className='flex flex-col'>
@@ -258,15 +168,22 @@ const ContactForm = () => {
             </span>
             <input
               type='text'
-              name='nameKana'
-              value={form.nameKana}
-              onChange={handleChange}
-              required
+              {...register("nameKana", {
+                required: "フリガナを入力してください",
+                pattern: {
+                  value: /^[ァ-ヶー\s]+$/,
+                  message: "フリガナは全角カタカナで入力してください"
+                },
+                maxLength: {
+                  value: 50,
+                  message: "フリガナは50文字以内で入力してください"
+                }
+              })}
               placeholder={contactContent.form.nameKana.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.nameKana ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.nameKana} />
+            {errors.nameKana && <p className="text-red-400 text-sm mt-1">{errors.nameKana.message}</p>}
           </label>
         </div>
 
@@ -279,15 +196,18 @@ const ContactForm = () => {
             </span>
             <input
               type='tel'
-              name='phone'
-              value={form.phone}
-              onChange={handleChange}
-              required
+              {...register("phone", {
+                required: "電話番号を入力してください",
+                pattern: {
+                  value: /^0[0-9]{9,10}$/,
+                  message: "正しい電話番号の形式で入力してください（例：03-1234-5678）"
+                }
+              })}
               placeholder={contactContent.form.phone.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.phone ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.phone} />
+            {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone.message}</p>}
           </label>
 
           <label className='flex flex-col'>
@@ -297,15 +217,22 @@ const ContactForm = () => {
             </span>
             <input
               type='email'
-              name='email'
-              value={form.email}
-              onChange={handleChange}
-              required
+              {...register("email", {
+                required: "メールアドレスを入力してください",
+                pattern: {
+                  value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                  message: "正しいメールアドレスの形式で入力してください"
+                },
+                maxLength: {
+                  value: 256,
+                  message: "メールアドレスは256文字以内で入力してください"
+                }
+              })}
               placeholder={contactContent.form.email.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.email ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.email} />
+            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
           </label>
 
           <label className='flex flex-col'>
@@ -315,31 +242,31 @@ const ContactForm = () => {
             </span>
             <textarea
               rows={6}
-              name='message'
-              value={form.message}
-              onChange={handleChange}
-              required
+              {...register("message", {
+                required: "お問い合わせ内容を入力してください",
+                minLength: {
+                  value: 10,
+                  message: "お問い合わせ内容は10文字以上で入力してください"
+                },
+                maxLength: {
+                  value: 1000,
+                  message: "お問い合わせ内容は1000文字以内で入力してください"
+                }
+              })}
               placeholder={contactContent.form.message.placeholder}
               className={`bg-tertiary py-3 px-4 placeholder:text-secondary text-white rounded-lg outline-none border-2 font-medium
                 ${errors.message ? 'border-red-400' : 'border-transparent'}`}
             />
-            <ErrorMessage error={errors.message} />
+            {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>}
           </label>
 
           <div className="space-y-4">
             <label className='flex items-center gap-2 cursor-pointer group'>
               <input
                 type='checkbox'
-                name='privacy'
-                checked={form.privacy}
-                onChange={(e) => {
-                  setForm({ ...form, privacy: e.target.checked });
-                  if (e.target.checked && errors.privacy) {
-                    const { privacy, ...restErrors } = errors;
-                    setErrors(restErrors);
-                  }
-                }}
-                required
+                {...register("privacy", {
+                  required: "プライバシーポリシーへの同意が必要です"
+                })}
                 className={`w-4 h-4 rounded border-2 bg-tertiary text-primary 
                   ${errors.privacy ? 'border-red-400' : 'border-tertiary'}`}
               />
@@ -355,14 +282,14 @@ const ContactForm = () => {
                 <span className="text-red-400 ml-1">*</span>
               </span>
             </label>
-            <ErrorMessage error={errors.privacy} />
+            {errors.privacy && <p className="text-red-400 text-sm mt-1">{errors.privacy.message}</p>}
 
             <button
               type='submit'
-              disabled={!form.privacy || loading}
+              disabled={!privacy || loading}
               className={`
                 bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary
-                ${(!form.privacy || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#915EFF] transition-colors'}
+                ${(!privacy || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#915EFF] transition-colors'}
               `}
             >
               {loading ? contactContent.form.button.sending : contactContent.form.button.default}

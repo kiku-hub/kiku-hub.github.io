@@ -12,7 +12,7 @@
     "rootDir": ".",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["node", "react", "@react-email/components"],
+    "types": ["node", "react"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true
   },
@@ -21,7 +21,6 @@
     "experimentalSpecifierResolution": "node"
   },
   "include": [
-    "scripts/**/*",
     "utils/**/*",
     "components/**/*"
   ],
