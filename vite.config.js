@@ -4,8 +4,9 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/ORCX_WEBSITE_NEW/',
+  base: '/',
   build: {
+    outDir: 'dist',
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
