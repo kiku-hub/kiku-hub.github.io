@@ -352,10 +352,14 @@ const GoogleMap = () => {
     };
 
     // Google Maps APIのスクリプトを読み込む
+    console.log('Google Maps API Key:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&callback=initMap&libraries=geocoding`;
     script.async = true;
     script.defer = true;
+    script.onerror = (error) => {
+      console.error('Google Maps API script failed to load:', error);
+    };
     document.head.appendChild(script);
 
     return () => {
