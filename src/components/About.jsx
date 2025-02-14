@@ -26,12 +26,9 @@ const About = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !isInView) {
           setIsInView(true);
           startAnimation();
-        } else {
-          setIsInView(false);
-          setVisibleLayers([]);
         }
       },
       {
@@ -49,7 +46,7 @@ const About = () => {
         observer.unobserve(sectionRef.current);
       }
     };
-  }, []);
+  }, [isInView]);
 
   const startAnimation = () => {
     if (animationRef.current) {
@@ -77,6 +74,8 @@ const About = () => {
         setVisibleLayers(sequence[2]);
       }, 1400)
     };
+
+    setHasAnimated(true);
   };
 
   useEffect(() => {
@@ -91,10 +90,6 @@ const About = () => {
     aboutContent.cards.slice().reverse(),
     []
   );
-
-  useEffect(() => {
-    setHasAnimated(true);
-  }, []);
 
   return (
     <div ref={sectionRef}>
@@ -117,7 +112,7 @@ const About = () => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-16 items-center justify-center -mt-8">
-        <div className="relative w-full md:w-1/2">
+       <div className="relative w-full md:w-1/2">
           <ThreePyramid 
             visibleLayers={visibleLayers} 
             highlightedLayer={highlightedLayer}
