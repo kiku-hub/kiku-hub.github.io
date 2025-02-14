@@ -19,20 +19,16 @@ const ProjectCard = ({
       variants={fadeIn("up", "spring", index * 0.5, 0.75)}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.25 }}
+      viewport={{ once: true }}
       className='w-full'>
       <motion.div
-        whileHover={{ 
-          scale: 1.02,
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className='bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent p-5 rounded-2xl w-full sm:w-[550px] md:w-[650px] lg:w-[800px] mx-auto transition-all duration-300'
+        className='bg-[#1d1836] border-2 border-transparent p-5 rounded-2xl w-full sm:w-[550px] md:w-[650px] lg:w-[800px] mx-auto'
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: index * 0.2 }}
+          variants={fadeIn("", "", index * 0.2, 0.5)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
           className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
         >
           <img
@@ -44,27 +40,30 @@ const ProjectCard = ({
 
         <div className='mt-5'>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.3 }}
+            variants={fadeIn("", "", index * 0.3, 0.5)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             className="mb-1"
           >
             <h3 className='text-white text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-bold'>{name}</h3>
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.4 }}
+            variants={fadeIn("", "", index * 0.4, 0.5)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             className='mt-2 text-secondary text-[12px] sm:text-[13px] md:text-[14px] italic'
           >
             {subtitle}
           </motion.p>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.5 }}
+            variants={fadeIn("", "", index * 0.5, 0.5)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             className='mt-4 text-white-100 text-[12px] sm:text-[13px] md:text-[14px] leading-relaxed'
           >
             {description}
