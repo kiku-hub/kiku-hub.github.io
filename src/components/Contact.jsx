@@ -8,8 +8,8 @@ import ContactForm from "./ContactForm";
 
 const Contact = () => {
   return (
-    <section className="relative min-h-[80vh] w-full mx-auto">
-      <div className="w-full h-full flex flex-col items-center justify-start pt-16">
+    <section className="relative min-h-[80vh] w-full mx-auto -mt-16">
+      <div className="w-full h-full flex flex-col items-center justify-start pt-8">
         <motion.div variants={textVariant()}>
           <p className={`${styles.sectionSubText} text-center`}>
             {contactContent.title}
@@ -19,7 +19,7 @@ const Contact = () => {
           </h2>
         </motion.div>
 
-        <div className="w-full flex flex-col items-center justify-center mt-10">
+        <div className="w-full flex flex-col items-center justify-center -mt-4">
           <motion.div
             variants={slideIn("left", "tween", 0.2, 1)}
             className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
