@@ -401,10 +401,7 @@ const CompanyDetail = ({ label, value, icon, index }) => {
   );
 
   return (
-    <motion.div
-      variants={fadeIn("right", "spring", index * 0.1, 0.75)}
-      className="w-full bg-[#1d1836] backdrop-blur-sm p-3 rounded-lg border border-white/5 transition-all duration-300"
-    >
+    <div className="w-full bg-[#1d1836] backdrop-blur-sm p-3 rounded-lg border border-white/5 transition-all duration-300">
       {isClickable ? (
         <a href={href} target="_blank" rel="noopener noreferrer" className="block">
           {content}
@@ -412,7 +409,7 @@ const CompanyDetail = ({ label, value, icon, index }) => {
       ) : (
         content
       )}
-    </motion.div>
+    </div>
   );
 };
 
@@ -435,18 +432,21 @@ const getIcon = (iconName) => {
 const Company = () => {
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <div>
         <p className={`${styles.sectionSubText} text-center`}>
           {companyInfo.title}
         </p>
         <h2 className={`${styles.sectionHeadText} text-center`}>
           {companyInfo.subtitle}
         </h2>
-      </motion.div>
+      </div>
 
       <div className="mt-8 flex flex-col lg:flex-row gap-6">
         <motion.div 
-          variants={fadeIn("right", "spring", 0.2, 0.75)}
+          initial={{ x: -100 }}
+          whileInView={{ x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
           className="flex-1"
         >
           <div className="flex flex-col space-y-2">
@@ -460,12 +460,9 @@ const Company = () => {
           </div>
         </motion.div>
 
-        <motion.div 
-          variants={fadeIn("left", "spring", 0.3, 0.75)}
-          className="flex-1"
-        >
+        <div className="flex-1">
           <GoogleMap />
-        </motion.div>
+        </div>
       </div>
     </>
   );
