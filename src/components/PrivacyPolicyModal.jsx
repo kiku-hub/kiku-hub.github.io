@@ -136,7 +136,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose, onScroll, canClose }) => {
               disabled={!canClose}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-500 
                 ${canClose 
-                  ? 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg scale-105 animate-pulse' 
+                  ? 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg' 
                   : 'bg-white/30 text-gray-400 cursor-not-allowed'}`}
             >
               {canClose ? '閉じる' : 'プライバシーポリシーを最後までお読みください'}

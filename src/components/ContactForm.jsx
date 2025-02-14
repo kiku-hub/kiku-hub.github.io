@@ -88,15 +88,15 @@ const ContactForm = () => {
 
   return (
     <motion.div
-      className='flex-[0.85] bg-black-100 p-7 rounded-2xl w-full max-w-xl mx-auto'
+      className='flex-[0.85] bg-black-100 p-7 rounded-2xl w-full max-w-4xl mx-auto'
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='flex flex-col gap-8 max-w-xl mx-auto'
+        className='flex flex-col gap-8 w-full mx-auto'
       >
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.type.label}
             </span>
             <span className="text-red-400">*</span>
@@ -105,8 +105,8 @@ const ContactForm = () => {
             <select
               {...register("type", { required: "お問い合わせ種別を選択してください" })}
               aria-invalid={errors.type ? "true" : "false"}
-              className={`w-full bg-tertiary py-3 px-4 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out placeholder:text-secondary/30
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.type ? 'border-red-400' : 'border-transparent'}`}
             >
               <option value="" disabled>
@@ -124,7 +124,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.company.label}
             </span>
           </div>
@@ -139,8 +139,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.company ? "true" : "false"}
               placeholder={contactContent.form.company.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.company ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.company && (
@@ -156,7 +156,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.name.label}
             </span>
             <span className="text-red-400">*</span>
@@ -173,8 +173,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.name ? "true" : "false"}
               placeholder={contactContent.form.name.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.name ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
@@ -183,7 +183,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.nameKana.label}
             </span>
             <span className="text-red-400">*</span>
@@ -204,8 +204,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.nameKana ? "true" : "false"}
               placeholder={contactContent.form.nameKana.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.nameKana ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.nameKana && <p className="text-red-400 text-sm mt-1">{errors.nameKana.message}</p>}
@@ -214,7 +214,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.phone.label}
             </span>
             <span className="text-red-400">*</span>
@@ -231,8 +231,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.phone ? "true" : "false"}
               placeholder={contactContent.form.phone.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.phone ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone.message}</p>}
@@ -241,7 +241,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row sm:items-start gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.email.label}
             </span>
             <span className="text-red-400">*</span>
@@ -262,8 +262,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.email ? "true" : "false"}
               placeholder={contactContent.form.email.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.email ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
@@ -272,7 +272,7 @@ const ContactForm = () => {
 
         <div className='flex flex-col sm:flex-row gap-3 group'>
           <div className='flex items-center gap-1 w-40 shrink-0 pt-3'>
-            <span className='text-white font-medium group-focus-within:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white font-medium group-focus-within:text-[#A78BFA] transition-colors duration-300'>
               {contactContent.form.message.label}
             </span>
             <span className="text-red-400">*</span>
@@ -293,8 +293,8 @@ const ContactForm = () => {
               })}
               aria-invalid={errors.message ? "true" : "false"}
               placeholder={contactContent.form.message.placeholder}
-              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/70 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:shadow-lg focus:shadow-[#915EFF]/20
+              className={`w-full bg-tertiary py-3 px-4 placeholder:text-secondary/30 text-white rounded-lg outline-none border-2 font-medium transition-all duration-300 ease-in-out
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:shadow-lg focus:shadow-[#A78BFA]/20
                 ${errors.message ? 'border-red-400' : 'border-transparent'}`}
             />
             {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>}
@@ -312,15 +312,15 @@ const ContactForm = () => {
               disabled={!hasReadPrivacyPolicy}
               aria-invalid={errors.privacy ? "true" : "false"}
               className={`w-4 h-4 mt-0.5 rounded border-2 bg-tertiary text-primary transition-all duration-300 ease-in-out
-                hover:border-[#915EFF] focus:border-[#915EFF] focus:ring-2 focus:ring-[#915EFF]/20
+                hover:border-[#A78BFA] focus:border-[#A78BFA] focus:ring-2 focus:ring-[#A78BFA]/20
                 ${errors.privacy ? 'border-red-400' : 'border-tertiary'}
                 ${!hasReadPrivacyPolicy ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
-            <span className='text-white text-sm group-hover:text-[#915EFF] transition-colors duration-300'>
+            <span className='text-white text-sm group-hover:text-[#A78BFA] transition-colors duration-300'>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className='text-[#915EFF] hover:underline focus:outline-none focus:ring-2 focus:ring-[#915EFF]/20 rounded'
+                className='text-[#A78BFA] hover:underline focus:outline-none focus:ring-2 focus:ring-[#A78BFA]/20 rounded'
               >
                 {contactContent.form.privacy.link}
               </button>
