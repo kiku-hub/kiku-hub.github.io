@@ -1,7 +1,6 @@
 import logo from "./logo.svg";
 import menu from "./menu.svg";
 import close from "./close.svg";
-import github from "./github.png";
 import comingsoon from "./comingsoon.jpg";
 
 import css from "./tech/css.png";
@@ -40,7 +39,6 @@ export {
   tailwind,
   typescript,
   nextjs,
-  github,
   comingsoon,
   ITsolution,
   CompanyServices,
