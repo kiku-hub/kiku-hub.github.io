@@ -147,16 +147,10 @@ const Services = () => {
     <section className="relative w-full h-screen mx-auto overflow-hidden">
       <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '0vh' }}>
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2 sm:mb-4">
-          <motion.div 
-            variants={textVariant()}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="text-center"
-          >
+          <div className="text-center">
             <p className={styles.sectionSubText}>事業内容</p>
             <h2 className={styles.sectionHeadText}>Services.</h2>
-          </motion.div>
+          </div>
         </div>
 
         <div className="flex-1 w-full relative flex items-start justify-center -mt-6">

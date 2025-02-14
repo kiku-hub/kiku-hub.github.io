@@ -49,9 +49,9 @@ const Navbar = () => {
           }
         });
       }, {
-        root: mainContainer,
-        threshold: 0.6, // より厳密なしきい値
-        rootMargin: '-100px 0px' // ナビゲーションバーの高さを考慮
+        root: null,
+        threshold: 0.2,
+        rootMargin: '-80px 0px -20% 0px'
       });
 
       if (heroSection) {

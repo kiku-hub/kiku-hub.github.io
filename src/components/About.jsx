@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 
 import { styles } from "../styles";
-import { fadeIn, textVariant } from "../utils/motion";
+import { textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramidOptimized";
@@ -12,9 +12,7 @@ const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
   const [highlightedLayer, setHighlightedLayer] = useState(null);
   const [hoveredFromPyramid, setHoveredFromPyramid] = useState(null);
-  const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
-  const animationRef = useRef(null);
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const handleHover = useCallback((layerId) => {
@@ -26,70 +24,30 @@ const About = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isInView) {
-          setIsInView(true);
-          startAnimation();
+        if (entry.isIntersecting && !hasAnimated) {
+          const sequence = [
+            ['value'],
+            ['value', 'vision'],
+            ['value', 'vision', 'mission']
+          ];
+
+          sequence.forEach((layers, index) => {
+            setTimeout(() => {
+              setVisibleLayers(layers);
+            }, index * 700);
+          });
+
+          setHasAnimated(true);
         }
       },
-      {
-        threshold: 0.3,
-        rootMargin: '-10% 0px'
-      }
+      { threshold: 0.3, rootMargin: '-10% 0px' }
     );
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
+      return () => observer.unobserve(sectionRef.current);
     }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, [isInView]);
-
-  const startAnimation = () => {
-    if (animationRef.current) {
-      Object.values(animationRef.current).forEach(timer => clearTimeout(timer));
-    }
-
-    setVisibleLayers([]);
-
-    const sequence = [
-      ['value'],
-      ['value', 'vision'],
-      ['value', 'vision', 'mission']
-    ];
-
-    animationRef.current = {
-      timer1: setTimeout(() => {
-        setVisibleLayers(sequence[0]);
-      }, 0),
-
-      timer2: setTimeout(() => {
-        setVisibleLayers(sequence[1]);
-      }, 700),
-
-      timer3: setTimeout(() => {
-        setVisibleLayers(sequence[2]);
-      }, 1400)
-    };
-
-    setHasAnimated(true);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        Object.values(animationRef.current).forEach(timer => clearTimeout(timer));
-      }
-    };
-  }, []);
-
-  const orderedCards = useMemo(() => 
-    aboutContent.cards.slice().reverse(),
-    []
-  );
+  }, [hasAnimated]);
 
   return (
     <div ref={sectionRef}>
@@ -102,17 +60,17 @@ const About = () => {
           variants={textVariant()}
           animate={hasAnimated ? "show" : "hidden"}
         >
-          <p className={`${styles.sectionSubText} bg-gradient-to-r from-white/90 via-white/80 to-white/70 bg-clip-text text-transparent`}>
+          <p className={`${styles.sectionSubText} text-secondary`}>
             {aboutContent.title}
           </p>
-          <h2 className={`${styles.sectionHeadText} bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text text-transparent`}>
+          <h2 className={`${styles.sectionHeadText} text-white`}>
             {aboutContent.subtitle}
           </h2>
         </motion.div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-16 items-center justify-center -mt-8">
-       <div className="relative w-full md:w-1/2">
+        <div className="relative w-full md:w-1/2">
           <ThreePyramid 
             visibleLayers={visibleLayers} 
             highlightedLayer={highlightedLayer}
@@ -124,7 +82,7 @@ const About = () => {
         </div>
 
         <MVVContainer
-          orderedCards={orderedCards}
+          orderedCards={aboutContent.cards.slice().reverse()}
           visibleLayers={visibleLayers}
           hoveredFromPyramid={hoveredFromPyramid}
           onHover={handleHover}
