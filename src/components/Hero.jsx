@@ -60,7 +60,11 @@ const Hero = () => {
   }, [isInView, controls]);
 
   return (
-    <section ref={ref} className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}>
+    <section 
+      ref={ref} 
+      id="hero"
+      className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}
+    >
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <motion.div

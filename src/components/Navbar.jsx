@@ -6,12 +6,14 @@ import { logo, menu, close } from "../assets";
 const Navbar = () => {
   const [active, setActive] = useState("");
   const [toggle, setToggle] = useState(false);
+  const [isHeroVisible, setIsHeroVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const mainContainer = document.querySelector('.bg-primary');
       if (!mainContainer) return;
 
+      const heroSection = document.querySelector('#hero');
       const sections = navLinks.map(nav => {
         // Companyセクションの場合はaboutのIDも含める
         const elements = nav.id === 'about' 
@@ -27,8 +29,17 @@ const Navbar = () => {
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // 表示されているセクションを探す
+          if (entry.target === heroSection) {
+            if (entry.isIntersecting) {
+              setIsHeroVisible(true);
+              setActive("");
+            } else {
+              setIsHeroVisible(false);
+            }
+            return;
+          }
+
+          if (entry.isIntersecting && !isHeroVisible) {
             const activeSection = sections.find(section => 
               section.elements.some(element => element === entry.target)
             );
@@ -39,10 +50,14 @@ const Navbar = () => {
         });
       }, {
         root: mainContainer,
-        threshold: 0.5
+        threshold: 0.6, // より厳密なしきい値
+        rootMargin: '-100px 0px' // ナビゲーションバーの高さを考慮
       });
 
-      // すべてのセクション要素を監視
+      if (heroSection) {
+        observer.observe(heroSection);
+      }
+
       sections.forEach(section => {
         section.elements.forEach(element => {
           observer.observe(element);
@@ -50,6 +65,9 @@ const Navbar = () => {
       });
 
       return () => {
+        if (heroSection) {
+          observer.unobserve(heroSection);
+        }
         sections.forEach(section => {
           section.elements.forEach(element => {
             observer.unobserve(element);
@@ -63,7 +81,7 @@ const Navbar = () => {
     return () => {
       handleScroll()?.();
     };
-  }, []);
+  }, [isHeroVisible]);
 
   const scrollToSection = (e, id) => {
     e.preventDefault();
@@ -77,10 +95,14 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full flex items-center py-5 z-20">
       <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
         <div
-          className='flex items-center gap-2 cursor-pointer'
+          className={`flex items-center gap-2 cursor-pointer transition-all duration-300 ${
+            isHeroVisible ? "scale-105" : ""
+          } hover:scale-105`}
           onClick={(e) => scrollToSection(e, 'hero')}
         >
-          <p className='text-white text-[18px] font-bold'>ÓRCX</p>
+          <p className={`text-[18px] font-bold transition-all duration-300 ${
+            isHeroVisible ? "text-white" : "text-secondary"
+          } hover:text-white`}>ÓRCX</p>
         </div>
 
         <ul className='list-none hidden sm:flex flex-row gap-10'>
@@ -88,8 +110,10 @@ const Navbar = () => {
             <li
               key={nav.id}
               className={`${
-                active === nav.title ? "text-white font-semibold scale-105" : "text-secondary"
-              } hover:text-white text-[18px] cursor-pointer transition-all duration-300`}
+                active === nav.title 
+                  ? "text-white font-semibold scale-105" 
+                  : "text-secondary hover:text-white hover:scale-105"
+              } text-[18px] cursor-pointer transition-all duration-300`}
               onClick={(e) => scrollToSection(e, nav.id)}
             >
               <a href={`#${nav.id}`}>{nav.title}</a>
@@ -115,7 +139,9 @@ const Navbar = () => {
                 <li
                   key={nav.id}
                   className={`font-poppins cursor-pointer text-[16px] ${
-                    active === nav.title ? "text-white font-semibold scale-105" : "text-secondary"
+                    active === nav.title 
+                      ? "text-white font-semibold scale-105" 
+                      : "text-secondary hover:text-white hover:scale-105"
                   } transition-all duration-300`}
                   onClick={(e) => {
                     setToggle(!toggle);
