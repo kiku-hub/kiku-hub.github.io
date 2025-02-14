@@ -145,8 +145,8 @@ const Services = () => {
 
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden">
-      <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '4vh' }}>
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+      <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '0vh' }}>
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2 sm:mb-4">
           <motion.div 
             variants={textVariant()}
             initial="hidden"
@@ -159,7 +159,7 @@ const Services = () => {
           </motion.div>
         </div>
 
-        <div className="flex-1 w-full relative flex items-start justify-center pt-4 sm:pt-8">
+        <div className="flex-1 w-full relative flex items-start justify-center -mt-6">
           <div className="absolute inset-0 flex items-start justify-center">
             <div className="relative w-full max-w-[1600px] mx-auto px-2 sm:px-4">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[15%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none" />

@@ -33,23 +33,13 @@ const ProjectCard = ({
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
-          className='w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
+          className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
         >
           <img
             src={image}
             alt='project_image'
             className='w-full h-full object-cover rounded-2xl'
           />
-
-          {source_code_link !== "#" && (
-            <div className='absolute inset-0 flex justify-end m-3 card-img_hover'>
-              <div
-                onClick={() => window.open(source_code_link, "_blank")}
-                className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer'
-              >
-              </div>
-            </div>
-          )}
         </motion.div>
 
         <div className='mt-5'>
@@ -57,7 +47,7 @@ const ProjectCard = ({
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.3 }}
-            className="mb-6"
+            className="mb-1"
           >
             <h3 className='text-white text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-bold'>{name}</h3>
           </motion.div>
@@ -66,7 +56,7 @@ const ProjectCard = ({
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.4 }}
-            className='mt-3 text-secondary text-[12px] sm:text-[13px] md:text-[14px] italic'
+            className='mt-2 text-secondary text-[12px] sm:text-[13px] md:text-[14px] italic'
           >
             {subtitle}
           </motion.p>
@@ -109,13 +99,13 @@ const Products = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center mb-2"
         >
           <p className={styles.sectionSubText}>製品</p>
           <h2 className={styles.sectionHeadText}>Products.</h2>
         </motion.div>
 
-        <div className='mt-12 flex flex-wrap gap-7 justify-center'>
+        <div className='mt-2 flex flex-wrap gap-7 justify-center'>
           {projects.map((project, index) => (
             <ProjectCard key={`project-${index}`} index={index} {...project} />
           ))}
