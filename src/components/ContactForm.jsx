@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import emailjs from '@emailjs/browser';
 import { contactContent } from "../constants";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
 
 const ContactForm = () => {
-  useEffect(() => {
-    emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
-  }, []);
-
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasReadPrivacyPolicy, setHasReadPrivacyPolicy] = useState(false);
@@ -41,15 +36,23 @@ const ContactForm = () => {
     if (hasScrolledToBottom) {
       setIsModalOpen(false);
       setHasReadPrivacyPolicy(true);
+      setValue('privacy', true);
       setHasScrolledToBottom(false);
     }
   };
 
   const handlePrivacyChange = (e) => {
-    if (!hasReadPrivacyPolicy && e.target.checked) {
+    if (!hasReadPrivacyPolicy) {
+      e.preventDefault();
       setValue('privacy', false);
       setIsModalOpen(true);
-      setHasScrolledToBottom(false);
+    }
+  };
+
+  const handleModalScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    if (scrollHeight - (scrollTop + clientHeight) < 20) {
+      setHasScrolledToBottom(true);
     }
   };
 
@@ -57,46 +60,23 @@ const ContactForm = () => {
     setLoading(true);
 
     try {
-      // 管理者向けメール送信
-      const adminResult = await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        {
-          type: data.type,
-          company: data.company,
-          name: data.name,
-          nameKana: data.nameKana,
-          phone: data.phone,
-          email: data.email,
-          message: data.message,
-          reply_to: data.email, // 返信先を設定
+      const response = await fetch(import.meta.env.VITE_GAS_DEPLOYMENT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-      );
+        mode: 'cors',
+        redirect: 'follow',
+        body: JSON.stringify(data),
+      });
 
-      // 入力者向け自動返信メール送信
-      const autoReplyResult = await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_AUTOREPLY_TEMPLATE_ID,
-        {
-          to_email: data.email,
-          to_name: data.name,
-          type: data.type,
-          company: data.company,
-          name: data.name,
-          nameKana: data.nameKana,
-          phone: data.phone,
-          email: data.email,
-          message: data.message,
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-      );
+      const result = await response.json();
 
-      if (adminResult.status === 200 && autoReplyResult.status === 200) {
+      if (result.status === 'success') {
         alert(contactContent.alerts.success);
         reset();
       } else {
-        throw new Error('メール送信に失敗しました');
+        throw new Error(result.message || 'メール送信に失敗しました');
       }
     } catch (error) {
       console.error(error);
@@ -329,10 +309,12 @@ const ContactForm = () => {
                 required: "プライバシーポリシーへの同意が必要です",
                 onChange: handlePrivacyChange
               })}
+              disabled={!hasReadPrivacyPolicy}
               aria-invalid={errors.privacy ? "true" : "false"}
               className={`w-4 h-4 mt-0.5 rounded border-2 bg-tertiary text-primary transition-all duration-300 ease-in-out
                 hover:border-[#915EFF] focus:border-[#915EFF] focus:ring-2 focus:ring-[#915EFF]/20
-                ${errors.privacy ? 'border-red-400' : 'border-tertiary'}`}
+                ${errors.privacy ? 'border-red-400' : 'border-tertiary'}
+                ${!hasReadPrivacyPolicy ? 'opacity-50 cursor-not-allowed' : ''}`}
             />
             <span className='text-white text-sm group-hover:text-[#915EFF] transition-colors duration-300'>
               <button
@@ -356,11 +338,11 @@ const ContactForm = () => {
               type='submit'
               disabled={!privacy || loading}
               className={`
-                relative bg-tertiary py-4 px-16 rounded-xl outline-none text-white font-bold shadow-md shadow-primary
+                relative bg-white py-4 px-16 rounded-xl outline-none text-gray-800 font-bold shadow-md
                 transform transition-all duration-300 ease-in-out overflow-hidden
                 ${(!privacy || loading) 
                   ? 'opacity-50 cursor-not-allowed' 
-                  : 'hover:bg-[#915EFF] hover:scale-105 hover:shadow-lg hover:shadow-[#915EFF]/30 active:scale-95'
+                  : 'hover:bg-gray-100 hover:scale-105 hover:shadow-lg active:scale-95'
                 }
               `}
             >
@@ -383,12 +365,7 @@ const ContactForm = () => {
       <PrivacyPolicyModal 
         isOpen={isModalOpen} 
         onClose={handleModalClose}
-        onScroll={(e) => {
-          const { scrollTop, scrollHeight, clientHeight } = e.target;
-          if (scrollHeight - (scrollTop + clientHeight) < 20) {
-            setHasScrolledToBottom(true);
-          }
-        }}
+        onScroll={handleModalScroll}
         canClose={hasScrolledToBottom}
       />
     </motion.div>

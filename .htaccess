@@ -19,7 +19,7 @@ AddType application/javascript .jsx
   Header set X-XSS-Protection "1; mode=block"
   
   # CORSの設定
-  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Origin "http://localhost:5173"
   Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
   Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
 </IfModule>

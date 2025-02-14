@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const PrivacyPolicyModal = ({ isOpen, onClose }) => {
+const PrivacyPolicyModal = ({ isOpen, onClose, onScroll, canClose }) => {
   if (!isOpen) return null;
 
   return (
@@ -18,31 +18,18 @@ const PrivacyPolicyModal = ({ isOpen, onClose }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
           onClick={e => e.stopPropagation()}
-          className="bg-tertiary rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-y-auto relative"
+          className="bg-tertiary rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden relative"
         >
           {/* ヘッダー */}
-          <div className="sticky top-0 bg-tertiary p-6 border-b border-gray-600">
+          <div className="sticky top-0 bg-tertiary p-6 border-b border-gray-600 z-10">
             <h2 className="text-2xl font-bold text-white">プライバシーポリシー</h2>
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
           </div>
 
-          {/* コンテンツ */}
-          <div className="p-6 text-gray-200">
+          {/* スクロール可能なコンテンツ */}
+          <div 
+            className="p-6 text-gray-200 overflow-y-auto max-h-[calc(80vh-180px)]"
+            onScroll={onScroll}
+          >
             <p className="mb-6">
               ORCX株式会社（以下、「当社」といいます。）は、当社ウェブサイトの問い合わせフォーム（以下、「本フォーム」といいます。）をご利用いただく方（以下、「ユーザー」といいます。）から取得する個人情報の取り扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。<br />
               ユーザーは、本フォームを送信することで、本ポリシーの内容に同意したものとみなします。
@@ -146,9 +133,13 @@ const PrivacyPolicyModal = ({ isOpen, onClose }) => {
           <div className="sticky bottom-0 bg-tertiary p-6 border-t border-gray-600">
             <button
               onClick={onClose}
-              className="w-full bg-[#915EFF] text-white py-2 px-4 rounded-lg hover:bg-[#804ee0] transition-colors"
+              disabled={!canClose}
+              className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-500 
+                ${canClose 
+                  ? 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg scale-105 animate-pulse' 
+                  : 'bg-white/30 text-gray-400 cursor-not-allowed'}`}
             >
-              閉じる
+              {canClose ? '閉じる' : 'プライバシーポリシーを最後までお読みください'}
             </button>
           </div>
         </motion.div>
