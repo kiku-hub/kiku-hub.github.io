@@ -131,4 +131,4 @@ const Products = () => {
   );
 };
 
-export default SectionWrapper(Products, "");
+export default SectionWrapper(Products, "products");
