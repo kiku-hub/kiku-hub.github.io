@@ -17,6 +17,9 @@ export default defineConfig({
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
         assetFileNames: ({ name }) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+            return 'images/[name][extname]'
+          }
           return 'assets/[name].[hash][extname]'
         }
       }
