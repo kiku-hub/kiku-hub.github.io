@@ -7,7 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
+dist
 dist-ssr
 *.local
 
@@ -27,9 +31,6 @@ dist-ssr
 .env.local
 .env.development
 .env.*.local
-
-# Build output
-/build
 
 # vscode
 .vscode
