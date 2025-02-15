@@ -1,10 +1,22 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
+import { imagetools } from 'vite-imagetools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    imagetools({
+      defaultDirectives: () => {
+        return new URLSearchParams({
+          format: 'webp',
+          quality: '80',
+          as: 'picture'
+        });
+      }
+    })
+  ],
   base: './',
   build: {
     outDir: 'docs',
@@ -16,14 +28,12 @@ export default defineConfig({
       output: {
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: ({ name }) => {
-          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
-            const isSmallImage = name?.includes('/tech/');
-            return isSmallImage 
-              ? 'assets/images/[name].[hash][extname]'
-              : 'assets/large-images/[name].[hash][extname]';
-          }
-          return 'assets/[name].[hash][extname]'
+        assetFileNames: (assetInfo) => {
+          const { name } = assetInfo;
+          const isSmallImage = name?.includes('/tech/');
+          return isSmallImage 
+            ? 'assets/images/[name].[hash][extname]'
+            : 'assets/large-images/[name].[hash][extname]';
         }
       }
     },
@@ -55,7 +65,7 @@ export default defineConfig({
     strictPort: true,
     port: 5173
   },
-  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg', '**/*.webp'],
   experimental: {
     renderBuiltUrl(filename, { hostType, type, hostId }) {
       if (type === 'asset' && filename.endsWith('?base64')) {
