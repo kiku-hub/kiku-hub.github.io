@@ -16,10 +16,10 @@ import tailwind from "./tech/tailwind.png?base64";
 import typescript from "./tech/typescript.png?base64";
 import nextjs from "./tech/nextjs.png?base64";
 
-import ITsolution from "./ITsolution.jpeg";
-import CompanyServices from "./CompanyServices.jpeg";
-import Teameng from "./Teameng.jpeg";
-import Datacenter from "./Datacenter.jpeg";
+const ITsolution = new URL('./ITsolution.jpeg', import.meta.url).href;
+const CompanyServices = new URL('./CompanyServices.jpeg', import.meta.url).href;
+const Teameng = new URL('./Teameng.jpeg', import.meta.url).href;
+const Datacenter = new URL('./Datacenter.jpeg', import.meta.url).href;
 
 export {
   menu,
