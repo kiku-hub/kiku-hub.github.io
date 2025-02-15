@@ -16,11 +16,12 @@ import tailwind from "./tech/tailwind.png?base64";
 import typescript from "./tech/typescript.png?base64";
 import nextjs from "./tech/nextjs.png?base64";
 
-import ITsolution from "./ITsolution.jpeg?url";
-import CompanyServices from "./CompanyServices.jpeg?url";
-import Teameng from "./Teameng.jpeg?url";
-import Datacenter from "./Datacenter.jpeg?url";
-import herobg from "./herobg.png?url";
+// 大きな画像ファイルは直接パスを指定
+const ITsolution = "/images/ITsolution.jpeg";
+const CompanyServices = "/images/CompanyServices.jpeg";
+const Teameng = "/images/Teameng.jpeg";
+const Datacenter = "/images/Datacenter.jpeg";
+const herobg = "/images/herobg.png";
 
 export {
   menu,

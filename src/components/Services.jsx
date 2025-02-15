@@ -9,10 +9,6 @@ import { styles } from "../styles";
 import { services } from "../constants";
 import { textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
-import ITsolution from "../assets/ITsolution.jpeg";
-import CompanyServices from "../assets/CompanyServices.jpeg";
-import Teameng from "../assets/Teameng.jpeg";
-import Datacenter from "../assets/Datacenter.jpeg";
 
 // スタイル定数
 const CARD_STYLES = {
@@ -114,10 +110,10 @@ const Services = () => {
     
     const getServiceImage = (title) => {
       const imageMap = {
-        'ITソリューション': ITsolution,
-        '自社サービス': CompanyServices,
-        'システム受託開発': Teameng,
-        'AI サーバー': Datacenter,
+        'ITソリューション': '/images/ITsolution.jpeg',
+        '自社サービス': '/images/CompanyServices.jpeg',
+        'システム受託開発': '/images/Teameng.jpeg',
+        'AI サーバー': '/images/Datacenter.jpeg',
       };
       
       return Object.entries(imageMap).find(([key]) => title.includes(key))?.[1] || null;
