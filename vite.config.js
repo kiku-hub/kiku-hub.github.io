@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: './',
+    outDir: 'dist',
     assetsDir: 'assets',
     rollupOptions: {
       output: {
@@ -25,8 +25,7 @@ export default defineConfig({
     },
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 1000,
-    cssCodeSplit: true,
-    emptyOutDir: false
+    cssCodeSplit: true
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
