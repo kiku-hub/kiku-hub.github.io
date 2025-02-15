@@ -14,8 +14,8 @@ ORCX 株式会社の公式ウェブサイトのソースコードです。
 │   ├── styles/       # スタイル定義
 │   └── utils/        # ユーティリティ関数
 ├── public/           # 静的ファイル
-├── dist/            # ビルド出力（自動生成）
-└── docs/            # ドキュメント
+├── docs/            # ビルド出力（GitHub Pages用）
+└── assets/          # その他のアセット
 ```
 
 ## 開発環境のセットアップ
@@ -60,7 +60,7 @@ npm run dev
 npm run build
 ```
 
-ビルドが完了すると、`dist`ディレクトリに最適化された静的ファイルが生成されます。
+ビルドが完了すると、`docs`ディレクトリに最適化された静的ファイルが生成されます。
 
 ### デプロイ手順
 
@@ -68,7 +68,7 @@ npm run build
 2. "Build and deployment" セクションで以下を設定：
    - Source: "Deploy from a branch"
    - Branch: `main`
-   - Folder: `/dist`
+   - Folder: `/docs`
 3. "Save" をクリック
 4. 以下のコマンドでデプロイを実行：
    ```bash
@@ -80,7 +80,7 @@ npm run build
 ### 注意事項
 
 - ビルド時は`.env.production`の環境変数が使用されます
-- `dist`ディレクトリは自動的に Git に追加されます
+- `docs`ディレクトリは自動的に Git に追加されます
 - カスタムドメイン（www.orcx.co.jp）の設定は自動的に保持されます
 - SSL の設定は自動的に行われます
 - デプロイには数分かかる場合があります

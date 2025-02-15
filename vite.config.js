@@ -5,7 +5,7 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '',
   build: {
     outDir: 'docs',
     assetsDir: 'assets',
@@ -16,7 +16,12 @@ export default defineConfig({
       output: {
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]'
+        assetFileNames: ({ name }) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+            return 'assets/images/[name].[hash][extname]'
+          }
+          return 'assets/[name].[hash][extname]'
+        }
       }
     },
     sourcemap: false,
@@ -34,7 +39,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '@': resolve(__dirname, 'src'),
+      '@assets': resolve(__dirname, 'src/assets')
     }
   },
   optimizeDeps: {
