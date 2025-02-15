@@ -26,9 +26,10 @@ const GoogleMap = () => {
   React.useEffect(() => {
     const address = companyInfo.details.find(detail => detail.icon === 'location')?.value;
 
-    window.initMap = () => {
-      if (!mapRef.current) return;
+    // Google Maps APIのスクリプトを読み込む前にmapRef.currentが存在することを確認
+    if (!mapRef.current) return;
 
+    window.initMap = () => {
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ address: address }, (results, status) => {
         if (status === 'OK') {
