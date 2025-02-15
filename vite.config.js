@@ -51,5 +51,15 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 5173
+  },
+  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  experimental: {
+    renderBuiltUrl(filename, { hostType, type, hostId }) {
+      if (type === 'asset' && filename.endsWith('?base64')) {
+        const path = filename.replace('?base64', '');
+        return `data:image/png;base64,${Buffer.from(path).toString('base64')}`;
+      }
+      return filename;
+    }
   }
 })

@@ -4,8 +4,8 @@ import {
   Decal,
   Float,
   Preload,
-  useTexture,
 } from "@react-three/drei";
+import * as THREE from 'three';
 
 import CanvasLoader from "../Loader";
 
@@ -31,18 +31,32 @@ const DECAL_CONFIG = {
 };
 
 const Ball = ({ imgUrl }) => {
-  const textureUrl = useMemo(() => {
-    // 相対パスを使用して画像を参照
-    const url = new URL(imgUrl, import.meta.url).href;
-    return url;
-  }, [imgUrl]);
-
-  const [decal] = useTexture([textureUrl], (loader) => {
-    // テクスチャのロード時のエラーハンドリング
-    loader.crossOrigin = 'anonymous';
-  });
-
   const meshRef = useRef();
+  const textureRef = useRef();
+
+  // テクスチャの作成
+  const decal = useMemo(() => {
+    const texture = new THREE.TextureLoader();
+    texture.crossOrigin = 'anonymous';
+    
+    const img = new Image();
+    img.src = imgUrl;
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        const base64 = canvas.toDataURL('image/png');
+        const newTexture = texture.load(base64);
+        textureRef.current = newTexture;
+        resolve(newTexture);
+      };
+    });
+  }, [imgUrl]);
 
   // 回転速度の初期化をより明確に
   const rotationSpeed = useRef({
@@ -75,10 +89,14 @@ const Ball = ({ imgUrl }) => {
       >
         <icosahedronGeometry args={[1, 1]} />
         <meshStandardMaterial {...MATERIAL_CONFIG} />
-        <Decal
-          {...DECAL_CONFIG}
-          map={decal}
-        />
+        <Suspense fallback={null}>
+          {textureRef.current && (
+            <Decal
+              {...DECAL_CONFIG}
+              map={textureRef.current}
+            />
+          )}
+        </Suspense>
       </mesh>
     </Float>
   );
