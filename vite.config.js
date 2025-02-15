@@ -26,7 +26,7 @@ export default defineConfig({
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
-    emptyOutDir: false
+    emptyOutDir: true
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
