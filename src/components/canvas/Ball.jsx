@@ -34,10 +34,10 @@ const Ball = ({ imgUrl }) => {
   const meshRef = useRef();
   const textureRef = useRef();
 
-  // テクスチャの作成
+  // テクスチャの作成を最適化
   const decal = useMemo(() => {
-    const texture = new THREE.TextureLoader();
-    texture.crossOrigin = 'anonymous';
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.crossOrigin = 'anonymous';
     
     const img = new Image();
     img.src = imgUrl;
@@ -51,7 +51,13 @@ const Ball = ({ imgUrl }) => {
         ctx.drawImage(img, 0, 0);
         
         const base64 = canvas.toDataURL('image/png');
-        const newTexture = texture.load(base64);
+        const newTexture = textureLoader.load(base64, (texture) => {
+          // テクスチャ設定を最適化
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          texture.generateMipmaps = false;
+          texture.needsUpdate = true;
+        });
         textureRef.current = newTexture;
         resolve(newTexture);
       };
@@ -88,7 +94,18 @@ const Ball = ({ imgUrl }) => {
         scale={MESH_SCALE}
       >
         <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial {...MATERIAL_CONFIG} />
+        <meshStandardMaterial 
+          {...MATERIAL_CONFIG}
+          onBeforeCompile={(shader) => {
+            shader.fragmentShader = shader.fragmentShader.replace(
+              '#include <map_fragment>',
+              `
+              #include <map_fragment>
+              gl_FragColor = vec4(gl_FragColor.rgb, gl_FragColor.a);
+              `
+            );
+          }}
+        />
         <Suspense fallback={null}>
           {textureRef.current && (
             <Decal

@@ -36,6 +36,36 @@ const Orca = () => {
       if (object.isMesh) {
         object.castShadow = true;
         object.receiveShadow = true;
+        
+        // マテリアルとテクスチャの最適化
+        if (object.material) {
+          if (object.material.map) {
+            object.material.map.minFilter = THREE.LinearFilter;
+            object.material.map.magFilter = THREE.LinearFilter;
+            object.material.map.generateMipmaps = false;
+            object.material.map.needsUpdate = true;
+          }
+          if (object.material.normalMap) {
+            object.material.normalMap.minFilter = THREE.LinearFilter;
+            object.material.normalMap.magFilter = THREE.LinearFilter;
+            object.material.normalMap.generateMipmaps = false;
+            object.material.normalMap.needsUpdate = true;
+          }
+          if (object.material.roughnessMap) {
+            object.material.roughnessMap.minFilter = THREE.LinearFilter;
+            object.material.roughnessMap.magFilter = THREE.LinearFilter;
+            object.material.roughnessMap.generateMipmaps = false;
+            object.material.roughnessMap.needsUpdate = true;
+          }
+          if (object.material.metalnessMap) {
+            object.material.metalnessMap.minFilter = THREE.LinearFilter;
+            object.material.metalnessMap.magFilter = THREE.LinearFilter;
+            object.material.metalnessMap.generateMipmaps = false;
+            object.material.metalnessMap.needsUpdate = true;
+          }
+          // マテリアルの更新フラグを設定
+          object.material.needsUpdate = true;
+        }
       }
     });
 
@@ -94,6 +124,8 @@ const OrcaCanvas = () => (
     gl={{ 
       preserveDrawingBuffer: true,
       antialias: true,
+      powerPreference: "high-performance",
+      alpha: true
     }}
     camera={CAMERA_CONFIG}
   >

@@ -43,10 +43,17 @@ const About = () => {
       { threshold: 0.3, rootMargin: '-10% 0px' }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-      return () => observer.unobserve(sectionRef.current);
+    const currentRef = sectionRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+      observer.disconnect();
+    };
   }, [hasAnimated]);
 
   return (
