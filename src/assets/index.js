@@ -1,26 +1,27 @@
 import menu from "./menu.svg";
 import close from "./close.svg";
-import comingsoon from "./comingsoon.jpg?format=webp&w=800&q=80";
+import comingsoon from "./comingsoon.jpg";
 
-import css from "./tech/css.png?base64";
-import docker from "./tech/docker.png?base64";
-import figma from "./tech/figma.png?base64";
-import git from "./tech/git.png?base64";
-import html from "./tech/html.png?base64";
-import javascript from "./tech/javascript.png?base64";
-import mongodb from "./tech/mongodb.png?base64";
-import nodejs from "./tech/nodejs.png?base64";
-import reactjs from "./tech/reactjs.png?base64";
-import redux from "./tech/redux.png?base64";
-import tailwind from "./tech/tailwind.png?base64";
-import typescript from "./tech/typescript.png?base64";
-import nextjs from "./tech/nextjs.png?base64";
+// 技術アイコン
+import css from "./tech/css.png";
+import docker from "./tech/docker.png";
+import figma from "./tech/figma.png";
+import git from "./tech/git.png";
+import html from "./tech/html.png";
+import javascript from "./tech/javascript.png";
+import mongodb from "./tech/mongodb.png";
+import nodejs from "./tech/nodejs.png";
+import reactjs from "./tech/reactjs.png";
+import redux from "./tech/redux.png";
+import tailwind from "./tech/tailwind.png";
+import typescript from "./tech/typescript.png";
+import nextjs from "./tech/nextjs.png";
 
-// 大きな画像は最適化して読み込み
-const ITsolution = new URL('./ITsolution.jpeg?format=webp&w=1200&q=80', import.meta.url).href;
-const CompanyServices = new URL('./CompanyServices.jpeg?format=webp&w=1200&q=80', import.meta.url).href;
-const Teameng = new URL('./Teameng.jpeg?format=webp&w=1200&q=80', import.meta.url).href;
-const Datacenter = new URL('./Datacenter.jpeg?format=webp&w=1200&q=80', import.meta.url).href;
+// 大きな画像
+import ITsolution from "./ITsolution.jpeg";
+import CompanyServices from "./CompanyServices.jpeg";
+import Teameng from "./Teameng.jpeg";
+import Datacenter from "./Datacenter.jpeg";
 
 export {
   menu,
