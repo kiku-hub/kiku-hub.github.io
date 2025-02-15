@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
@@ -21,6 +22,18 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true
       }
-    }
+    },
+    assetsInlineLimit: 4096,
+    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['@google/model-viewer']
+  },
+  server: {
+    host: true,
+    strictPort: true,
+    port: 5173
   }
 })
