@@ -9,6 +9,8 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
+.pnp
+.pnp.js
 
 # Build output
 dist
@@ -19,7 +21,6 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -32,5 +33,18 @@ dist-ssr
 .env.development
 .env.*.local
 
-# vscode
-.vscode
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Next.js
+.next
+
+# Temporary files
+*.tmp
+*.temp
