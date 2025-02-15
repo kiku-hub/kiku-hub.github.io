@@ -17,11 +17,11 @@ import typescript from "./tech/typescript.png?base64";
 import nextjs from "./tech/nextjs.png?base64";
 
 // 大きな画像ファイルは直接パスを指定
-const ITsolution = "./ITsolution.jpeg";
-const CompanyServices = "./CompanyServices.jpeg";
-const Teameng = "./Teameng.jpeg";
-const Datacenter = "./Datacenter.jpeg";
-const herobg = "./herobg.png";
+const ITsolution = new URL("./ITsolution.jpeg", import.meta.url).href;
+const CompanyServices = new URL("./CompanyServices.jpeg", import.meta.url).href;
+const Teameng = new URL("./Teameng.jpeg", import.meta.url).href;
+const Datacenter = new URL("./Datacenter.jpeg", import.meta.url).href;
+const herobg = new URL("./herobg.png", import.meta.url).href;
 
 export {
   menu,
