@@ -5,16 +5,18 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '',
+  base: '/dist/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
+      input: {
+        main: resolve(__dirname, 'index.html')
+      },
       output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       }
     },
     sourcemap: false,
@@ -29,6 +31,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
     emptyOutDir: true
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
