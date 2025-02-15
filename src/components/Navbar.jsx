@@ -93,13 +93,18 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full flex items-center py-5 z-20">
-      <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
+      <div className='w-full flex justify-between items-center max-w-7xl mx-auto px-4'>
         <div
           className={`flex items-center gap-2 cursor-pointer transition-all duration-300 ${
             isHeroVisible ? "scale-105" : ""
           } hover:scale-105`}
           onClick={(e) => scrollToSection(e, 'hero')}
         >
+          <img
+            src="/orcx-logo.png"
+            alt="ORCX"
+            className="w-8 h-8 object-contain"
+          />
           <p className={`text-[18px] font-bold transition-all duration-300 ${
             isHeroVisible ? "text-white" : "text-secondary"
           } hover:text-white`}>ÓRCX</p>
