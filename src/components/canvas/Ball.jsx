@@ -1,4 +1,4 @@
-import React, { Suspense, useRef } from "react";
+import React, { Suspense, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Decal,
@@ -31,7 +31,17 @@ const DECAL_CONFIG = {
 };
 
 const Ball = ({ imgUrl }) => {
-  const [decal] = useTexture([imgUrl]);
+  const textureUrl = useMemo(() => {
+    // 相対パスを使用して画像を参照
+    const url = new URL(imgUrl, import.meta.url).href;
+    return url;
+  }, [imgUrl]);
+
+  const [decal] = useTexture([textureUrl], (loader) => {
+    // テクスチャのロード時のエラーハンドリング
+    loader.crossOrigin = 'anonymous';
+  });
+
   const meshRef = useRef();
 
   // 回転速度の初期化をより明確に
