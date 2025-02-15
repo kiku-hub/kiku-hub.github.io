@@ -61,22 +61,29 @@ npm run build
 ```
 
 ビルドが完了すると、`dist`ディレクトリに最適化された静的ファイルが生成されます。
-これらのファイルは GitHub Pages にデプロイされます。
 
 ### デプロイ手順
 
-1. GitHub Pages の設定で Branch を選択し、以下を設定：
-
+1. GitHub リポジトリの "Settings" > "Pages" を開く
+2. "Build and deployment" セクションで以下を設定：
+   - Source: "Deploy from a branch"
    - Branch: `main`
    - Folder: `/dist`
+3. "Save" をクリック
+4. 以下のコマンドでデプロイを実行：
+   ```bash
+   npm run deploy
+   ```
 
-2. 変更をコミットしてプッシュすると、自動的にデプロイが開始されます
+デプロイが完了すると、`https://www.orcx.co.jp/` でアクセス可能になります。
 
 ### 注意事項
 
 - ビルド時は`.env.production`の環境変数が使用されます
-- デプロイには`dist`ディレクトリを使用します
-- `dist`ディレクトリは`.gitignore`に含めないでください
+- `dist`ディレクトリは自動的に Git に追加されます
+- カスタムドメイン（www.orcx.co.jp）の設定は自動的に保持されます
+- SSL の設定は自動的に行われます
+- デプロイには数分かかる場合があります
 
 ## メンテナンス
 
