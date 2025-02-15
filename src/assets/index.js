@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import menu from "./menu.svg";
 import close from "./close.svg";
 import comingsoon from "./comingsoon.jpg";
@@ -23,7 +22,6 @@ import Teameng from "./Teameng.jpeg";
 import Datacenter from "./Datacenter.jpeg";
 
 export {
-  logo,
   menu,
   close,
   css,
