@@ -12,6 +12,16 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html')
+      },
+      output: {
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: ({ name }) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+            return 'assets/images/[name].[hash][extname]'
+          }
+          return 'assets/[name].[hash][extname]'
+        }
       }
     },
     sourcemap: false,
@@ -21,7 +31,12 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true
       }
-    }
+    },
+    assetsInlineLimit: 4096,
+    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true,
+    emptyOutDir: true,
+    copyPublicDir: true
   },
   resolve: {
     alias: {
@@ -37,5 +52,18 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 5173
+  },
+  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  experimental: {
+    renderBuiltUrl(filename, { hostType, type, hostId }) {
+      if (type === 'asset' && filename.endsWith('?base64')) {
+        const path = filename.replace('?base64', '');
+        return `data:image/png;base64,${Buffer.from(path).toString('base64')}`;
+      }
+      if (type === 'asset' && filename.endsWith('?url')) {
+        return filename.replace('?url', '');
+      }
+      return filename;
+    }
   }
 })
