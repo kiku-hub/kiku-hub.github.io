@@ -9,10 +9,7 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
-.pnp
-.pnp.js
-
-# Build output
+dist
 dist-ssr
 *.local
 
