@@ -5,9 +5,9 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '',
+  base: '/',
   build: {
-    outDir: 'docs',
+    outDir: 'dist',
     assetsDir: 'assets',
     rollupOptions: {
       input: {
@@ -17,6 +17,12 @@ export default defineConfig({
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
         assetFileNames: ({ name }) => {
+          if (/\.(glb|gltf)$/.test(name ?? '')) {
+            return 'assets/models/[name].[hash][extname]'
+          }
+          if (/\.(mp4|webm|ogg)$/.test(name ?? '')) {
+            return 'assets/videos/[name].[hash][extname]'
+          }
           return 'assets/[name].[hash][extname]'
         }
       }
@@ -25,15 +31,16 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: true
       }
     },
     assetsInlineLimit: 4096,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     cssCodeSplit: true,
     emptyOutDir: true,
-    copyPublicDir: true
+    copyPublicDir: true,
+    reportCompressedSize: false
   },
   resolve: {
     alias: {
@@ -42,7 +49,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
+    include: ['react', 'react-dom', 'three'],
     exclude: ['@google/model-viewer']
   },
   server: {
@@ -50,7 +57,22 @@ export default defineConfig({
     strictPort: true,
     port: 5173
   },
-  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  preview: {
+    port: 5173,
+    host: true
+  },
+  assetsInclude: [
+    '**/*.glb',
+    '**/*.gltf',
+    '**/*.png',
+    '**/*.jpg',
+    '**/*.jpeg',
+    '**/*.gif',
+    '**/*.svg',
+    '**/*.mp4',
+    '**/*.webm',
+    '**/*.ogg'
+  ],
   publicDir: 'public',
   experimental: {
     renderBuiltUrl(filename, { hostType, type, hostId }) {
