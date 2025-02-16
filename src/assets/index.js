@@ -1,27 +1,63 @@
-import menu from "./menu.svg";
-import close from "./close.svg";
-import comingsoon from "./comingsoon.jpg";
+import menu from "./icons/menu.svg";
+import close from "./icons/close.svg";
 
-import css from "./tech/css.png?base64";
-import docker from "./tech/docker.png?base64";
-import figma from "./tech/figma.png?base64";
-import git from "./tech/git.png?base64";
-import html from "./tech/html.png?base64";
-import javascript from "./tech/javascript.png?base64";
-import mongodb from "./tech/mongodb.png?base64";
-import nodejs from "./tech/nodejs.png?base64";
-import reactjs from "./tech/reactjs.png?base64";
-import redux from "./tech/redux.png?base64";
-import tailwind from "./tech/tailwind.png?base64";
-import typescript from "./tech/typescript.png?base64";
-import nextjs from "./tech/nextjs.png?base64";
+// 画像ファイル - JPEG/PNG
+import comingsoon from "./images/comingsoon.jpg";
+import ITsolution from "./images/ITsolution.jpeg";
+import CompanyServices from "./images/CompanyServices.jpeg";
+import Teameng from "./images/Teameng.jpeg";
+import Datacenter from "./images/Datacenter.jpeg";
+import herobg from "./images/herobg.png";
 
-// 大きな画像ファイルは直接パスを指定
-const ITsolution = new URL("./ITsolution.jpeg", import.meta.url).href;
-const CompanyServices = new URL("./CompanyServices.jpeg", import.meta.url).href;
-const Teameng = new URL("./Teameng.jpeg", import.meta.url).href;
-const Datacenter = new URL("./Datacenter.jpeg", import.meta.url).href;
-const herobg = new URL("./herobg.png", import.meta.url).href;
+// 画像ファイル - WebP
+import comingsoonWebP from "./images/comingsoon.webp";
+import ITsolutionWebP from "./images/ITsolution.webp";
+import CompanyServicesWebP from "./images/CompanyServices.webp";
+import TeamengWebP from "./images/Teameng.webp";
+import DatacenterWebP from "./images/Datacenter.webp";
+import herobgWebP from "./images/herobg.webp";
+
+import css from "./tech/css.png";
+import docker from "./tech/docker.png";
+import figma from "./tech/figma.png";
+import git from "./tech/git.png";
+import html from "./tech/html.png";
+import javascript from "./tech/javascript.png";
+import mongodb from "./tech/mongodb.png";
+import nodejs from "./tech/nodejs.png";
+import reactjs from "./tech/reactjs.png";
+import redux from "./tech/redux.png";
+import tailwind from "./tech/tailwind.png";
+import typescript from "./tech/typescript.png";
+import nextjs from "./tech/nextjs.png";
+
+// 画像オブジェクトの作成（WebPフォールバック付き）
+const images = {
+  comingsoon: {
+    src: comingsoon,
+    webp: comingsoonWebP,
+  },
+  ITsolution: {
+    src: ITsolution,
+    webp: ITsolutionWebP,
+  },
+  CompanyServices: {
+    src: CompanyServices,
+    webp: CompanyServicesWebP,
+  },
+  Teameng: {
+    src: Teameng,
+    webp: TeamengWebP,
+  },
+  Datacenter: {
+    src: Datacenter,
+    webp: DatacenterWebP,
+  },
+  herobg: {
+    src: herobg,
+    webp: herobgWebP,
+  }
+};
 
 export {
   menu,
@@ -39,10 +75,5 @@ export {
   tailwind,
   typescript,
   nextjs,
-  comingsoon,
-  ITsolution,
-  CompanyServices,
-  Teameng,
-  Datacenter,
-  herobg,
+  images
 };

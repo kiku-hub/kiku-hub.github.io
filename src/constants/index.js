@@ -11,12 +11,8 @@ import {
   git,
   figma,
   docker,
-  comingsoon,
   nextjs,
-  ITsolution,
-  CompanyServices,
-  Teameng,
-  Datacenter,
+  images
 } from "../assets";
 
 const navLinks = [
@@ -49,6 +45,8 @@ const services = [
     points: [
       "\nお客様のプロジェクトを成功へと導くため、最適な人材のマッチングをご提案いたします。\n\nプロジェクトの背景や必要なスキル、業務内容、期間などについてお話をお伺いし、課題を把握した上で、ぴったりの人材を迅速にご紹介。\n\nプロジェクトの円滑な進行と成功に向けて、サポートいたします。",
     ],
+    image: images.ITsolution.src,
+    webp: images.ITsolution.webp,
   },
   {
     title: "自社サービス事業",
@@ -135,7 +133,8 @@ const projects = [
     subtitle: "SES業界に特化した統合プラットフォーム",
     description:
       `Arch（アーチ）は、SESビジネスに関わるすべての人と企業を繋ぐ次世代プラットフォームです。\n建築において、アーチは空間に強度と美しさをもたらす重要な構造体です。\n私たちのArchは、SES業界に新たな構造体を築き、より強く、より効率的なビジネスモデルを実現します。\nSES 2.0の時代に向けて、人材と企業の最適なマッチング、業務効率化、データ driven な意思決定をワンストップで提供。\n伝統的なSESビジネスを、テクノロジーの力で新次元へと進化させます。`,
-    image: comingsoon,
+    image: images.comingsoon.src,
+    webp: images.comingsoon.webp,
   },
 ];
 

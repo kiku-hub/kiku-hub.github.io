@@ -17,11 +17,11 @@ export default defineConfig({
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
         assetFileNames: ({ name }) => {
-          if (/\.(glb|gltf)$/.test(name ?? '')) {
-            return 'assets/models/[name].[hash][extname]'
+          if (/\.(jpe?g|png|gif|webp)$/i.test(name ?? '')) {
+            return 'assets/images/[name].[hash][extname]'
           }
-          if (/\.(mp4|webm|ogg)$/.test(name ?? '')) {
-            return 'assets/videos/[name].[hash][extname]'
+          if (/\.svg$/i.test(name ?? '')) {
+            return 'assets/icons/[name].[hash][extname]'
           }
           return 'assets/[name].[hash][extname]'
         }
@@ -35,7 +35,7 @@ export default defineConfig({
         drop_debugger: true
       }
     },
-    assetsInlineLimit: 4096,
+    assetsInlineLimit: 0,
     chunkSizeWarningLimit: 2000,
     cssCodeSplit: true,
     emptyOutDir: true,
@@ -58,20 +58,16 @@ export default defineConfig({
     port: 5173
   },
   preview: {
-    port: 5173,
+    port: 5174,
     host: true
   },
   assetsInclude: [
-    '**/*.glb',
-    '**/*.gltf',
-    '**/*.png',
     '**/*.jpg',
     '**/*.jpeg',
+    '**/*.png',
     '**/*.gif',
     '**/*.svg',
-    '**/*.mp4',
-    '**/*.webm',
-    '**/*.ogg'
+    '**/*.webp'
   ],
   publicDir: 'public',
   experimental: {
