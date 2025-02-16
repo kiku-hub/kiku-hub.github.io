@@ -12,7 +12,8 @@ import {
   figma,
   docker,
   nextjs,
-  images
+  images,
+  logo
 } from "../assets";
 
 const navLinks = [
@@ -239,8 +240,8 @@ const news = [
   {
     title: "ORCX株式会社設立",
     category: "会社名の由来",
-    icon: "/orcx-logo.png",
-    iconBg: "#1a1d29",
+    icon: logo,
+    iconBg: "#ffffff",
     date: "2025年3月",
     description: [
       "ORCX株式会社の会社名の由来は、地球上で最も成功した捕食者の一つであるシャチ（ORCA）と無限の可能性を象徴する（X）の組み合わせです。\n\n" +

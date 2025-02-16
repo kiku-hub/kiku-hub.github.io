@@ -1,5 +1,6 @@
 import menu from "./icons/menu.svg";
 import close from "./icons/close.svg";
+import logo from "./images/orcx-logo.png";
 
 // 画像ファイル - JPEG/PNG
 import comingsoon from "./images/comingsoon.jpg";
@@ -33,6 +34,7 @@ import nextjs from "./tech/nextjs.png";
 
 // 画像オブジェクトの作成（WebPフォールバック付き）
 const images = {
+  logo,
   comingsoon: {
     src: comingsoon,
     webp: comingsoonWebP,
@@ -62,6 +64,7 @@ const images = {
 export {
   menu,
   close,
+  logo,
   css,
   docker,
   figma,

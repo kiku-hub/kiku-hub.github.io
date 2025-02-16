@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { useProgress } from "@react-three/drei";
+import { logo } from "../assets";
 
 // アニメーション設定
 const containerVariants = {
@@ -188,7 +189,7 @@ const InitialLoader = () => {
                     {/* ORCX Logo */}
                     <div className="absolute w-[50px] h-[50px] flex items-center justify-center bg-white rounded-full">
                       <img
-                        src="/orcx-logo.png"
+                        src={logo}
                         alt="ORCX"
                         className="w-[40px] h-[40px] object-contain"
                       />

@@ -16,6 +16,7 @@ import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
 import { companyInfo } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
+import { logo } from "../assets";
 
 const GoogleMap = () => {
   const mapRef = useRef(null);
@@ -238,7 +239,7 @@ const GoogleMap = () => {
 
       // ラベル（ロゴ）のスタイルを設定
       const markerLabel = {
-        url: '/orcx-logo.png',
+        url: logo,
         scaledSize: new google.maps.Size(55, 55),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(27.5, 55)
@@ -292,7 +293,7 @@ const GoogleMap = () => {
                 align-items: center;
                 justify-content: center;
               ">
-                <img src="/orcx-logo.png" 
+                <img src="${logo}" 
                   style="
                     width: 20px;
                     height: 20px;
