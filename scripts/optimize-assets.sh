@@ -47,6 +47,21 @@ for file in src/assets/icons/*.svg; do
   fi
 done
 
+# GLBファイルの最適化
+echo "Optimizing GLB files..."
+for file in public/orca/*.glb; do
+  if [ -f "$file" ]; then
+    filename=$(basename "$file")
+    echo "Optimizing GLB: $filename"
+    
+    # GLBファイルの最適化（Draco圧縮を適用）
+    gltf-pipeline -i "$file" -o "${file%.glb}_optimized.glb" --draco.compressionLevel 7
+    
+    # 最適化されたファイルで元のファイルを置き換え
+    mv "${file%.glb}_optimized.glb" "$file"
+  fi
+done
+
 # 最適化されたファイルを移動
 mv src/assets/images/optimized/* src/assets/images/ 2>/dev/null || true
 mv src/assets/icons/optimized/* src/assets/icons/ 2>/dev/null || true
