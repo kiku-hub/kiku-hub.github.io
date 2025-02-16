@@ -8,7 +8,7 @@ import ITsolution from "./images/ITsolution.jpeg";
 import CompanyServices from "./images/CompanyServices.jpeg";
 import Teameng from "./images/Teameng.jpeg";
 import Datacenter from "./images/Datacenter.jpeg";
-import herobg from "./images/herobg.png";
+import herobg from "./images/herobg.webp";
 
 // 画像ファイル - WebP
 import comingsoonWebP from "./images/comingsoon.webp";
@@ -78,5 +78,11 @@ export {
   tailwind,
   typescript,
   nextjs,
-  images
+  images,
+  comingsoon,
+  ITsolution,
+  CompanyServices,
+  Teameng,
+  Datacenter,
+  herobg,
 };

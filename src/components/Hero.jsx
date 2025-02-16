@@ -2,6 +2,7 @@ import { motion, useAnimation, useInView } from "framer-motion";
 import { styles } from "../styles";
 import { OrcaCanvas } from "./canvas";
 import { useEffect, useRef } from "react";
+import { herobg } from "../assets";
 
 // 青系のカラーパレット
 const colors = {
@@ -63,8 +64,15 @@ const Hero = () => {
     <section 
       ref={ref} 
       id="hero"
-      className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}
+      className={`relative w-full h-screen mx-auto`}
+      style={{
+        backgroundImage: `url(${herobg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
+      <div className="absolute inset-0 bg-black/50" />
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <motion.div
