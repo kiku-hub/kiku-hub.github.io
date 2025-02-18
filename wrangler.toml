@@ -5,5 +5,5 @@ command = "npm install && npm run build"
 format = "directory"
 
 [site]
-bucket = "dist"
+bucket = "docs"
 entry-point = "workers-site" 

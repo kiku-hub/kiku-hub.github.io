@@ -1,7 +1,8 @@
 import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Preload, useGLTF, useAnimations, DRACOLoader } from "@react-three/drei";
+import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
 // 定数の定義
 const MODEL_PATH = "https://cdn.orcx.jp/models/Animation_Formal_Bow_withSkin.glb";

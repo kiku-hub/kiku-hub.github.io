@@ -5,7 +5,7 @@ zone_id = "your_zone_id"
 
 [build]
 command = "npm run build"
-publish = "dist"
+publish = "docs"
 
 [[redirects]]
 from = "/orca/*"

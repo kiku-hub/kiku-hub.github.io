@@ -5,7 +5,7 @@ const { exec } = require('child_process');
 const execAsync = promisify(exec);
 
 const MODELS_DIR = path.join(__dirname, '../public/orca');
-const OUTPUT_DIR = path.join(__dirname, '../dist/orca');
+const OUTPUT_DIR = path.join(__dirname, '../docs/orca');
 
 async function optimizeGlb(inputPath, outputPath) {
   try {
