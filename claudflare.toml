@@ -1,0 +1,26 @@
+[site]
+site = "www.orcx.co.jp"
+account_id = "your_account_id"
+zone_id = "your_zone_id"
+
+[build]
+command = "npm run build"
+publish = "dist"
+
+[[redirects]]
+from = "/orca/*"
+to = "https://cdn.orcx.co.jp/models/:splat"
+status = 301
+force = true
+
+[[headers]]
+for = "/orca/*.glb"
+[headers.values]
+Cache-Control = "public, max-age=31536000"
+Access-Control-Allow-Origin = "*"
+
+[[redirects]]
+from = "http://*"
+to = "https://:1"
+status = 301
+force = true 

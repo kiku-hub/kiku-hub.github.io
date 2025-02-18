@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
+import { OrbitControls, Preload, useGLTF, useAnimations, DRACOLoader } from "@react-three/drei";
 import * as THREE from 'three';
 
 // 定数の定義
-const MODEL_PATH = "./orca/Animation_Formal_Bow_withSkin.glb";
+const MODEL_PATH = "https://cdn.orcx.jp/models/Animation_Formal_Bow_withSkin.glb";
 const ANIMATION_CONFIG = {
   timeScale: 0.7,
   fadeInDuration: 1,
@@ -19,6 +19,14 @@ const CAMERA_CONFIG = {
 };
 
 const MODEL_SCALE = 6.5;
+
+// Dracoローダーの設定
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+dracoLoader.setDecoderConfig({ type: 'js' });
+
+// GLTFローダーの設定
+useGLTF.preload(MODEL_PATH, dracoLoader);
 
 // Orcaコンポーネント
 const Orca = () => {
@@ -37,37 +45,61 @@ const Orca = () => {
         object.castShadow = true;
         object.receiveShadow = true;
         
+        // ジオメトリの最適化
+        if (object.geometry) {
+          object.geometry.attributes.position.usage = THREE.StaticDrawUsage;
+          if (object.geometry.attributes.normal) {
+            object.geometry.attributes.normal.usage = THREE.StaticDrawUsage;
+          }
+          if (object.geometry.attributes.uv) {
+            object.geometry.attributes.uv.usage = THREE.StaticDrawUsage;
+          }
+        }
+        
         // マテリアルとテクスチャの最適化
         if (object.material) {
-          if (object.material.map) {
-            object.material.map.minFilter = THREE.LinearFilter;
-            object.material.map.magFilter = THREE.LinearFilter;
-            object.material.map.generateMipmaps = false;
-            object.material.map.needsUpdate = true;
-          }
-          if (object.material.normalMap) {
-            object.material.normalMap.minFilter = THREE.LinearFilter;
-            object.material.normalMap.magFilter = THREE.LinearFilter;
-            object.material.normalMap.generateMipmaps = false;
-            object.material.normalMap.needsUpdate = true;
-          }
-          if (object.material.roughnessMap) {
-            object.material.roughnessMap.minFilter = THREE.LinearFilter;
-            object.material.roughnessMap.magFilter = THREE.LinearFilter;
-            object.material.roughnessMap.generateMipmaps = false;
-            object.material.roughnessMap.needsUpdate = true;
-          }
-          if (object.material.metalnessMap) {
-            object.material.metalnessMap.minFilter = THREE.LinearFilter;
-            object.material.metalnessMap.magFilter = THREE.LinearFilter;
-            object.material.metalnessMap.generateMipmaps = false;
-            object.material.metalnessMap.needsUpdate = true;
-          }
-          // マテリアルの更新フラグを設定
+          // テクスチャの最適化
+          const optimizeTexture = (texture) => {
+            if (!texture) return;
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = false;
+            texture.needsUpdate = true;
+            texture.anisotropy = 1;
+          };
+
+          optimizeTexture(object.material.map);
+          optimizeTexture(object.material.normalMap);
+          optimizeTexture(object.material.roughnessMap);
+          optimizeTexture(object.material.metalnessMap);
+          
+          // マテリアルの最適化
+          object.material.precision = 'lowp';
           object.material.needsUpdate = true;
         }
       }
     });
+
+    // メモリ解放のための参照解除
+    const cleanup = () => {
+      names.forEach((name) => {
+        if (actions[name]) {
+          actions[name].stop();
+          actions[name].reset();
+        }
+      });
+      
+      orca.scene.traverse((object) => {
+        if (object.isMesh) {
+          object.geometry.dispose();
+          if (object.material.map) object.material.map.dispose();
+          if (object.material.normalMap) object.material.normalMap.dispose();
+          if (object.material.roughnessMap) object.material.roughnessMap.dispose();
+          if (object.material.metalnessMap) object.material.metalnessMap.dispose();
+          object.material.dispose();
+        }
+      });
+    };
 
     // 5秒待ってからアニメーション開始
     const timer = setTimeout(() => {
@@ -83,12 +115,15 @@ const Orca = () => {
 
         action.clampWhenFinished = true;
       });
-    }, 4000); // 5秒の遅延
+    }, 4000);
 
     return () => {
       clearTimeout(timer);
+      cleanup();
       names.forEach((name) => {
-        actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
+        if (actions[name]) {
+          actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
+        }
       });
     };
   }, [actions, names, orca.scene]);
@@ -125,9 +160,13 @@ const OrcaCanvas = () => (
       preserveDrawingBuffer: true,
       antialias: true,
       powerPreference: "high-performance",
-      alpha: true
+      alpha: true,
+      precision: 'lowp',
+      depth: true,
+      stencil: false
     }}
     camera={CAMERA_CONFIG}
+    performance={{ min: 0.5 }}
   >
     <Suspense fallback={null}>
       <OrbitControls

@@ -10,7 +10,8 @@
     "start": "wrangler pages dev dist",
     "deploy:staging": "npm run build && wrangler pages deploy dist --branch staging",
     "deploy:production": "npm run build && wrangler pages deploy dist --branch main",
-    "optimize:assets": "bash scripts/optimize-assets.sh"
+    "optimize:assets": "bash scripts/optimize-assets.sh",
+    "optimize-models": "node scripts/optimize-glb.js"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.3.4",
@@ -31,7 +32,9 @@
     "react-tilt": "^1.0.2",
     "react-vertical-timeline-component": "^3.6.0",
     "swiper": "^8.4.7",
-    "three": "^0.149.0"
+    "three": "^0.149.0",
+    "gltf-pipeline": "^4.1.0",
+    "draco3d": "^1.5.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
