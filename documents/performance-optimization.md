@@ -23,6 +23,63 @@
 - Content-Security-Policy: 設定済み (✅ 実装済)
 - CORS 設定: `/orca/*.glb`に対して設定済み (✅ 実装済)
 
+### 1.3 サイズ確認コマンド
+
+#### 本番環境のファイルサイズ確認
+
+```bash
+# 3Dモデルのサイズ確認
+curl -sL https://www.orcx.co.jp/orca/Animation_Formal_Bow_withSkin.glb -o temp1.glb && ls -lh temp1.glb && rm temp1.glb
+curl -sL https://www.orcx.co.jp/orca/Animation_Skill_01_withSkin.glb -o temp2.glb && ls -lh temp2.glb && rm temp2.glb
+
+# キャッシュ状態の確認
+curl -sI https://www.orcx.co.jp/orca/Animation_Formal_Bow_withSkin.glb | grep -i 'cf-cache-status\|content-length\|last-modified'
+curl -sI https://www.orcx.co.jp/orca/Animation_Skill_01_withSkin.glb | grep -i 'cf-cache-status\|content-length\|last-modified'
+
+# WebP画像のサイズ確認
+curl -sL https://www.orcx.co.jp/assets/images/Datacenter.webp -o temp.webp && ls -lh temp.webp && rm temp.webp
+```
+
+#### ローカル環境のファイルサイズ確認
+
+```bash
+# docs/orcaディレクトリのサイズ確認
+ls -lh docs/orca/*.glb
+
+# 最適化前後のサイズ比較
+ls -lh public/orca/*.glb
+ls -lh docs/orca/*.glb
+
+# ディレクトリ全体のサイズ確認
+du -sh docs/orca
+du -sh docs/assets/images
+```
+
+#### ビルド後のアセットサイズ確認
+
+```bash
+# ビルド後の全アセットサイズ
+find docs -type f -exec ls -lh {} \;
+
+# 拡張子別の合計サイズ
+find docs -type f -name "*.glb" -exec ls -lh {} \; | awk '{ total += $5 } END { print "Total GLB size: " total/1024/1024 "MB" }'
+find docs -type f -name "*.webp" -exec ls -lh {} \; | awk '{ total += $5 } END { print "Total WebP size: " total/1024/1024 "MB" }'
+find docs -type f -name "*.js" -exec ls -lh {} \; | awk '{ total += $5 } END { print "Total JS size: " total/1024/1024 "MB" }'
+```
+
+#### デプロイ後の確認コマンド
+
+```bash
+# Cloudflareのキャッシュ状態確認
+for file in $(curl -s https://www.orcx.co.jp | grep -o 'src="[^"]*"' | cut -d'"' -f2); do
+  echo "Checking $file"
+  curl -sI "https://www.orcx.co.jp$file" | grep -i 'cf-cache-status\|content-length'
+done
+
+# 圧縮状態の確認
+curl -sI -H "Accept-Encoding: gzip, deflate, br" https://www.orcx.co.jp/orca/Animation_Formal_Bow_withSkin.glb | grep -i 'content-encoding\|content-length'
+```
+
 ## 2. 最適化目標
 
 ### 2.1 ファイルサイズ削減目標

@@ -1,9 +1,0 @@
-[build]
-command = "npm install && npm run build"
-
-[build.upload]
-format = "directory"
-
-[site]
-bucket = "docs"
-entry-point = "workers-site" 
