@@ -2,10 +2,9 @@ import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
 // 定数の定義
-const MODEL_PATH = "https://cdn.orcx.jp/models/Animation_Formal_Bow_withSkin.glb";
+const MODEL_PATH = "/orca/Animation_Formal_Bow_withSkin.glb";
 const ANIMATION_CONFIG = {
   timeScale: 0.7,
   fadeInDuration: 1,
@@ -21,20 +20,42 @@ const CAMERA_CONFIG = {
 
 const MODEL_SCALE = 6.5;
 
-// Dracoローダーの設定
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-dracoLoader.setDecoderConfig({ type: 'js' });
-
-// GLTFローダーの設定
-useGLTF.preload(MODEL_PATH, dracoLoader);
-
-// Orcaコンポーネント
-const Orca = () => {
+// Orcaモデルコンポーネント
+const OrcaModel = () => {
   const modelRef = useRef();
-  const orca = useGLTF(MODEL_PATH);
-  const { actions, names } = useAnimations(orca.animations, orca.scene);
   const hasStartedRef = useRef(false);
+  const [modelPath, setModelPath] = useState(MODEL_PATH);
+  const [loadError, setLoadError] = useState(false);
+
+  // GLTFローダーの設定
+  useEffect(() => {
+    const loadModel = async () => {
+      try {
+        await useGLTF.preload(modelPath, undefined, {
+          crossOrigin: 'anonymous'
+        });
+      } catch (error) {
+        console.error('CDNからのモデル読み込みに失敗:', error);
+        if (modelPath === MODEL_PATH) {
+          setModelPath(FALLBACK_MODEL_PATH);
+          setLoadError(true);
+        }
+      }
+    };
+    loadModel();
+  }, [modelPath]);
+
+  const orca = useGLTF(modelPath);
+  const { actions, names } = useAnimations(orca.animations, orca.scene);
+  const [renderer, setRenderer] = useState(null);
+
+  // レンダラーの設定
+  useEffect(() => {
+    if (modelRef.current) {
+      const renderer = modelRef.current.getRenderer();
+      setRenderer(renderer);
+    }
+  }, [modelRef]);
 
   useEffect(() => {
     if (hasStartedRef.current) return;
@@ -66,7 +87,9 @@ const Orca = () => {
             texture.magFilter = THREE.LinearFilter;
             texture.generateMipmaps = false;
             texture.needsUpdate = true;
-            texture.anisotropy = 1;
+            if (renderer) {
+              texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            }
           };
 
           optimizeTexture(object.material.map);
@@ -127,7 +150,7 @@ const Orca = () => {
         }
       });
     };
-  }, [actions, names, orca.scene]);
+  }, [actions, names, orca.scene, renderer]);
 
   return (
     <mesh ref={modelRef}>
@@ -176,7 +199,7 @@ const OrcaCanvas = () => (
         maxPolarAngle={Math.PI / 2}
         minPolarAngle={Math.PI / 2}
       />
-      <Orca />
+      <OrcaModel />
     </Suspense>
     <Preload all />
   </Canvas>

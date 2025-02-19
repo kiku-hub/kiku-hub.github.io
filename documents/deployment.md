@@ -105,6 +105,55 @@ npm ci
 npm run optimize:assets
 ```
 
+2. ビルド後の厳密なチェックリスト
+
+#### ファイル構造の確認
+
+- [ ] `docs/orca/Animation_Formal_Bow_withSkin.glb`が存在する
+- [ ] `docs/assets/`内のファイルハッシュが更新されている
+- [ ] `docs/index.html`のアセットパスが正しい
+- [ ] 不要なファイル（.DS_Store 等）が含まれていない
+
+#### セキュリティヘッダーの確認
+
+- [ ] `claudflare.toml`の Content-Security-Policy が正しく設定されている
+- [ ] CORS 設定が`/orca/*.glb`に対して正しく設定されている
+- [ ] キャッシュヘッダーが適切に設定されている
+- [ ] HTTPS リダイレクトが設定されている
+
+#### ソースコードの確認
+
+- [ ] `MODEL_PATH`が`/orca/Animation_Formal_Bow_withSkin.glb`を指している
+- [ ] 不要な CDN 参照が削除されている
+- [ ] フォールバックパスが適切に設定されている
+- [ ] コンソールログやデバッグコードが削除されている
+
+#### メタ情報の確認
+
+- [ ] OGP 画像のパスが正しい
+- [ ] favicon のパスが正しい
+- [ ] メタディスクリプションが正しい
+- [ ] title タグが正しい
+
+#### パフォーマンスの確認
+
+- [ ] JS ファイルが最小化されている
+- [ ] CSS ファイルが最小化されている
+- [ ] 画像ファイルが最適化されている
+- [ ] 3D モデルファイルが最適化されている
+
+#### アセットの整合性確認
+
+```bash
+# ハッシュ値の確認
+ls -la docs/assets/
+cat docs/index.html | grep "assets/"
+```
+
+- [ ] index.html の参照するアセットハッシュと実ファイルが一致
+- [ ] すべての必要なアセットファイルが存在する
+- [ ] 古いビルドのアセットが残っていない
+
 2. ステージング環境へのデプロイ
 
 ```bash
@@ -151,7 +200,7 @@ npm run optimize:assets
 npm run deploy:production
 ```
 
-3. デプロイ後の確認項目
+4. デプロイ後の確認項目
 
 - [○] https://www.orcx.co.jp にアクセスできる（カスタムドメイン）
 - [○] kiku-hub-github-io.pages.dev にアクセスできる（GitHub Pages デフォルトドメイン）

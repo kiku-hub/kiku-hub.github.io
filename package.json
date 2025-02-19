@@ -21,6 +21,7 @@
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.19.1",
     "axios": "^1.7.9",
+    "draco3d": "^1.5.6",
     "framer-motion": "^9.0.7",
     "maath": "^0.5.2",
     "react": "^18.2.0",
@@ -32,9 +33,7 @@
     "react-tilt": "^1.0.2",
     "react-vertical-timeline-component": "^3.6.0",
     "swiper": "^8.4.7",
-    "three": "^0.149.0",
-    "gltf-pipeline": "^4.1.0",
-    "draco3d": "^1.5.6"
+    "three": "^0.149.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250214.0",
@@ -44,6 +43,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.13",
     "dotenv": "^16.4.7",
+    "gltf-pipeline": "^4.1.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.6",
     "terser": "^5.38.2",
