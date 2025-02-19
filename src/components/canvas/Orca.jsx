@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
 
@@ -47,15 +47,15 @@ const OrcaModel = () => {
 
   const orca = useGLTF(modelPath);
   const { actions, names } = useAnimations(orca.animations, orca.scene);
-  const [renderer, setRenderer] = useState(null);
+  const { gl } = useThree();
 
-  // レンダラーの設定
   useEffect(() => {
-    if (modelRef.current) {
-      const renderer = modelRef.current.getRenderer();
-      setRenderer(renderer);
+    if (gl) {
+      // レンダラーの設定
+      gl.setPixelRatio(window.devicePixelRatio);
+      gl.capabilities.getMaxAnisotropy();
     }
-  }, [modelRef]);
+  }, [gl]);
 
   useEffect(() => {
     if (hasStartedRef.current) return;
@@ -87,8 +87,8 @@ const OrcaModel = () => {
             texture.magFilter = THREE.LinearFilter;
             texture.generateMipmaps = false;
             texture.needsUpdate = true;
-            if (renderer) {
-              texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            if (gl) {
+              texture.anisotropy = gl.capabilities.getMaxAnisotropy();
             }
           };
 
@@ -150,7 +150,7 @@ const OrcaModel = () => {
         }
       });
     };
-  }, [actions, names, orca.scene, renderer]);
+  }, [actions, names, orca.scene, gl]);
 
   return (
     <mesh ref={modelRef}>
