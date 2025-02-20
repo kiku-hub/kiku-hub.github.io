@@ -352,14 +352,14 @@ const News = () => {
 
       {/* メインコンテンツ */}
       <div className="relative z-10 bg-transparent">
-        <motion.div variants={textVariant()}>
+        <div>
           <p className={`${styles.sectionSubText} text-center`}>
             {newsContent.title}
           </p>
           <h2 className={`${styles.sectionHeadText} text-center`}>
             {newsContent.subtitle}
           </h2>
-        </motion.div>
+        </div>
 
         <div className='mt-20 flex flex-col'>
           <VerticalTimeline>

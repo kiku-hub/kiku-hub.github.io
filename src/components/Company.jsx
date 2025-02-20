@@ -486,13 +486,7 @@ const Company = () => {
       </div>
 
       <div className="mt-8 flex flex-col lg:flex-row gap-6">
-        <motion.div 
-          initial={{ x: -100 }}
-          whileInView={{ x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="flex-1"
-        >
+        <div className="flex-1">
           <div className="flex flex-col space-y-2">
             {companyInfo.details.map((detail, index) => (
               <CompanyDetail
@@ -502,7 +496,7 @@ const Company = () => {
               />
             ))}
           </div>
-        </motion.div>
+        </div>
 
         <div className="flex-1">
           <GoogleMap />
