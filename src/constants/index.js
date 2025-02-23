@@ -1,17 +1,4 @@
 import {
-  javascript,
-  typescript,
-  html,
-  css,
-  reactjs,
-  redux,
-  tailwind,
-  nodejs,
-  mongodb,
-  git,
-  figma,
-  docker,
-  nextjs,
   images,
   logo
 } from "../assets";
@@ -70,61 +57,6 @@ const services = [
       "\nNVIDIA 最新 GPU を搭載したハイパフォーマンスな AI 基盤を、オンプレミスからクラウドまで柔軟に構築。\n\n企業規模や用途に最適化された構成の提案から、24時間365日の安定運用、高度なセキュリティ対策まで、包括的なサポートを提供いたします。",
       "\n※サービス開始日は未定となっております。",
     ],
-  },
-];
-
-const technologies = [
-  {
-    name: "HTML 5",
-    icon: html,
-  },
-  {
-    name: "CSS 3",
-    icon: css,
-  },
-  {
-    name: "JavaScript",
-    icon: javascript,
-  },
-  {
-    name: "TypeScript",
-    icon: typescript,
-  },
-  {
-    name: "React JS",
-    icon: reactjs,
-  },
-  {
-    name: "Redux Toolkit",
-    icon: redux,
-  },
-  {
-    name: "Tailwind CSS",
-    icon: tailwind,
-  },
-  {
-    name: "Node JS",
-    icon: nodejs,
-  },
-  {
-    name: "MongoDB",
-    icon: mongodb,
-  },
-  {
-    name: "Next.js",
-    icon: nextjs,
-  },
-  {
-    name: "git",
-    icon: git,
-  },
-  {
-    name: "figma",
-    icon: figma,
-  },
-  {
-    name: "docker",
-    icon: docker,
   },
 ];
 
@@ -307,7 +239,6 @@ const contactContent = {
 export {
   navLinks,
   services,
-  technologies,
   projects,
   aboutContent,
   companyInfo,

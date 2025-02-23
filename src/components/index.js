@@ -1,25 +1,24 @@
-import { BallCanvas, OrcaCanvas, StarsCanvas } from './canvas';
-import Hero from "./Hero";
-import Navbar from "./Navbar";
-import About from "./About";
+import { OrcaCanvas, StarsCanvas } from './canvas';
 import News from "./News";
 import Contact from "./Contact";
-import CanvasLoader from "./Loader";
+import About from "./About";
 import Services from "./Services";
+import Products from "./Products";
+import Hero from "./Hero";
+import Navbar from "./Navbar";
+import CanvasLoader from "./Loader";
 import Company from './Company';
 
 export {
   Hero,
   Navbar,
   About,
+  Services,
+  Products,
   News,
   Contact,
-  CanvasLoader,
-  BallCanvas, 
   OrcaCanvas,
   StarsCanvas,
-  Services,
+  CanvasLoader,
   Company,
 };
-
-export { default as Products } from './Products';
