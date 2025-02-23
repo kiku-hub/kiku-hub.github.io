@@ -1,7 +1,6 @@
 import React, { useRef, useCallback, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useGLTF, useAnimations } from "@react-three/drei";
 
 const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visible, isHighlighted, highlightedLayer, onHover, layerId }) => {
   const meshRef = useRef();
@@ -113,78 +112,6 @@ const PyramidLayer = React.memo(({ position, bottomScale, topScale, height, visi
   );
 });
 
-const OrcaModel = React.memo(({ position, visible }) => {
-  const modelRef = useRef();
-  const orca = useGLTF("/orca/Animation_Skill_01_withSkin.glb");
-  const { animations } = orca;
-  const { actions, names } = useAnimations(animations, orca.scene);
-  const scaleRef = useRef(0);
-  const initialYOffset = useRef(20);
-  const hasStartedRef = useRef(false);
-
-  useEffect(() => {
-    orca.scene.traverse((object) => {
-      if (object.isMesh) {
-        object.castShadow = true;
-        object.receiveShadow = true;
-      }
-    });
-
-    names.forEach((name) => {
-      const action = actions[name];
-      action
-        .reset()
-        .setLoop(THREE.LoopRepeat, Infinity)
-        .setEffectiveTimeScale(0.6)
-        .fadeIn(0.5)
-        .play();
-    });
-
-    return () => {
-      names.forEach((name) => {
-        actions[name].fadeOut(0.5);
-      });
-    };
-  }, [actions, names, orca.scene]);
-
-  useFrame(() => {
-    if (!modelRef.current) return;
-    
-    if (visible) {
-      if (!hasStartedRef.current) {
-        setTimeout(() => {
-          hasStartedRef.current = true;
-        }, 100);
-      }
-      
-      if (hasStartedRef.current) {
-        scaleRef.current += (1 - scaleRef.current) * 0.03;
-        if (initialYOffset.current > 0) {
-          initialYOffset.current *= 0.8;
-        }
-      }
-    } else {
-      scaleRef.current *= 0.96;
-      initialYOffset.current = 20;
-      hasStartedRef.current = false;
-    }
-    
-    modelRef.current.scale.setScalar(scaleRef.current * 1.0);
-    modelRef.current.position.y = position[1] + initialYOffset.current;
-    modelRef.current.visible = scaleRef.current > 0.02;
-  });
-
-  return (
-    <primitive
-      ref={modelRef}
-      object={orca.scene}
-      scale={0}
-      position={[position[0], position[1], position[2]]}
-      rotation={[0, Math.PI / 2, 0]}
-    />
-  );
-});
-
 const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover }) => {
   const groupRef = useRef();
 
@@ -242,10 +169,6 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
           layerId={layer.id}
         />
       ))}
-      <OrcaModel 
-        position={[0, pyramidLayers[2].y - 2.1, 0]}
-        visible={visibleLayers.includes('mission')}
-      />
     </group>
   );
 });
