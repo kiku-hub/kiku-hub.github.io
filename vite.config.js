@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     outDir: 'docs',
     assetsDir: 'assets',
+    cssCodeSplit: false,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html')
@@ -24,6 +25,10 @@ export default defineConfig({
             return 'assets/icons/[name].[hash][extname]'
           }
           return 'assets/[name].[hash][extname]'
+        },
+        manualChunks: {
+          'swiper': ['swiper'],
+          'vendor': ['react', 'react-dom']
         }
       }
     },
@@ -37,7 +42,6 @@ export default defineConfig({
     },
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 2000,
-    cssCodeSplit: true,
     emptyOutDir: true,
     copyPublicDir: true,
     reportCompressedSize: false

@@ -2,9 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectCoverflow, Navigation } from 'swiper';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/navigation';
+import 'swiper/css/bundle';
 import { styles } from "../styles";
 import { services } from "../constants";
 import { textVariant } from "../utils/motion";
@@ -134,9 +132,25 @@ const Services = () => {
     navigation: true,
     className: "services-swiper",
     breakpoints: {
-      320: { slidesPerView: "auto", spaceBetween: -20 },
-      640: { slidesPerView: "auto", spaceBetween: -30 },
-      1024: { slidesPerView: "auto", spaceBetween: -50 },
+      320: { 
+        slidesPerView: 1,
+        spaceBetween: 10 
+      },
+      640: { 
+        slidesPerView: "auto",
+        spaceBetween: -30 
+      },
+      1024: { 
+        slidesPerView: "auto",
+        spaceBetween: -50 
+      }
+    },
+    on: {
+      init: function () {
+        setTimeout(() => {
+          this.update();
+        }, 100);
+      }
     }
   };
 
