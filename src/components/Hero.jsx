@@ -75,9 +75,7 @@ const Hero = () => {
   }, []);
 
   const backgroundStyle = {
-    backgroundImage: images.herobg.webp 
-      ? `url(${images.herobg.webp}), url(${images.herobg.src})`
-      : `url(${images.herobg.src})`,
+    backgroundImage: `url(${images.herobg.webp || images.herobg.src})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -89,11 +87,20 @@ const Hero = () => {
     <section 
       ref={ref} 
       id="hero"
-      className={`relative w-full h-screen mx-auto`}
-      style={backgroundStyle}
+      className={`relative w-full h-screen mx-auto overflow-hidden`}
       role="banner"
       aria-label="Hero Section"
     >
+      <picture className="absolute inset-0 w-full h-full">
+        {images.herobg.webp && <source srcSet={images.herobg.webp} type="image/webp" />}
+        <img
+          src={images.herobg.src}
+          alt="Hero background"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </picture>
       <div className="absolute inset-0 bg-black/50" />
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
       
