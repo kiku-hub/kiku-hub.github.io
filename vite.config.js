@@ -27,8 +27,11 @@ export default defineConfig({
           return 'assets/[name].[hash][extname]'
         },
         manualChunks: {
+          'three': ['three', '@react-three/fiber', '@react-three/drei'],
+          'react': ['react', 'react-dom', 'react-router-dom'],
+          'animation': ['framer-motion'],
           'swiper': ['swiper'],
-          'vendor': ['react', 'react-dom']
+          'utils': ['maath']
         }
       }
     },
@@ -37,24 +40,56 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: process.env.NODE_ENV === 'production',
-        drop_debugger: true
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2,
+        ecma: 2020
+      },
+      mangle: {
+        safari10: true
+      },
+      format: {
+        comments: false,
+        ecma: 2020
       }
     },
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 2000,
     emptyOutDir: true,
     copyPublicDir: true,
-    reportCompressedSize: false
+    reportCompressedSize: false,
+    target: 'es2020'
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@assets': resolve(__dirname, 'src/assets')
+      '@assets': resolve(__dirname, 'src/assets'),
+      '@components': resolve(__dirname, 'src/components'),
+      '@constants': resolve(__dirname, 'src/constants'),
+      '@utils': resolve(__dirname, 'src/utils')
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'three'],
-    exclude: ['@google/model-viewer']
+    include: [
+      'react', 
+      'react-dom', 
+      'three', 
+      '@react-three/fiber', 
+      '@react-three/drei',
+      'framer-motion',
+      'swiper'
+    ],
+    exclude: ['@google/model-viewer'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
+  },
+  esbuild: {
+    target: 'es2020',
+    treeShaking: true,
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true
   },
   server: {
     host: true,
@@ -73,14 +108,5 @@ export default defineConfig({
     '**/*.svg',
     '**/*.webp'
   ],
-  publicDir: 'public',
-  experimental: {
-    renderBuiltUrl(filename, { hostType, type, hostId }) {
-      if (type === 'asset' && filename.endsWith('?base64')) {
-        const path = filename.replace('?base64', '');
-        return `data:image/png;base64,${Buffer.from(path).toString('base64')}`;
-      }
-      return filename;
-    }
-  }
+  publicDir: 'public'
 })
