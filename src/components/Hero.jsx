@@ -2,7 +2,7 @@ import { motion, useAnimation, useInView } from "framer-motion";
 import { styles } from "../styles";
 import { OrcaCanvas } from "./canvas";
 import { useEffect, useRef } from "react";
-import { herobg } from "../assets";
+import { images } from "../assets";
 
 // 青系のカラーパレット
 const colors = {
@@ -10,6 +10,16 @@ const colors = {
   accent: '#0097e6',       // アクセントの青
   glow: '#00d2ff',         // グロー効果用の明るい青
   neon: '#48dbfb'          // ネオン効果用の鮮やかな青
+};
+
+// 背景画像のプリロード
+const preloadBackgroundImage = () => {
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.as = 'image';
+  link.href = images.herobg.webp || images.herobg.src;
+  link.type = images.herobg.webp ? 'image/webp' : 'image/jpeg';
+  document.head.appendChild(link);
 };
 
 // アニメーション設定をメモ化
@@ -60,17 +70,29 @@ const Hero = () => {
     }
   }, [isInView, controls]);
 
+  useEffect(() => {
+    preloadBackgroundImage();
+  }, []);
+
+  const backgroundStyle = {
+    backgroundImage: images.herobg.webp 
+      ? `url(${images.herobg.webp}), url(${images.herobg.src})`
+      : `url(${images.herobg.src})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100%',
+    height: '100vh'
+  };
+
   return (
     <section 
       ref={ref} 
       id="hero"
       className={`relative w-full h-screen mx-auto`}
-      style={{
-        backgroundImage: `url(${herobg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
+      style={backgroundStyle}
+      role="banner"
+      aria-label="Hero Section"
     >
       <div className="absolute inset-0 bg-black/50" />
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />

@@ -5,6 +5,7 @@ import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
+import { images } from "../assets";
 
 const ProjectCard = ({
   index,
@@ -14,6 +15,9 @@ const ProjectCard = ({
   image,
   source_code_link,
 }) => {
+  // 画像オブジェクトの取得（文字列の場合はcomingsoonを使用）
+  const imageObj = typeof image === 'string' ? images.comingsoon : image;
+
   return (
     <motion.div 
       variants={fadeIn("up", "spring", index * 0.5, 0.75)}
@@ -28,47 +32,37 @@ const ProjectCard = ({
           variants={fadeIn("", "", index * 0.2, 0.5)}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "100px" }}
           className='w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] bg-gradient-to-br from-[#1d1836] to-[#232631] rounded-xl overflow-hidden relative group shadow-lg mb-8'
         >
-          <img
-            src={image}
-            alt='project_image'
-            className='w-full h-full object-cover rounded-2xl'
-          />
+          <picture>
+            {imageObj.webp && <source srcSet={imageObj.webp} type="image/webp" />}
+            <img
+              src={imageObj.src}
+              alt={`${name} - ${subtitle}`}
+              className='w-full h-full object-cover rounded-2xl transition-opacity duration-300 opacity-0'
+              loading="lazy"
+              width="800"
+              height="450"
+              decoding="async"
+              fetchpriority="low"
+              onLoad={(e) => {
+                e.target.classList.remove('opacity-0');
+              }}
+            />
+          </picture>
+          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </motion.div>
 
-        <div className='mt-5'>
-          <motion.div
-            variants={fadeIn("", "", index * 0.3, 0.5)}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mb-1"
-          >
-            <h3 className='text-white text-[18px] sm:text-[20px] md:text-[22px] lg:text-[24px] font-bold'>{name}</h3>
-          </motion.div>
-
-          <motion.p
-            variants={fadeIn("", "", index * 0.4, 0.5)}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className='mt-2 text-secondary text-[12px] sm:text-[13px] md:text-[14px] italic'
-          >
-            {subtitle}
-          </motion.p>
-
-          <motion.p
-            variants={fadeIn("", "", index * 0.5, 0.5)}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className='mt-4 text-white-100 text-[12px] sm:text-[13px] md:text-[14px] leading-relaxed'
-          >
-            {description}
-          </motion.p>
+        <div className="text-white text-[20px] font-bold mb-3">
+          {name}
         </div>
+        <div className="text-secondary text-[16px] mb-4">
+          {subtitle}
+        </div>
+        <p className="text-white-100 text-[14px] leading-relaxed">
+          {description}
+        </p>
       </motion.div>
     </motion.div>
   );

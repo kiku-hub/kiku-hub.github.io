@@ -9,7 +9,7 @@ import { styles } from "../styles";
 import { services } from "../constants";
 import { textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
-import { ITsolution, CompanyServices, Teameng, Datacenter } from "../assets";
+import { images } from "../assets";
 
 // 定数の整理
 const ANIMATION_CONFIG = {
@@ -137,17 +137,30 @@ const ServiceImage = React.memo(({ image, title }) => {
     </div>
   );
 
-  const renderImage = () => (
-    <div className={STYLES.card.imageWrapper}>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent z-10" />
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
-        loading="lazy"
-      />
-    </div>
-  );
+  const renderImage = () => {
+    // WebPとフォールバック画像のパスを取得
+    const webpSrc = image.webp;
+    const fallbackSrc = image.src;
+
+    return (
+      <div className={STYLES.card.imageWrapper}>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent z-10" />
+        <picture>
+          {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+          <img
+            src={fallbackSrc}
+            alt={title}
+            className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+            loading="lazy"
+            width="400"
+            height="225"
+            decoding="async"
+            fetchpriority="low"
+          />
+        </picture>
+      </div>
+    );
+  };
 
   return image ? renderImage() : renderPlaceholder();
 });
@@ -180,10 +193,10 @@ const ServiceCard = React.memo(({ title, description, points, image }) => (
 const useServices = () => {
   return useMemo(() => {
     const imageMap = {
-      'ITソリューション': ITsolution,
-      '自社サービス': CompanyServices,
-      'システム受託開発': Teameng,
-      'AI サーバー': Datacenter,
+      'ITソリューション': images.ITsolution,
+      '自社サービス': images.CompanyServices,
+      'システム受託開発': images.Teameng,
+      'AI サーバー': images.Datacenter,
     };
 
     const getServiceImage = (title) => (
