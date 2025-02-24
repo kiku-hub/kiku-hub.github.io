@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectCoverflow, Navigation } from 'swiper';
@@ -11,172 +11,226 @@ import { textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
 import { ITsolution, CompanyServices, Teameng, Datacenter } from "../assets";
 
-// スタイル定数
-const CARD_STYLES = {
-  container: "bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-6 rounded-2xl w-full h-[520px] flex flex-col shadow-lg hover:shadow-xl",
-  imageContainer: "w-full h-[180px] rounded-xl overflow-hidden relative group shadow-lg mb-5",
-  title: "text-white text-[20px] font-bold text-center",
-  description: "text-secondary text-[13px] text-center whitespace-pre-line",
-  content: "text-white-100 text-[13px] tracking-wider whitespace-pre-line",
+// 定数の整理
+const ANIMATION_CONFIG = {
+  card: {
+    hover: {
+      scale: 1.02,
+      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+    },
+    transition: {
+      duration: 0.3,
+    },
+  },
+  image: {
+    hover: {
+      scale: 1.1,
+    },
+    transition: {
+      duration: 0.5,
+    },
+  },
 };
 
-// Swiperの基本設定
-const BASE_SWIPER_CONFIG = {
+// スタイル定数
+const STYLES = {
+  card: {
+    container: "bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-3 sm:p-4 md:p-5 rounded-2xl w-full flex flex-col shadow-lg hover:shadow-xl h-[500px] sm:h-[540px] md:h-[580px]",
+    image: "w-full h-[160px] sm:h-[180px] md:h-[200px] rounded-xl overflow-hidden relative group shadow-lg mb-2 sm:mb-3 md:mb-4",
+    imageWrapper: "w-full h-full relative",
+    title: "text-white text-[18px] sm:text-[20px] md:text-[24px] font-bold text-center mb-2 sm:mb-3",
+    description: "text-secondary text-[13px] sm:text-[14px] md:text-[16px] text-center whitespace-pre-line mb-2 sm:mb-3",
+    content: "text-white-100 text-[12px] sm:text-[13px] md:text-[14px] tracking-wider whitespace-pre-line",
+    contentWrapper: "flex-grow flex flex-col",
+    list: "space-y-1 sm:space-y-2 flex-grow",
+  },
+  section: {
+    container: "relative w-full min-h-[100vh] sm:h-screen mx-auto overflow-hidden",
+    wrapper: "absolute inset-0 flex flex-col items-center py-4 sm:py-0",
+    header: "w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-2 sm:mb-4",
+    title: "text-[14px] sm:text-base",
+    subtitle: "text-[28px] sm:text-[32px] md:text-[36px]",
+  },
+  swiper: {
+    container: "absolute inset-0 flex items-start justify-center",
+    wrapper: "relative w-full max-w-[1600px] mx-auto px-2 sm:px-4",
+    gradient: {
+      left: "absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[10%] sm:w-[15%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none",
+      right: "absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[10%] sm:w-[15%] h-full bg-gradient-to-l from-primary to-transparent pointer-events-none",
+    },
+    slide: "w-[80vw] sm:!w-[340px] md:!w-[400px] lg:!w-[450px] flex items-center justify-center py-3 sm:py-4 md:py-6 lg:py-8",
+  },
+};
+
+// Swiperの設定
+const SWIPER_CONFIG = {
   effect: "coverflow",
   grabCursor: true,
   centeredSlides: true,
   loop: true,
   slidesPerView: "auto",
   speed: 800,
-  spaceBetween: -50,
   initialSlide: 2,
-  coverflowEffect: {
-    rotate: 5,
-    stretch: 20,
-    depth: 100,
-    modifier: 1,
-    slideShadows: false,
-  },
+  modules: [Autoplay, EffectCoverflow, Navigation],
+  navigation: true,
+  className: "services-swiper",
   autoplay: {
     delay: 3500,
     pauseOnMouseEnter: true,
     disableOnInteraction: false,
     reverseDirection: false,
   },
+  breakpoints: {
+    320: { 
+      slidesPerView: 1,
+      spaceBetween: 20,
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+      }
+    },
+    480: {
+      slidesPerView: "auto",
+      spaceBetween: -10,
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+      }
+    },
+    640: { 
+      slidesPerView: "auto",
+      spaceBetween: -20,
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+      }
+    },
+    1024: { 
+      slidesPerView: "auto",
+      spaceBetween: -30,
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+      }
+    }
+  }
 };
 
-const ServiceImage = ({ image, title }) => {
-  if (!image) {
-    return (
-      <>
-        <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="text-7xl text-white/90 drop-shadow-lg transform transition-transform group-hover:scale-110 duration-300">
-            🚀
-          </div>
+// ServiceImageコンポーネント
+const ServiceImage = React.memo(({ image, title }) => {
+  const renderPlaceholder = () => (
+    <div className={STYLES.card.imageWrapper}>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="text-7xl text-white/90 drop-shadow-lg transform transition-transform group-hover:scale-110 duration-300">
+          🚀
         </div>
-      </>
-    );
-  }
+      </div>
+    </div>
+  );
 
-  return (
-    <div className="w-full h-full relative overflow-hidden">
+  const renderImage = () => (
+    <div className={STYLES.card.imageWrapper}>
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent z-10" />
       <img
         src={image}
         alt={title}
-        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+        className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+        loading="lazy"
       />
     </div>
   );
-};
 
-const ServiceCard = ({ title, description, points, image }) => {
-  return (
-    <motion.div
-      whileHover={{ 
-        scale: 1.02,
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
-      }}
-      className={CARD_STYLES.container}
-    >
-      <div className={CARD_STYLES.imageContainer}>
-        <ServiceImage image={image} title={title} />
-      </div>
+  return image ? renderImage() : renderPlaceholder();
+});
 
-      <div className="mb-3">
-        <h3 className={CARD_STYLES.title}>{title}</h3>
-      </div>
+// ServiceCardコンポーネント
+const ServiceCard = React.memo(({ title, description, points, image }) => (
+  <motion.div
+    whileHover={ANIMATION_CONFIG.card.hover}
+    className={STYLES.card.container}
+  >
+    <div className={STYLES.card.image}>
+      <ServiceImage image={image} title={title} />
+    </div>
 
-      <div className="space-y-3 flex-grow">
-        <p className={CARD_STYLES.description}>{description}</p>
-        <div className="space-y-2">
-          <ul className="space-y-2">
-            {points.map((point, pointIndex) => (
-              <li key={pointIndex} className={CARD_STYLES.content}>
-                {point}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
+    <div className={STYLES.card.contentWrapper}>
+      <h3 className={STYLES.card.title}>{title}</h3>
+      <p className={STYLES.card.description}>{description}</p>
+      <ul className={STYLES.card.list}>
+        {points.map((point, index) => (
+          <li key={index} className={STYLES.card.content}>
+            {point}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </motion.div>
+));
 
-const Services = () => {
-  const sortedServices = React.useMemo(() => {
+// サービスデータのカスタムフック
+const useServices = () => {
+  return useMemo(() => {
+    const imageMap = {
+      'ITソリューション': ITsolution,
+      '自社サービス': CompanyServices,
+      'システム受託開発': Teameng,
+      'AI サーバー': Datacenter,
+    };
+
+    const getServiceImage = (title) => (
+      Object.entries(imageMap).find(([key]) => title.includes(key))?.[1] || null
+    );
+
     const itSolution = services.find(service => service.title.includes('ITソリューション'));
     const otherServices = services.filter(service => !service.title.includes('ITソリューション'));
     
-    const getServiceImage = (title) => {
-      const imageMap = {
-        'ITソリューション': ITsolution,
-        '自社サービス': CompanyServices,
-        'システム受託開発': Teameng,
-        'AI サーバー': Datacenter,
-      };
-      
-      return Object.entries(imageMap).find(([key]) => title.includes(key))?.[1] || null;
-    };
-
-    return [itSolution, ...otherServices].map(service => ({
+    const sortedServices = [itSolution, ...otherServices].map(service => ({
       ...service,
       image: getServiceImage(service.title)
     }));
+
+    return [...sortedServices, ...sortedServices, ...sortedServices];
   }, []);
+};
 
-  const tripleServices = [...sortedServices, ...sortedServices, ...sortedServices];
-
-  const swiperConfig = {
-    ...BASE_SWIPER_CONFIG,
-    modules: [Autoplay, EffectCoverflow, Navigation],
-    navigation: true,
-    className: "services-swiper",
-    breakpoints: {
-      320: { 
-        slidesPerView: 1,
-        spaceBetween: 10 
-      },
-      640: { 
-        slidesPerView: "auto",
-        spaceBetween: -30 
-      },
-      1024: { 
-        slidesPerView: "auto",
-        spaceBetween: -50 
-      }
-    },
-    on: {
-      init: function () {
-        setTimeout(() => {
-          this.update();
-        }, 100);
-      }
-    }
-  };
+// Servicesコンポーネント
+const Services = () => {
+  const services = useServices();
 
   return (
-    <section className="relative w-full h-screen mx-auto overflow-hidden">
-      <div className="absolute inset-0 flex flex-col items-center" style={{ paddingTop: '0vh' }}>
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2 sm:mb-4">
+    <section className={STYLES.section.container}>
+      <div className={STYLES.section.wrapper}>
+        <div className={STYLES.section.header}>
           <div className="text-center">
-            <p className={styles.sectionSubText}>事業内容</p>
-            <h2 className={styles.sectionHeadText}>Services.</h2>
+            <p className={`${styles.sectionSubText} ${STYLES.section.title}`}>
+              事業内容
+            </p>
+            <h2 className={`${styles.sectionHeadText} ${STYLES.section.subtitle}`}>
+              Services.
+            </h2>
           </div>
         </div>
 
-        <div className="flex-1 w-full relative flex items-start justify-center -mt-6">
-          <div className="absolute inset-0 flex items-start justify-center">
-            <div className="relative w-full max-w-[1600px] mx-auto px-2 sm:px-4">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[15%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none" />
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[15%] h-full bg-gradient-to-l from-primary to-transparent pointer-events-none" />
+        <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
+          <div className={STYLES.swiper.container}>
+            <div className={STYLES.swiper.wrapper}>
+              <div className={STYLES.swiper.gradient.left} />
+              <div className={STYLES.swiper.gradient.right} />
               
-              <Swiper {...swiperConfig}>
-                {tripleServices.map((service, index) => (
+              <Swiper {...SWIPER_CONFIG}>
+                {services.map((service, index) => (
                   <SwiperSlide
                     key={`${service.title}-${index}`}
-                    className="!w-[280px] sm:!w-[380px] md:!w-[420px] lg:!w-[450px] flex items-center justify-center py-4 sm:py-6 md:py-8"
+                    className={STYLES.swiper.slide}
                   >
                     <div className="transform transition-all duration-300 w-full">
                       <ServiceCard {...service} />
@@ -192,8 +246,9 @@ const Services = () => {
       <style jsx global>{`
         .services-swiper .swiper-slide {
           transition: all 0.4s ease;
-          opacity: 0.3;
-          transform: scale(0.75);
+          opacity: 0.4;
+          transform: scale(0.85);
+          will-change: transform, opacity;
         }
         
         .services-swiper .swiper-slide-active {
@@ -204,8 +259,8 @@ const Services = () => {
 
         .services-swiper .swiper-slide-prev,
         .services-swiper .swiper-slide-next {
-          opacity: 0.5;
-          transform: scale(0.82);
+          opacity: 0.6;
+          transform: scale(0.9);
         }
 
         .services-swiper .swiper-button-next,
@@ -213,6 +268,8 @@ const Services = () => {
           color: rgba(255, 255, 255, 0.8);
           transition: all 0.3s ease;
           top: 45%;
+          width: 30px;
+          height: 30px;
         }
 
         .services-swiper .swiper-button-next:hover,
@@ -223,11 +280,24 @@ const Services = () => {
 
         .services-swiper .swiper-button-next:after,
         .services-swiper .swiper-button-prev:after {
-          font-size: 1.5rem;
+          font-size: 1.2rem;
           font-weight: bold;
         }
 
-        @media (max-width: 640px) {
+        @media (min-width: 640px) {
+          .services-swiper .swiper-button-next,
+          .services-swiper .swiper-button-prev {
+            width: 44px;
+            height: 44px;
+          }
+
+          .services-swiper .swiper-button-next:after,
+          .services-swiper .swiper-button-prev:after {
+            font-size: 1.5rem;
+          }
+        }
+
+        @media (max-width: 639px) {
           .services-swiper .swiper-button-next,
           .services-swiper .swiper-button-prev {
             display: none;
