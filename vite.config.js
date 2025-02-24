@@ -94,11 +94,19 @@ export default defineConfig({
   server: {
     host: true,
     strictPort: true,
-    port: 5173
+    port: 5173,
+    headers: {
+      'Cache-Control': 'public, max-age=31536000',
+      'Service-Worker-Allowed': '/'
+    }
   },
   preview: {
     port: 5174,
-    host: true
+    host: true,
+    headers: {
+      'Cache-Control': 'public, max-age=31536000',
+      'Service-Worker-Allowed': '/'
+    }
   },
   assetsInclude: [
     '**/*.jpg',
