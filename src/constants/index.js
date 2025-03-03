@@ -142,7 +142,7 @@ const companyInfo = {
     },
     {
       label: "所在地",
-      value: "東京都世田谷区用賀4-18-7",
+      value: "東京都世田谷区用賀",
       icon: "location"
     },
     {
