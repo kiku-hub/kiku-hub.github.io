@@ -166,13 +166,15 @@ function sendEmails(data) {
     var replySubject = "【ORCX株式会社】お問い合わせありがとうございます";
     var replyBody = createAutoReplyBody(data);
 
-    // 自動返信メールの送信 - noReplyを使用して送信元を設定
+    // 自動返信メールの送信設定を修正
     MailApp.sendEmail({
       to: data.email,
       subject: replySubject,
       htmlBody: replyBody,
       name: "ORCX株式会社",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
+      // noReplyをfalseに変更し、実際のメールアドレスから送信
+      noReply: false,
+      from: userEmail, // 実行ユーザーのメールアドレスを使用
       replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
     });
 
@@ -309,7 +311,6 @@ function createAutoReplyBody(data) {
       <p>万が一返信がない場合は、お手数ですが再度お問い合わせいただくか、お電話にてご連絡ください。</p>
       <p>--</p>
       <p>ORCX株式会社</p>
-      <p>TEL: 06-6455-9960</p>
       <p>Email: info@orcx.co.jp</p>
       <p>https://orcx.co.jp</p>
     </div>
@@ -584,13 +585,15 @@ function sendEmailsProduction(data) {
     var replySubject = "【ORCX株式会社】お問い合わせありがとうございます";
     var replyBody = createAutoReplyBody(data);
 
-    // noReplyを使用
+    // 自動返信メールの送信設定を修正
     MailApp.sendEmail({
       to: data.email,
       subject: replySubject,
       htmlBody: replyBody,
       name: "ORCX株式会社",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
+      // noReplyをfalseに変更し、実際のメールアドレスから送信
+      noReply: false,
+      from: "info@orcx.co.jp", // 実際のメールアドレスを使用
       replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
     });
 
