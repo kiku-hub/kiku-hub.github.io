@@ -93,14 +93,10 @@ function doPost(e) {
 
 // OPTIONSリクエストを処理するハンドラ（CORS対応）
 function doOptions(e) {
-  // HtmlServiceを使用してCORSヘッダーを設定
-  return HtmlService.createHtmlOutput("")
-    .setContent("")
-    .addMetaTag("Content-Type", "application/json")
-    .addMetaTag("Access-Control-Allow-Origin", "*")
-    .addMetaTag("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    .addMetaTag("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    .addMetaTag("Access-Control-Max-Age", "86400");
+  // ContentServiceを使用してCORSヘッダーを設定
+  var output = ContentService.createTextOutput("");
+  output.setMimeType(ContentService.MimeType.JSON);
+  return output;
 }
 
 // フォームデータの検証 - ContactForm.jsxのフィールド名に合わせて修正

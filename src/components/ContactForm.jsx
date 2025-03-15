@@ -65,19 +65,13 @@ const ContactForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors',
+        mode: 'no-cors',
         redirect: 'follow',
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        alert(contactContent.alerts.success);
-        reset();
-      } else {
-        throw new Error(result.message || 'メール送信に失敗しました');
-      }
+      alert(contactContent.alerts.success);
+      reset();
     } catch (error) {
       console.error(error);
       alert(contactContent.alerts.error);
