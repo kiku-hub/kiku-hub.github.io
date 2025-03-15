@@ -1,13 +1,41 @@
+// 共通のレスポンス生成関数
+function createResponse(data, mimeType) {
+  // JSONデータを文字列に変換
+  var jsonString = JSON.stringify(data);
+
+  // ContentServiceを使用してレスポンスを作成
+  var output = ContentService.createTextOutput(jsonString);
+
+  // MIMEタイプを設定
+  output.setMimeType(mimeType || ContentService.MimeType.JSON);
+
+  // CORSヘッダーを追加
+  var headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  // ヘッダーを設定
+  for (var key in headers) {
+    if (headers.hasOwnProperty(key)) {
+      try {
+        output.addHeader(key, headers[key]);
+      } catch (e) {
+        Logger.log("ヘッダー設定エラー: " + e);
+      }
+    }
+  }
+
+  return output;
+}
+
 // GETリクエストを処理するハンドラ
 function doGet(e) {
-  var output = ContentService.createTextOutput(
-    JSON.stringify({
-      status: "success",
-      message: "GET request received",
-    })
-  );
-  output.setMimeType(ContentService.MimeType.JSON);
-  return output;
+  return createResponse({
+    status: "success",
+    message: "GET request received",
+  });
 }
 
 // POSTリクエストを処理するメインハンドラ
@@ -19,14 +47,10 @@ function doPost(e) {
     // eオブジェクトの存在チェック
     if (!e || !e.postData) {
       Logger.log("引数eまたはpostDataが存在しません");
-      var errorOutput = ContentService.createTextOutput(
-        JSON.stringify({
-          status: "error",
-          message: "リクエストデータがありません",
-        })
-      );
-      errorOutput.setMimeType(ContentService.MimeType.JSON);
-      return errorOutput;
+      return createResponse({
+        status: "error",
+        message: "リクエストデータがありません",
+      });
     }
 
     // リクエストの詳細をログに記録
@@ -60,43 +84,32 @@ function doPost(e) {
     // メール送信
     // エラーが発生しても処理を続行
     try {
-      sendEmails(formData);
+      sendEmails(formData, false);
     } catch (emailError) {
       // メール送信エラーをログに記録
       Logger.log("メール送信エラー（処理は続行）: " + emailError);
     }
 
     // 成功レスポンスを返す
-    var successOutput = ContentService.createTextOutput(
-      JSON.stringify({
-        status: "success",
-        message: "お問い合わせを受け付けました",
-      })
-    );
-    successOutput.setMimeType(ContentService.MimeType.JSON);
-    return successOutput;
+    return createResponse({
+      status: "success",
+      message: "お問い合わせを受け付けました",
+    });
   } catch (error) {
     // エラー詳細をログに記録
     Logger.log("エラー発生: " + (error.stack || error.message || error));
 
     // エラーレスポンスを返す
-    var errorOutput = ContentService.createTextOutput(
-      JSON.stringify({
-        status: "error",
-        message: error.toString(),
-      })
-    );
-    errorOutput.setMimeType(ContentService.MimeType.JSON);
-    return errorOutput;
+    return createResponse({
+      status: "error",
+      message: error.toString(),
+    });
   }
 }
 
 // OPTIONSリクエストを処理するハンドラ（CORS対応）
 function doOptions(e) {
-  // ContentServiceを使用してCORSヘッダーを設定
-  var output = ContentService.createTextOutput("");
-  output.setMimeType(ContentService.MimeType.JSON);
-  return output;
+  return createResponse({}, ContentService.MimeType.JSON);
 }
 
 // フォームデータの検証 - ContactForm.jsxのフィールド名に合わせて修正
@@ -138,54 +151,78 @@ function validateFormData(data) {
   }
 }
 
-// メール送信処理 - 修正版（テスト環境と本番環境に対応）
-function sendEmails(data) {
-  try {
-    // スクリプトを実行しているユーザーのメールアドレスを取得
-    // Session.getActiveUserが空を返す場合があるため、固定のメールアドレスをバックアップとして用意
-    var userEmail = Session.getActiveUser().getEmail();
-    if (!userEmail || userEmail === "") {
-      userEmail = "info@orcx.co.jp"; // バックアップの管理者メールアドレス
-    }
-    Logger.log("現在のユーザーメール: " + userEmail);
+// 共通のメール送信関数
+function sendMail(options) {
+  return MailApp.sendEmail({
+    to: options.to,
+    subject: options.subject,
+    htmlBody: options.htmlBody || options.body,
+    name: options.name || "ORCX株式会社",
+    noReply: options.noReply !== false, // デフォルトはtrue
+    replyTo: options.replyTo,
+  });
+}
 
-    // 管理者への通知メール（送信先を調整）
+// メール送信処理 - 統合版（テスト環境と本番環境に対応）
+function sendEmails(data, isProduction) {
+  try {
+    // 送信先メールアドレスの決定
+    var adminEmail;
+    if (isProduction) {
+      // 本番環境では固定のメールアドレスを使用
+      adminEmail = "info@orcx.co.jp";
+    } else {
+      // テスト環境ではスクリプト実行者のメールアドレスを取得
+      adminEmail = Session.getActiveUser().getEmail();
+      if (!adminEmail || adminEmail === "") {
+        adminEmail = "info@orcx.co.jp"; // バックアップの管理者メールアドレス
+      }
+    }
+    Logger.log("管理者メール送信先: " + adminEmail);
+
+    // 管理者への通知メール
     var adminSubject = `【問い合わせ】${getInquiryType(data.type)}について`;
     var adminBody = createAdminEmailBody(data);
 
-    // 管理者へのメール送信 - noReplyを使用して送信元を設定
-    MailApp.sendEmail({
-      to: userEmail, // 本番環境では権限のある特定の管理者メールに送信
+    // 管理者へのメール送信
+    sendMail({
+      to: adminEmail,
       subject: adminSubject,
       htmlBody: adminBody,
       name: "ORCX株式会社 お問い合わせシステム",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
+      noReply: true,
     });
 
     // 自動返信メール（問い合わせ者に送信）
     var replySubject = "【ORCX株式会社】お問い合わせありがとうございます";
     var replyBody = createAutoReplyBody(data);
 
-    // 自動返信メールの送信設定を修正
-    GmailApp.sendEmail(
-      data.email,
-      replySubject,
-      "このメールはHTML形式で送信されています。表示できない場合はお手数ですが別の環境でご確認ください。",
-      {
-        htmlBody: replyBody,
-        name: "ORCX株式会社",
-        from: userEmail, // 実行ユーザーのメールアドレスを使用
-        replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
-      }
-    );
+    // 自動返信メールの送信
+    sendMail({
+      to: data.email,
+      subject: replySubject,
+      htmlBody: replyBody,
+      name: "ORCX株式会社",
+      replyTo: "info@orcx.co.jp",
+      noReply: true,
+    });
 
     // ログを記録
-    Logger.log(`お問い合わせを受け付けました: ${data.name} (${data.email})`);
+    var logPrefix = isProduction ? "本番環境: " : "";
+    Logger.log(
+      `${logPrefix}お問い合わせを受け付けました: ${data.name} (${data.email})`
+    );
     return true;
   } catch (error) {
-    Logger.log("メール送信エラー: " + error.message);
+    var errorPrefix = isProduction ? "本番環境" : "";
+    Logger.log(`${errorPrefix}メール送信エラー: ${error.message}`);
     throw new Error("メール送信に失敗しました: " + error.message);
   }
+}
+
+// 本番環境用のメール送信関数（sendEmails関数のラッパー）
+function sendEmailsProduction(data) {
+  return sendEmails(data, true);
 }
 
 // 管理者向けメール本文を作成する関数
@@ -333,9 +370,9 @@ function getInquiryType(type) {
   return types[type] || "不明";
 }
 
-// シンプルなテスト用データを使用するテスト関数
-function testDoPostComplete() {
-  var testData = {
+// テスト用データを生成する共通関数
+function createTestData(overrides) {
+  var baseData = {
     type: "service",
     company: "テスト株式会社",
     name: "テスト太郎",
@@ -346,13 +383,41 @@ function testDoPostComplete() {
     privacy: true,
   };
 
-  var mockEvent = {
+  // オーバーライドがある場合は適用
+  if (overrides) {
+    for (var key in overrides) {
+      baseData[key] = overrides[key];
+    }
+  }
+
+  return baseData;
+}
+
+// モックイベントを作成する関数
+function createMockEvent(data) {
+  return {
     postData: {
-      contents: JSON.stringify(testData),
+      contents: JSON.stringify(data),
       type: "application/json",
     },
     parameter: {},
   };
+}
+
+// シンプルなテスト関数（基本的な動作確認用）
+function simplestTest() {
+  var testData = createTestData({ name: "テスト" });
+  var mockEvent = createMockEvent(testData);
+
+  Logger.log("シンプルテスト実行");
+  var result = doPost(mockEvent);
+  return result;
+}
+
+// シンプルなテスト用データを使用するテスト関数
+function testDoPostComplete() {
+  var testData = createTestData();
+  var mockEvent = createMockEvent(testData);
 
   Logger.log(
     "testDoPostComplete関数開始 - モックイベント: " + JSON.stringify(mockEvent)
@@ -363,49 +428,45 @@ function testDoPostComplete() {
 
 // テスト専用のメール送信関数（本番環境と分離）
 function testEmailSendingToYourself() {
-  var testData = {
-    type: "service",
-    company: "テスト株式会社",
-    name: "テスト太郎",
-    nameKana: "テストタロウ",
-    phone: "0312345678",
-    email: Session.getActiveUser().getEmail() || "info@orcx.co.jp", // スクリプト実行者のメールに送信
+  // 自分自身のメールアドレスを取得
+  var userEmail = Session.getActiveUser().getEmail();
+  if (!userEmail || userEmail === "") {
+    userEmail = "info@orcx.co.jp"; // バックアップの管理者メールアドレス
+  }
+
+  // テストデータを作成（メールアドレスを自分自身に設定）
+  var testData = createTestData({
+    email: userEmail,
     message: "これはメール送信テストです。\n改行テスト。",
-    privacy: true,
-  };
+  });
 
   try {
-    // 自分自身にだけメールを送信するテスト
-    var userEmail = Session.getActiveUser().getEmail();
-    if (!userEmail || userEmail === "") {
-      userEmail = "info@orcx.co.jp"; // バックアップの管理者メールアドレス
-    }
     Logger.log("テストメール送信先: " + userEmail);
 
     var adminSubject = `【テスト】${getInquiryType(testData.type)}について`;
     var adminBody = createAdminEmailBody(testData);
 
-    // 管理者へのテストメール - noReplyを使用
-    MailApp.sendEmail({
+    // 管理者へのテストメール
+    sendMail({
       to: userEmail,
       subject: adminSubject,
       htmlBody: adminBody,
       name: "テスト送信",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
+      noReply: true,
     });
 
     // 自動返信メールもテスト
     var replySubject = "【テスト】お問い合わせありがとうございます";
     var replyBody = createAutoReplyBody(testData);
 
-    // 自動返信テストメール - noReplyを使用
-    MailApp.sendEmail({
+    // 自動返信テストメール
+    sendMail({
       to: userEmail,
       subject: replySubject,
       htmlBody: replyBody,
       name: "テスト送信",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
-      replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
+      noReply: true,
+      replyTo: "info@orcx.co.jp",
     });
 
     Logger.log("テストメール送信成功: " + userEmail);
@@ -418,24 +479,8 @@ function testEmailSendingToYourself() {
 
 // メールの送信を無効化したテスト関数（メール送信なしでフォーム処理のみテスト）
 function testDoPostWithoutEmail() {
-  var testData = {
-    type: "service",
-    company: "テスト株式会社",
-    name: "テスト太郎",
-    nameKana: "テストタロウ",
-    phone: "0312345678",
-    email: "test@example.com",
-    message: "これはテストメッセージです。\n改行テスト。",
-    privacy: true,
-  };
-
-  var mockEvent = {
-    postData: {
-      contents: JSON.stringify(testData),
-      type: "application/json",
-    },
-    parameter: {},
-  };
+  var testData = createTestData();
+  var mockEvent = createMockEvent(testData);
 
   Logger.log("testDoPostWithoutEmail関数開始");
 
@@ -471,6 +516,21 @@ function testDoPostWithoutEmail() {
   }
 }
 
+// 最もシンプルなテスト関数（レスポンス生成のみをテスト）
+function testResponseOnly() {
+  try {
+    var response = createResponse({
+      status: "success",
+      message: "テストメッセージ",
+    });
+    Logger.log("レスポンス生成成功: " + response.getContent());
+    return "テスト成功";
+  } catch (error) {
+    Logger.log("レスポンス生成エラー: " + error);
+    return "テスト失敗: " + error;
+  }
+}
+
 // Webアプリケーションを正しくデプロイするための説明
 function setup() {
   var instructions = `
@@ -484,47 +544,41 @@ GASでCORSを有効にする唯一の効果的な方法は、デプロイ設定�
    - 「アクセスできるユーザー」で「全員（匿名ユーザーを含む）」を選択
    - デプロイ後、表示されたURLをコピー（この際、必ずURLの末尾が /exec であることを確認）
 
-2. **フロントエンドのfetchコード修正**:
+2. **フロントエンドのfetchコード修正（no-corsモード）**:
    フロントエンドのContactForm.jsxのfetch関数を次のように修正:
 
    \`\`\`javascript
    try {
+     // no-corsモードを使用
      const response = await fetch(gasDeploymentUrl, {
        method: 'POST',
-       mode: 'cors',  // または 'no-cors'
+       mode: 'no-cors',  // CORSエラーを回避
        headers: {
          'Content-Type': 'application/json',
        },
-       redirect: 'follow',
        body: JSON.stringify(formData)
      });
 
-     if (response.ok) {
-       // 成功処理
-     } else {
-       // エラー処理
-     }
+     // no-corsモードではレスポンスの内容を読み取れないため、
+     // 成功したと仮定して処理を続行
+     setSubmitting(false);
+     setSubmitSuccess(true);
+     resetForm();
+     
+     // 注意: no-corsモードではresponse.okやresponse.statusは確認できません
    } catch (error) {
-     // 例外処理
+     console.error('送信エラー:', error);
+     setSubmitting(false);
+     setSubmitError(true);
    }
    \`\`\`
 
-3. **最終手段: 'no-cors'モードの使用**:
-   上記の設定でも問題が解決しない場合は、フロントエンドのfetchリクエストを'no-cors'モードに変更する:
-
-   \`\`\`javascript
-   const response = await fetch(gasDeploymentUrl, {
-     method: 'POST',
-     mode: 'no-cors',  // CORSエラーを回避
-     headers: {
-       'Content-Type': 'application/json',
-     },
-     body: JSON.stringify(formData)
-   });
-   \`\`\`
-
-   注意: 'no-cors'モードを使用すると、レスポンスの内容を読み取ることができなくなりますが、
-   リクエストは送信されます。送信成功の確認は、GASのログで行う必要があります。
+3. **no-corsモードの注意点**:
+   - no-corsモードを使用すると、レスポンスの内容を読み取ることができなくなります
+   - リクエストは送信されますが、成功したかどうかをフロントエンドで確認できません
+   - 送信成功の確認は、GASのログで行う必要があります
+   - ユーザーへのフィードバックは、送信が成功したと仮定して表示する必要があります
+   - エラーが発生した場合は、GASのログを確認してください
 
 ■ Google共有設定の確認
 
@@ -539,72 +593,11 @@ GASプロジェクトが適切に共有されていることを確認してく�
 2. メール送信が成功したら「testDoPostWithoutEmail」関数を実行してフォーム処理をテスト
 3. すべてのテストが成功したら「testDoPostComplete」関数を実行して完全なテスト
 4. デプロイ後、新しいURLを.env.developmentファイルに設定
-5. フロントエンドのfetch設定を確認・修正
+5. フロントエンドのfetch設定を確認・修正（no-corsモードを使用）
 6. 再テスト
+7. 問題が発生した場合は、GASのログを確認してください
 `;
 
   Logger.log(instructions);
   return instructions;
-}
-
-// シンプルなテスト関数（基本的な動作確認用）
-function simplestTest() {
-  var testData = {
-    name: "テスト",
-  };
-
-  var mockEvent = {
-    postData: {
-      contents: JSON.stringify(testData),
-      type: "application/json",
-    },
-    parameter: {},
-  };
-
-  Logger.log("シンプルテスト実行");
-  var result = doPost(mockEvent);
-  return result;
-}
-
-// 本番環境用のメール送信調整（GmailAppを使用）
-function sendEmailsProduction(data) {
-  try {
-    // 管理者への通知メール
-    var adminSubject = `【問い合わせ】${getInquiryType(data.type)}について`;
-    var adminBody = createAdminEmailBody(data);
-
-    // MailAppを使用（Google Workspace環境で有効）- noReplyを使用
-    MailApp.sendEmail({
-      to: "info@orcx.co.jp",
-      subject: adminSubject,
-      htmlBody: adminBody,
-      name: "ORCX株式会社 お問い合わせシステム",
-      noReply: true, // 返信不可の設定（送信元がnoreply@[スクリプトのドメイン]になる）
-    });
-
-    // 自動返信メール
-    var replySubject = "【ORCX株式会社】お問い合わせありがとうございます";
-    var replyBody = createAutoReplyBody(data);
-
-    // 自動返信メールの送信設定を修正 - GmailAppを使用
-    GmailApp.sendEmail(
-      data.email,
-      replySubject,
-      "このメールはHTML形式で送信されています。表示できない場合はお手数ですが別の環境でご確認ください。",
-      {
-        htmlBody: replyBody,
-        name: "ORCX株式会社",
-        from: "info@orcx.co.jp", // 実際のメールアドレスを使用
-        replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
-      }
-    );
-
-    Logger.log(
-      `本番環境: お問い合わせを受け付けました: ${data.name} (${data.email})`
-    );
-    return true;
-  } catch (error) {
-    Logger.log("本番環境メール送信エラー: " + error.message);
-    throw new Error("メール送信に失敗しました: " + error.message);
-  }
 }
