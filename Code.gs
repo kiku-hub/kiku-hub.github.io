@@ -167,16 +167,17 @@ function sendEmails(data) {
     var replyBody = createAutoReplyBody(data);
 
     // 自動返信メールの送信設定を修正
-    MailApp.sendEmail({
-      to: data.email,
-      subject: replySubject,
-      htmlBody: replyBody,
-      name: "ORCX株式会社",
-      // noReplyをfalseに変更し、実際のメールアドレスから送信
-      noReply: false,
-      from: userEmail, // 実行ユーザーのメールアドレスを使用
-      replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
-    });
+    GmailApp.sendEmail(
+      data.email,
+      replySubject,
+      "このメールはHTML形式で送信されています。表示できない場合はお手数ですが別の環境でご確認ください。",
+      {
+        htmlBody: replyBody,
+        name: "ORCX株式会社",
+        from: userEmail, // 実行ユーザーのメールアドレスを使用
+        replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
+      }
+    );
 
     // ログを記録
     Logger.log(`お問い合わせを受け付けました: ${data.name} (${data.email})`);
@@ -565,7 +566,7 @@ function simplestTest() {
   return result;
 }
 
-// 本番環境用のメール送信調整（MailAppを使用）
+// 本番環境用のメール送信調整（GmailAppを使用）
 function sendEmailsProduction(data) {
   try {
     // 管理者への通知メール
@@ -585,17 +586,18 @@ function sendEmailsProduction(data) {
     var replySubject = "【ORCX株式会社】お問い合わせありがとうございます";
     var replyBody = createAutoReplyBody(data);
 
-    // 自動返信メールの送信設定を修正
-    MailApp.sendEmail({
-      to: data.email,
-      subject: replySubject,
-      htmlBody: replyBody,
-      name: "ORCX株式会社",
-      // noReplyをfalseに変更し、実際のメールアドレスから送信
-      noReply: false,
-      from: "info@orcx.co.jp", // 実際のメールアドレスを使用
-      replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
-    });
+    // 自動返信メールの送信設定を修正 - GmailAppを使用
+    GmailApp.sendEmail(
+      data.email,
+      replySubject,
+      "このメールはHTML形式で送信されています。表示できない場合はお手数ですが別の環境でご確認ください。",
+      {
+        htmlBody: replyBody,
+        name: "ORCX株式会社",
+        from: "info@orcx.co.jp", // 実際のメールアドレスを使用
+        replyTo: "info@orcx.co.jp", // 返信先アドレスを指定
+      }
+    );
 
     Logger.log(
       `本番環境: お問い合わせを受け付けました: ${data.name} (${data.email})`
