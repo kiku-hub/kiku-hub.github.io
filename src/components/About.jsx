@@ -7,6 +7,7 @@ import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramidOptimized";
 import MVVContainer from "./mvv/MVVContainer";
+import useMediaQuery from "../hooks/useMediaQuery";
 
 const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
@@ -14,6 +15,7 @@ const About = () => {
   const [hoveredFromPyramid, setHoveredFromPyramid] = useState(null);
   const sectionRef = useRef(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const handleHover = useCallback((layerId) => {
     if (visibleLayers.includes(layerId) || layerId === null) {
@@ -52,48 +54,42 @@ const About = () => {
       if (currentRef) {
         observer.unobserve(currentRef);
       }
-      observer.disconnect();
     };
   }, [hasAnimated]);
 
+  useEffect(() => {
+    if (hoveredFromPyramid) {
+      handleHover(hoveredFromPyramid);
+    }
+  }, [hoveredFromPyramid, handleHover]);
+
   return (
-    <div ref={sectionRef}>
-      <div className="text-center mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          variants={textVariant()}
-          animate={hasAnimated ? "show" : "hidden"}
-        >
-          <p className={`${styles.sectionSubText} text-secondary`}>
-            {aboutContent.title}
-          </p>
-          <h2 className={`${styles.sectionHeadText} text-white`}>
-            {aboutContent.subtitle}
-          </h2>
+    <div ref={sectionRef} className="relative min-h-screen py-16">
+      <div className="container mx-auto px-4">
+        <motion.div variants={textVariant()}>
+          <p className={styles.sectionSubText}>About Us</p>
+          <h2 className={styles.sectionHeadText}>Mission, Vision, Value.</h2>
         </motion.div>
-      </div>
 
-      <div className="flex flex-col md:flex-row gap-16 items-center justify-center -mt-8">
-        <div className="relative w-full md:w-1/2">
-          <ThreePyramid 
-            visibleLayers={visibleLayers} 
-            highlightedLayer={highlightedLayer}
-            onLayerHover={useCallback((layerId) => {
-              setHoveredFromPyramid(layerId);
-              setHighlightedLayer(layerId);
-            }, [])}
-          />
+        <div className="mt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className={`flex-1 ${isMobile ? 'w-full' : 'w-1/2'}`}>
+            <MVVContainer
+              visibleLayers={visibleLayers}
+              highlightedLayer={highlightedLayer}
+              onHover={handleHover}
+            />
+          </div>
+
+          {/* モバイルでは3Dピラミッドは表示しない */}
+          {!isMobile && (
+            <div className="flex-1 w-1/2 h-[400px] relative">
+              <ThreePyramid
+                visibleLayers={visibleLayers}
+                onHover={setHoveredFromPyramid}
+              />
+            </div>
+          )}
         </div>
-
-        <MVVContainer
-          orderedCards={aboutContent.cards.slice().reverse()}
-          visibleLayers={visibleLayers}
-          hoveredFromPyramid={hoveredFromPyramid}
-          onHover={handleHover}
-        />
       </div>
     </div>
   );
