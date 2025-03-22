@@ -5,6 +5,8 @@ import * as THREE from 'three';
 
 // 定数の定義
 const MODEL_PATH = "/orca/Animation_Formal_Bow_withSkin.glb";
+// フォールバックパスの修正 - 実際のファイルと同じ名前に
+const FALLBACK_MODEL_PATH = "/orca/Animation_Formal_Bow_withSkin.glb";
 const ANIMATION_CONFIG = {
   timeScale: 0.7,
   fadeInDuration: 1,
@@ -36,7 +38,8 @@ const OrcaModel = () => {
         });
       } catch (error) {
         console.error('CDNからのモデル読み込みに失敗:', error);
-        if (modelPath === MODEL_PATH) {
+        // モデルパスが既にフォールバックでなく、FALLBACKが異なる場合のみ
+        if (modelPath === MODEL_PATH && MODEL_PATH !== FALLBACK_MODEL_PATH) {
           setModelPath(FALLBACK_MODEL_PATH);
           setLoadError(true);
         }
@@ -45,8 +48,19 @@ const OrcaModel = () => {
     loadModel();
   }, [modelPath]);
 
-  const orca = useGLTF(modelPath);
-  const { actions, names } = useAnimations(orca.animations, orca.scene);
+  // エラーハンドリングを追加
+  let orca;
+  try {
+    orca = useGLTF(modelPath);
+  } catch (error) {
+    console.error('モデル読み込みエラー:', error);
+    // エラー時は空のダミーオブジェクトを返す
+    return null;
+  }
+
+  // 必要なアニメーションとアクションが存在することを確認
+  const animations = orca?.animations || [];
+  const { actions = {}, names = [] } = useAnimations(animations, orca?.scene);
   const { gl } = useThree();
 
   useEffect(() => {
@@ -58,6 +72,7 @@ const OrcaModel = () => {
   }, [gl]);
 
   useEffect(() => {
+    if (!orca?.scene) return; // シーンがない場合は早期リターン
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
 
@@ -113,22 +128,28 @@ const OrcaModel = () => {
         }
       });
       
-      orca.scene.traverse((object) => {
-        if (object.isMesh) {
-          object.geometry.dispose();
-          if (object.material.map) object.material.map.dispose();
-          if (object.material.normalMap) object.material.normalMap.dispose();
-          if (object.material.roughnessMap) object.material.roughnessMap.dispose();
-          if (object.material.metalnessMap) object.material.metalnessMap.dispose();
-          object.material.dispose();
-        }
-      });
+      if (orca?.scene) {
+        orca.scene.traverse((object) => {
+          if (object.isMesh) {
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) {
+              if (object.material.map) object.material.map.dispose();
+              if (object.material.normalMap) object.material.normalMap.dispose();
+              if (object.material.roughnessMap) object.material.roughnessMap.dispose();
+              if (object.material.metalnessMap) object.material.metalnessMap.dispose();
+              object.material.dispose();
+            }
+          }
+        });
+      }
     };
 
     // 5秒待ってからアニメーション開始
     const timer = setTimeout(() => {
       names.forEach((name) => {
         const action = actions[name];
+        if (!action) return;
+
         action.reset();
         action.time = 0;
         action
@@ -150,7 +171,12 @@ const OrcaModel = () => {
         }
       });
     };
-  }, [actions, names, orca.scene, gl]);
+  }, [actions, names, orca?.scene, gl]);
+
+  // シーンがない場合は何も表示しない
+  if (!orca?.scene) {
+    return null;
+  }
 
   return (
     <mesh ref={modelRef}>
