@@ -22,6 +22,15 @@ const CAMERA_CONFIG = {
 
 const MODEL_SCALE = 6.5;
 
+// ロード中にエラーがあった場合の簡易的なフォールバックコンポーネント
+const ErrorFallback = () => (
+  <mesh>
+    <sphereGeometry args={[1, 16, 16]} />
+    <meshStandardMaterial color="#ff4040" />
+    <pointLight intensity={1} />
+  </mesh>
+);
+
 // Orcaモデルコンポーネント
 const OrcaModel = () => {
   const modelRef = useRef();
@@ -33,16 +42,13 @@ const OrcaModel = () => {
   useEffect(() => {
     const loadModel = async () => {
       try {
+        // モデルのプリロードを試みる
         await useGLTF.preload(modelPath, undefined, {
           crossOrigin: 'anonymous'
         });
       } catch (error) {
-        console.error('CDNからのモデル読み込みに失敗:', error);
-        // モデルパスが既にフォールバックでなく、FALLBACKが異なる場合のみ
-        if (modelPath === MODEL_PATH && MODEL_PATH !== FALLBACK_MODEL_PATH) {
-          setModelPath(FALLBACK_MODEL_PATH);
-          setLoadError(true);
-        }
+        console.error('モデル読み込みエラー:', error);
+        setLoadError(true);
       }
     };
     loadModel();
@@ -54,8 +60,13 @@ const OrcaModel = () => {
     orca = useGLTF(modelPath);
   } catch (error) {
     console.error('モデル読み込みエラー:', error);
-    // エラー時は空のダミーオブジェクトを返す
-    return null;
+    return <ErrorFallback />;
+  }
+
+  // orcaオブジェクトが正しく読み込まれたか確認
+  if (!orca || !orca.scene) {
+    console.error('モデルのシーンが見つかりません');
+    return <ErrorFallback />;
   }
 
   // 必要なアニメーションとアクションが存在することを確認
@@ -144,21 +155,25 @@ const OrcaModel = () => {
       }
     };
 
-    // 5秒待ってからアニメーション開始
+    // アニメーション開始を遅延させる
     const timer = setTimeout(() => {
       names.forEach((name) => {
         const action = actions[name];
         if (!action) return;
 
-        action.reset();
-        action.time = 0;
-        action
-          .setLoop(THREE.LoopOnce, 1)
-          .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
-          .fadeIn(ANIMATION_CONFIG.fadeInDuration)
-          .play();
+        try {
+          action.reset();
+          action.time = 0;
+          action
+            .setLoop(THREE.LoopOnce, 1)
+            .setEffectiveTimeScale(ANIMATION_CONFIG.timeScale)
+            .fadeIn(ANIMATION_CONFIG.fadeInDuration)
+            .play();
 
-        action.clampWhenFinished = true;
+          action.clampWhenFinished = true;
+        } catch (error) {
+          console.error('アニメーション設定エラー:', error);
+        }
       });
     }, 4000);
 
@@ -167,16 +182,15 @@ const OrcaModel = () => {
       cleanup();
       names.forEach((name) => {
         if (actions[name]) {
-          actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
+          try {
+            actions[name].fadeOut(ANIMATION_CONFIG.fadeOutDuration);
+          } catch (error) {
+            console.error('アニメーション終了エラー:', error);
+          }
         }
       });
     };
   }, [actions, names, orca?.scene, gl]);
-
-  // シーンがない場合は何も表示しない
-  if (!orca?.scene) {
-    return null;
-  }
 
   return (
     <mesh ref={modelRef}>
@@ -200,6 +214,15 @@ const OrcaModel = () => {
   );
 };
 
+// ロード中の表示コンポーネント
+const LoadingFallback = () => (
+  <mesh>
+    <sphereGeometry args={[1, 8, 8]} />
+    <meshStandardMaterial wireframe color="#ffffff" opacity={0.5} transparent />
+    <pointLight intensity={0.5} />
+  </mesh>
+);
+
 // Canvas コンポーネント
 const OrcaCanvas = () => (
   <Canvas
@@ -218,7 +241,7 @@ const OrcaCanvas = () => (
     camera={CAMERA_CONFIG}
     performance={{ min: 0.5 }}
   >
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingFallback />}>
       <OrbitControls
         enableZoom={false}
         enableRotate={false}

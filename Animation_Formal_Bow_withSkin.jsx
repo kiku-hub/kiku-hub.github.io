@@ -11,7 +11,7 @@ import { SkeletonUtils } from 'three-stdlib'
 
 export function Model(props) {
   const group = React.useRef()
-  const { scene, animations } = useGLTF('/Animation_Formal_Bow_withSkin-transformed.glb')
+  const { scene, animations } = useGLTF('/orca/Animation_Formal_Bow_withSkin.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
@@ -27,4 +27,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/Animation_Formal_Bow_withSkin-transformed.glb')
+useGLTF.preload('/orca/Animation_Formal_Bow_withSkin.glb')
