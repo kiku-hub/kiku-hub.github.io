@@ -109,8 +109,8 @@ const useServices = () => {
     getServiceImage: (title) => {
       const key = title.toLowerCase().replace(/\s+/g, '_');
       const defaultImage = {
-        src: images.placeholder.src,
-        webp: images.placeholder.webp,
+        src: images.comingsoon.src,
+        webp: images.comingsoon.webp,
         alt: title,
       };
 

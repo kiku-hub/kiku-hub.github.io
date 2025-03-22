@@ -130,7 +130,7 @@ const Hero = () => {
       {isMobile ? (
         <div className="absolute inset-0 z-0 opacity-70">
           <img 
-            src={images.hero_mobile?.webp || images.hero_mobile?.src || images.herobg.webp || images.herobg.src} 
+            src={images.herobg.webp || images.herobg.src} 
             alt="Hero Background" 
             className="w-full h-full object-cover"
             loading="eager"
