@@ -10,6 +10,7 @@ import { services } from "../constants";
 import { textVariant } from "../utils/motion";
 import { SectionWrapper } from "../hoc";
 import { images } from "../assets";
+import { useMediaQuery } from "../hooks";
 
 // 定数の整理
 const ANIMATION_CONFIG = {
@@ -36,13 +37,19 @@ const ANIMATION_CONFIG = {
 const STYLES = {
   card: {
     container: "bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-3 sm:p-4 md:p-5 rounded-2xl w-full flex flex-col shadow-lg hover:shadow-xl h-[500px] sm:h-[540px] md:h-[580px]",
+    mobileContainer: "bg-[#1d1836] border-2 border-[#4a4a8f] transition-all p-3 rounded-2xl w-full flex flex-col shadow-lg mb-6",
     image: "w-full h-[160px] sm:h-[180px] md:h-[200px] rounded-xl overflow-hidden relative group shadow-lg mb-2 sm:mb-3 md:mb-4",
+    mobileImage: "w-full h-[160px] rounded-xl overflow-hidden relative group shadow-lg mb-2",
     imageWrapper: "w-full h-full relative",
     title: "text-white text-[18px] sm:text-[20px] md:text-[24px] font-bold text-center mb-2 sm:mb-3",
+    mobileTitle: "text-white text-[18px] font-bold text-center mb-2",
     description: "text-secondary text-[13px] sm:text-[14px] md:text-[16px] text-center whitespace-pre-line mb-2 sm:mb-3",
+    mobileDescription: "text-secondary text-[13px] text-center whitespace-pre-line mb-2",
     content: "text-white-100 text-[12px] sm:text-[13px] md:text-[14px] tracking-wider whitespace-pre-line",
+    mobileContent: "text-white-100 text-[12px] tracking-wider whitespace-pre-line",
     contentWrapper: "flex-grow flex flex-col",
     list: "space-y-1 sm:space-y-2 flex-grow",
+    mobileList: "space-y-1 flex-grow",
   },
   section: {
     container: "relative w-full min-h-[100vh] sm:h-screen mx-auto overflow-hidden",
@@ -50,6 +57,7 @@ const STYLES = {
     header: "w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-2 sm:mb-4",
     title: "text-[14px] sm:text-base",
     subtitle: "text-[28px] sm:text-[32px] md:text-[36px]",
+    mobileCardContainer: "w-full max-w-7xl mx-auto px-4 mt-6 mb-24",
   },
   swiper: {
     container: "absolute inset-0 flex items-start justify-center",
@@ -125,7 +133,7 @@ const SWIPER_CONFIG = {
 };
 
 // ServiceImageコンポーネント
-const ServiceImage = React.memo(({ image, title }) => {
+const ServiceImage = React.memo(({ image, title, isMobile }) => {
   const renderPlaceholder = () => (
     <div className={STYLES.card.imageWrapper}>
       <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
@@ -150,7 +158,7 @@ const ServiceImage = React.memo(({ image, title }) => {
           <img
             src={fallbackSrc}
             alt={title}
-            className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+            className={`w-full h-full object-cover object-center ${!isMobile ? "transform group-hover:scale-110 transition-transform duration-500" : ""}`}
             loading="lazy"
             width="400"
             height="225"
@@ -166,27 +174,38 @@ const ServiceImage = React.memo(({ image, title }) => {
 });
 
 // ServiceCardコンポーネント
-const ServiceCard = React.memo(({ title, description, points, image }) => (
+const ServiceCard = React.memo(({ title, description, points, image, isMobile }) => (
   <motion.div
-    whileHover={ANIMATION_CONFIG.card.hover}
-    className={STYLES.card.container}
+    whileHover={!isMobile ? ANIMATION_CONFIG.card.hover : undefined}
+    className={isMobile ? STYLES.card.mobileContainer : STYLES.card.container}
   >
-    <div className={STYLES.card.image}>
-      <ServiceImage image={image} title={title} />
+    <div className={isMobile ? STYLES.card.mobileImage : STYLES.card.image}>
+      <ServiceImage image={image} title={title} isMobile={isMobile} />
     </div>
 
     <div className={STYLES.card.contentWrapper}>
-      <h3 className={STYLES.card.title}>{title}</h3>
-      <p className={STYLES.card.description}>{description}</p>
-      <ul className={STYLES.card.list}>
+      <h3 className={isMobile ? STYLES.card.mobileTitle : STYLES.card.title}>{title}</h3>
+      <p className={isMobile ? STYLES.card.mobileDescription : STYLES.card.description}>{description}</p>
+      <ul className={isMobile ? STYLES.card.mobileList : STYLES.card.list}>
         {points.map((point, index) => (
-          <li key={index} className={STYLES.card.content}>
+          <li key={index} className={isMobile ? STYLES.card.mobileContent : STYLES.card.content}>
             {point}
           </li>
         ))}
       </ul>
     </div>
   </motion.div>
+));
+
+// MobileServiceCardコンポーネント（モバイル用に最適化されたカード）
+const MobileServiceCard = React.memo(({ service }) => (
+  <ServiceCard
+    title={service.title}
+    description={service.description}
+    points={service.points}
+    image={service.image}
+    isMobile={true}
+  />
 ));
 
 // サービスデータのカスタムフック
@@ -217,7 +236,10 @@ const useServices = () => {
 
 // Servicesコンポーネント
 const Services = () => {
-  const services = useServices();
+  const allServices = useServices();
+  const uniqueServices = allServices.slice(0, 4); // 重複なしのサービス一覧
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
     <section className={STYLES.section.container}>
@@ -233,27 +255,37 @@ const Services = () => {
           </div>
         </div>
 
-        <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
-          <div className={STYLES.swiper.container}>
-            <div className={STYLES.swiper.wrapper}>
-              <div className={STYLES.swiper.gradient.left} />
-              <div className={STYLES.swiper.gradient.right} />
-              
-              <Swiper {...SWIPER_CONFIG}>
-                {services.map((service, index) => (
-                  <SwiperSlide
-                    key={`${service.title}-${index}`}
-                    className={STYLES.swiper.slide}
-                  >
-                    <div className="transform transition-all duration-300 w-full">
-                      <ServiceCard {...service} />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+        {isMobile ? (
+          // モバイル向け表示: 縦に並べたカード
+          <div className={STYLES.section.mobileCardContainer}>
+            {uniqueServices.map((service, index) => (
+              <MobileServiceCard key={`mobile-${service.title}-${index}`} service={service} />
+            ))}
+          </div>
+        ) : (
+          // デスクトップ向け表示: Swiperカルーセル
+          <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
+            <div className={STYLES.swiper.container}>
+              <div className={STYLES.swiper.wrapper}>
+                <div className={STYLES.swiper.gradient.left} />
+                <div className={STYLES.swiper.gradient.right} />
+                
+                <Swiper {...SWIPER_CONFIG}>
+                  {allServices.map((service, index) => (
+                    <SwiperSlide
+                      key={`${service.title}-${index}`}
+                      className={STYLES.swiper.slide}
+                    >
+                      <div className="transform transition-all duration-300 w-full">
+                        <ServiceCard {...service} isMobile={false} />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <style jsx global>{`

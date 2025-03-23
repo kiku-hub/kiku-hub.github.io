@@ -7,6 +7,7 @@ import { SectionWrapper } from "../hoc";
 import { aboutContent } from "../constants";
 import ThreePyramid from "./canvas/ThreePyramidOptimized";
 import MVVContainer from "./mvv/MVVContainer";
+import { useMediaQuery } from "../hooks";
 
 const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
@@ -14,6 +15,8 @@ const About = () => {
   const [hoveredFromPyramid, setHoveredFromPyramid] = useState(null);
   const sectionRef = useRef(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const handleHover = useCallback((layerId) => {
     if (visibleLayers.includes(layerId) || layerId === null) {
@@ -76,23 +79,27 @@ const About = () => {
         </motion.div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-16 items-center justify-center -mt-8">
-        <div className="relative w-full md:w-1/2">
-          <ThreePyramid 
-            visibleLayers={visibleLayers} 
-            highlightedLayer={highlightedLayer}
-            onLayerHover={useCallback((layerId) => {
-              setHoveredFromPyramid(layerId);
-              setHighlightedLayer(layerId);
-            }, [])}
-          />
-        </div>
+      <div className={`flex flex-col ${!isMobile ? 'md:flex-row' : ''} gap-16 items-center justify-center -mt-8`}>
+        {/* モバイルでない場合のみ3Dピラミッドを表示 */}
+        {!isMobile && (
+          <div className="relative w-full md:w-1/2">
+            <ThreePyramid 
+              visibleLayers={visibleLayers} 
+              highlightedLayer={highlightedLayer}
+              onLayerHover={useCallback((layerId) => {
+                setHoveredFromPyramid(layerId);
+                setHighlightedLayer(layerId);
+              }, [])}
+            />
+          </div>
+        )}
 
         <MVVContainer
           orderedCards={aboutContent.cards.slice().reverse()}
           visibleLayers={visibleLayers}
           hoveredFromPyramid={hoveredFromPyramid}
           onHover={handleHover}
+          className={isMobile ? "w-full" : ""}
         />
       </div>
     </div>

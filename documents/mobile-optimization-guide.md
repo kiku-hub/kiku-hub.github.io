@@ -13,6 +13,8 @@
 
 - コンポーネントを統一し、条件付きレンダリングを採用
 - デバイスタイプに応じた最適化表示を実装
+  - モバイル：3D モデルを削除し、静的背景画像のみに簡素化
+  - デスクトップ：3D モデルとアニメーションを活用したリッチな表現
 - Three.js は星空の背景（Stars.jsx）と重要な 3D モデルにのみ使用
 - パフォーマンスを最優先
 
@@ -74,8 +76,10 @@ hooks/
 
 ```jsx
 // components/Hero.jsx
+import { motion } from "framer-motion";
 import useMediaQuery from "../hooks/useMediaQuery";
 import { OrcaCanvas } from "./canvas";
+import { images } from "../assets";
 
 const Hero = () => {
   // モバイルかどうかを検出
@@ -85,32 +89,64 @@ const Hero = () => {
     <section
       id="hero"
       className="relative w-full h-screen flex justify-center items-center overflow-hidden"
+      style={{
+        backgroundImage: `url(${images.herobg.webp || images.herobg.src})`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
     >
-      {/* 共通テキストコンテンツ */}
-      <div className="text-content z-10">
-        <h1>ORCX</h1>
-        <p>
-          <span className="block sm:inline">IT業界の固定観念を覆し、</span>
-          <span className="block sm:inline">
-            本質を追求するエンジニア集団。
-          </span>
-        </p>
+      {/* 半透明のオーバーレイ */}
+      <div className="absolute inset-0 bg-black/30 z-0"></div>
+
+      {/* テキストコンテンツ */}
+      <div className="text-content z-10 max-w-7xl mx-auto relative">
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {[
+            ["BREAK", "AND", "BUILD"],
+            ["BREAK", "the ordinary,", "CREATE", "new value."],
+            ["SEE", "the essence,", "OPEN", "the future."],
+          ].map((textParts, index) => (
+            <div
+              key={index}
+              className={`relative overflow-hidden inline-block ${
+                index === 0
+                  ? isMobile
+                    ? "text-[2.2rem]"
+                    : "text-[3rem] sm:text-[4rem]"
+                  : isMobile
+                  ? "text-[1.8rem]"
+                  : "text-[2.5rem] sm:text-[3.5rem]"
+              }`}
+            >
+              <span className="text-white flex items-center gap-4 sm:gap-8">
+                {textParts.map((part, partIndex) => (
+                  <span
+                    key={partIndex}
+                    className={
+                      part.trim().toUpperCase() === part.trim()
+                        ? "text-[#00a8ff] font-bold"
+                        : ""
+                    }
+                  >
+                    {part}
+                  </span>
+                ))}
+              </span>
+            </div>
+          ))}
+        </motion.div>
       </div>
 
-      {/* モバイルの場合は静的な画像、デスクトップの場合は3Dモデル */}
-      {isMobile ? (
-        <div className="absolute inset-0 z-0 opacity-70">
-          <img
-            src="/images/hero-background.webp"
-            alt="Hero Background"
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchpriority="high"
-          />
-        </div>
-      ) : (
-        <div className="absolute inset-0 z-0">
-          <OrcaCanvas />
+      {/* モバイルでない場合のみ3Dモデルを表示 */}
+      {!isMobile && (
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3/5 h-full">
+          <div className="relative w-full h-full">
+            <OrcaCanvas />
+          </div>
         </div>
       )}
     </section>
@@ -119,20 +155,10 @@ const Hero = () => {
 ```
 
 - メインビジュアル
-  - モバイル: 最適化された静的画像
-  - デスクトップ: Three.js による 3D モデル（OrcaCanvas）
-- 画像最適化：WebP 形式、eager loading、高優先度設定
-- テキスト表現
-  - モバイル・デスクトップ共通: デスクトップと同様の視覚表現を維持
-  - 「BREAK AND BUILD」のテキストアニメーション
-  - 「BREAK the ordinary, CREATE new value」などのサブテキスト
-  - 文字単位のアニメーション効果とグロー効果
-  - レスポンシブフォントサイズを使用し、可読性を維持
-- モバイル最適化
-  - アニメーション数を抑制（パフォーマンス向上）
-  - 文字サイズをビューポートに合わせて調整
-  - グラデーションやグロー効果の軽量化
-  - タッチ操作に適した余白とサイズ設定
+  - 共通: 背景画像を直接スタイルで設定。
+  - 共通: テキストとして「BREAK AND BUILD」「BREAK the ordinary, CREATE new value.」「SEE the essence, OPEN the future.」を表示
+  - モバイル: より小さいフォントサイズを使用し、3D モデルを非表示
+  - デスクトップ: より大きいフォントサイズと 3D モデルを右側に表示
 
 ### 3.2 About セクション
 

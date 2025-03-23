@@ -2,9 +2,9 @@ import React from "react";
 import MVVDescription from "./MVVDescription";
 
 // MVVの説明部分のコンテナコンポーネント
-const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover }) => {
+const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover, className = "" }) => {
   return (
-    <div className="w-full md:w-1/2 -mt-4 relative h-[500px]">
+    <div className={`w-full md:w-1/2 -mt-4 relative h-[500px] ${className}`}>
       <div className="relative w-full h-full">
         {orderedCards.map((card, index) => {
           const isVisible = visibleLayers.includes(card.id.toLowerCase());

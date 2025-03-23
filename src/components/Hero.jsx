@@ -3,6 +3,7 @@ import { styles } from "../styles";
 import { OrcaCanvas } from "./canvas";
 import { useEffect, useRef } from "react";
 import { images } from "../assets";
+import { useMediaQuery } from "../hooks";
 
 // 青系のカラーパレット
 const colors = {
@@ -63,6 +64,8 @@ const Hero = () => {
   const ref = useRef(null);
   const isInView = useInView(ref);
   const controls = useAnimation();
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   useEffect(() => {
     if (isInView) {
@@ -132,7 +135,7 @@ const Hero = () => {
             transition={{ duration: 1 }}
           >
             <motion.h1 
-              className={`${styles.heroHeadText} text-white relative inline-block text-[7rem] sm:text-[9rem]`}
+              className={`${styles.heroHeadText} text-white relative inline-block ${isMobile ? 'text-[4rem] sm:text-[9rem]' : 'text-[7rem] sm:text-[9rem]'}`}
               variants={textVariants}
               initial="initial"
               animate={controls}
@@ -183,7 +186,7 @@ const Hero = () => {
             ].map((textParts, index) => (
               <motion.div
                 key={index}
-                className="relative overflow-hidden inline-block group text-[2.5rem] sm:text-[3.5rem]"
+                className={`relative overflow-hidden inline-block group ${isMobile ? 'text-[1.8rem]' : 'text-[2.5rem] sm:text-[3.5rem]'}`}
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 2 + index * 0.3, duration: 0.8 }}
@@ -246,11 +249,14 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3/5 h-full">
-        <div className="relative w-full h-full">
-          <OrcaCanvas />
+      {/* モバイルでない場合のみ3Dモデルを表示 */}
+      {!isMobile && (
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3/5 h-full">
+          <div className="relative w-full h-full">
+            <OrcaCanvas />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none" />
     </section>
