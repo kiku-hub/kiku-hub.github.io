@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   BiBuildingHouse,
@@ -17,14 +17,22 @@ import { SectionWrapper } from "../hoc";
 import { companyInfo } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 import { logo } from "../assets";
+import { useMediaQuery } from "../hooks";
+
+// Google Maps APIのロード状態を追跡する変数
+let isGoogleMapsLoading = false;
+let isGoogleMapsLoaded = false;
 
 const GoogleMap = () => {
   const mapRef = useRef(null);
   const [map, setMap] = React.useState(null);
   const infoWindowRef = useRef(null);
   const markersRef = useRef({ base: null, logo: null });
+  const scriptRef = useRef(null);
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
-  React.useEffect(() => {
+  useEffect(() => {
     // DOMの準備ができていることを確認
     if (!mapRef.current) {
       console.warn('Map container is not ready');
@@ -37,378 +45,284 @@ const GoogleMap = () => {
       return;
     }
 
-    // 既存のinitMap関数を削除
-    if (window.initMap) {
-      delete window.initMap;
-    }
-
     // エラーハンドリング用の関数
     const handleLoadError = (error) => {
       console.error('Google Maps API loading failed:', error);
+      isGoogleMapsLoading = false;
     };
 
-    // Google Maps APIをasync属性付きで読み込む
-    const loadGoogleMapsAPI = () => {
-      return new Promise((resolve, reject) => {
-        window.initMap = resolve;
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&callback=initMap&libraries=geocoding`;
-        script.async = true;
-        script.defer = true;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    };
+    // 初期化関数を定義
+    const initializeMapWithAPI = () => {
+      if (!mapRef.current) return;
 
-    // APIのロードと地図の初期化
-    loadGoogleMapsAPI()
-      .then(() => {
-        if (!mapRef.current) return;
-
-        try {
-          const geocoder = new google.maps.Geocoder();
-          geocoder.geocode({ address: address }, (results, status) => {
-            if (status === 'OK' && results[0]) {
-              initializeMap(results[0].geometry.location);
-            } else {
-              console.error('Geocode was not successful:', status);
-            }
-          });
-        } catch (error) {
-          console.error('Map initialization failed:', error);
+      try {
+        // window.googleが既に存在するか確認
+        if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
+          console.warn('Google Maps API not fully loaded');
+          return;
         }
-      })
-      .catch(handleLoadError);
+
+        isGoogleMapsLoaded = true;
+        isGoogleMapsLoading = false;
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ address: address }, (results, status) => {
+          if (status === 'OK' && results[0]) {
+            initializeMap(results[0].geometry.location);
+          } else {
+            console.error('Geocode was not successful:', status);
+          }
+        });
+      } catch (error) {
+        console.error('Map initialization failed:', error);
+      }
+    };
+
+    // Google Maps APIを読み込む
+    const loadGoogleMapsAPI = () => {
+      // 既にグローバルなスクリプトロード中の場合は待機
+      if (isGoogleMapsLoading) {
+        // 定期的にAPIのロードが完了したかチェック
+        const checkInterval = setInterval(() => {
+          if (isGoogleMapsLoaded && window.google && window.google.maps) {
+            clearInterval(checkInterval);
+            initializeMapWithAPI();
+          }
+        }, 100);
+        
+        // 10秒後にタイムアウト
+        setTimeout(() => {
+          clearInterval(checkInterval);
+        }, 10000);
+        return;
+      }
+      
+      // 既にグローバルにAPIがロード済みの場合
+      if (isGoogleMapsLoaded && window.google && window.google.maps) {
+        initializeMapWithAPI();
+        return;
+      }
+
+      // どのコンポーネントからもまだロードされていない場合
+      isGoogleMapsLoading = true;
+      
+      // APIをロード
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=geocoding&loading=async`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        isGoogleMapsLoaded = true;
+        isGoogleMapsLoading = false;
+        initializeMapWithAPI();
+      };
+      script.onerror = handleLoadError;
+      document.head.appendChild(script);
+      scriptRef.current = script;
+    };
+
+    // APIをロード
+    loadGoogleMapsAPI();
 
     // 地図の初期化関数
     const initializeMap = (location) => {
-      const newMap = new google.maps.Map(mapRef.current, {
-        center: location,
-        zoom: 17,
-        styles: [
-          {
-            featureType: "poi",
-            elementType: "labels",
-            stylers: [{ visibility: "off" }]
+      if (!window.google || !window.google.maps) return;
+      
+      try {
+        const newMap = new window.google.maps.Map(mapRef.current, {
+          center: location,
+          zoom: isMobile ? 16 : 17, // モバイルではズームレベルを調整
+          styles: [
+            {
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }]
+            },
+            {
+              featureType: "transit",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }]
+            },
+            {
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#1a1d29"
+                }
+              ]
+            },
+            {
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#ffffff"
+                }
+              ]
+            },
+            {
+              "elementType": "labels.text.stroke",
+              "stylers": [
+                {
+                  "color": "#1a1d29"
+                },
+                {
+                  "visibility": "simplified"
+                }
+              ]
+            },
+            {
+              "featureType": "administrative",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#2c303d"
+                }
+              ]
+            },
+            {
+              "featureType": "poi",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#242836"
+                }
+              ]
+            },
+            {
+              "featureType": "poi",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#6f7285"
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#2d3241"
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#8c93a8"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#3d4254"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#a8aec4"
+                }
+              ]
+            },
+            {
+              "featureType": "water",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#151821"
+                }
+              ]
+            },
+            {
+              "featureType": "water",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#4e6d70"
+                }
+              ]
+            }
+          ],
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          zoomControl: true,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
           },
-          {
-            featureType: "transit",
-            elementType: "labels",
-            stylers: [{ visibility: "off" }]
-          },
-          {
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#1a1d29"
-              }
-            ]
-          },
-          {
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#ffffff"
-              }
-            ]
-          },
-          {
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              {
-                "color": "#1a1d29"
-              },
-              {
-                "visibility": "simplified"
-              }
-            ]
-          },
-          {
-            "featureType": "administrative",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#2c303d"
-              }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#242836"
-              }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#6f7285"
-              }
-            ]
-          },
-          {
-            "featureType": "road",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#2d3241"
-              }
-            ]
-          },
-          {
-            "featureType": "road",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#8c93a8"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#3d4254"
-              }
-            ]
-          },
-          {
-            "featureType": "road.highway",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#a8aec4"
-              }
-            ]
-          },
-          {
-            "featureType": "water",
-            "elementType": "geometry",
-            "stylers": [
-              {
-                "color": "#151821"
-              }
-            ]
-          },
-          {
-            "featureType": "water",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              {
-                "color": "#4e6d70"
-              }
-            ]
+          gestureHandling: isMobile ? 'cooperative' : 'greedy',
+          disableDefaultUI: isMobile,
+          backgroundColor: '#1a1d29',
+          restriction: {
+            latLngBounds: {
+              north: location.lat() + 0.01,
+              south: location.lat() - 0.01,
+              east: location.lng() + 0.01,
+              west: location.lng() - 0.01,
+            },
+            strictBounds: true
           }
-        ],
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-        zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_BOTTOM
-        },
-        gestureHandling: 'cooperative',
-        disableDefaultUI: true,
-        backgroundColor: '#1a1d29',
-        restriction: {
-          latLngBounds: {
-            north: location.lat() + 0.01,
-            south: location.lat() - 0.01,
-            east: location.lng() + 0.01,
-            west: location.lng() - 0.01,
-          },
-          strictBounds: true
-        }
-      });
-
-      // マーカーのスタイルをカスタマイズ
-      const markerIcon = {
-        path: 'M32 0C14.3 0 0 14.3 0 32c0 36.8 32 76.8 32 76.8S64 68.8 64 32C64 14.3 49.7 0 32 0z',
-        fillColor: '#FFFFFF',
-        fillOpacity: 1,
-        strokeColor: '#FFFFFF',
-        strokeWeight: 2,
-        scale: 0.6,
-        anchor: new google.maps.Point(32, 85)
-      };
-
-      // ラベル（ロゴ）のスタイルを設定
-      const markerLabel = {
-        url: logo,
-        scaledSize: new google.maps.Size(55, 55),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(27.5, 55)
-      };
-
-      // マーカーを作成
-      markersRef.current.base = new google.maps.Marker({
-        position: location,
-        map: newMap,
-        icon: markerIcon,
-        animation: google.maps.Animation.DROP,
-        zIndex: 1
-      });
-
-      markersRef.current.logo = new google.maps.Marker({
-        position: location,
-        map: newMap,
-        icon: markerLabel,
-        title: "ORCX株式会社 用賀オフィス",
-        animation: google.maps.Animation.DROP,
-        zIndex: 2
-      });
-
-      // InfoWindowを作成
-      infoWindowRef.current = new google.maps.InfoWindow({
-        content: `
-          <div style="
-            position: relative;
-            min-width: 320px;
-            background: rgba(26, 29, 41, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: visible;
-          ">
-            <div style="
-              display: flex;
-              align-items: center;
-              gap: 12px;
-              padding: 16px;
-              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-              background: linear-gradient(to right, rgba(255, 255, 255, 0.05), transparent);
-            ">
-              <div style="
-                width: 24px;
-                height: 24px;
-                background: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              ">
-                <img src="${logo}" 
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    object-fit: contain;
-                  "
-                />
-              </div>
-              <h3 style="margin: 0; font-size: 16px; font-weight: 500; color: #ffffff; letter-spacing: 0.5px; flex-grow: 1;">
-                ORCX株式会社
-              </h3>
-            </div>
-            <div style="padding: 16px;">
-              <div style="font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.8);">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                  <svg style="width: 16px; height: 16px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  <span style="font-size: 13px;">〒158-0097</span>
-                </div>
-                <p style="margin: 0 0 16px 24px; color: rgba(255, 255, 255, 0.9); font-size: 14px;">
-                  東京都世田谷区用賀4-18-7
-                </p>
-                <div style="display: flex; align-items: center; gap: 8px; margin-left: 24px;">
-                  <svg style="width: 16px; height: 16px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  <a href="https://maps.google.com/?q=東京都世田谷区用賀4-18-7" 
-                    target="_blank"
-                    style="color: #00ADB5; text-decoration: none; font-size: 14px; transition: color 0.2s;"
-                    onmouseover="this.style.color='#00c4cc'"
-                    onmouseout="this.style.color='#00ADB5'"
-                  >
-                    Google Mapで見る
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div style="
-              position: absolute;
-              bottom: -10px;
-              left: 50%;
-              transform: translateX(-50%);
-              width: 0;
-              height: 0;
-              border-left: 10px solid transparent;
-              border-right: 10px solid transparent;
-              border-top: 10px solid rgba(26, 29, 41, 0.95);
-              filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.1));
-            "></div>
-          </div>
-        `,
-        pixelOffset: new google.maps.Size(0, -25),
-        disableAutoPan: false,
-        maxWidth: 360
-      });
-
-      // マーカーのクリックイベントを設定
-      const handleMarkerClick = () => {
-        infoWindowRef.current.open({
-          anchor: markersRef.current.logo,
-          map: newMap
         });
 
-        // スタイルのカスタマイズ
-        setTimeout(() => {
-          const iwOuter = document.querySelector('.gm-style-iw-c');
-          const iwBackground = document.querySelector('.gm-style-iw-tc');
-          const iwCloseBtn = document.querySelector('.gm-style-iw-d');
-          
-          if (iwBackground) {
-            iwBackground.style.display = 'none';
-          }
-          
-          if (iwOuter) {
-            iwOuter.style.padding = '0';
-            iwOuter.style.background = 'none';
-            iwOuter.style.boxShadow = 'none';
-            iwOuter.style.overflow = 'visible'; // スクロールを無効化
-          }
-          
-          if (iwCloseBtn) {
-            iwCloseBtn.style.overflow = 'visible'; // スクロールを無効化
-            const closeButton = iwCloseBtn.parentElement.querySelector('button');
-            if (closeButton) {
-              closeButton.style.top = '8px';
-              closeButton.style.right = '8px';
-              closeButton.style.opacity = '1';
-            }
-          }
-        }, 10);
-      };
+        setMap(newMap);
 
-      // 両方のマーカーにクリックイベントを追加
-      [markersRef.current.base, markersRef.current.logo].forEach(marker => {
-        marker.addListener('click', handleMarkerClick);
-      });
+        // マーカーを設定
+        if (markersRef.current.base) {
+          markersRef.current.base.setMap(null);
+        }
+        markersRef.current.base = new window.google.maps.Marker({
+          position: location,
+          map: newMap,
+          animation: window.google.maps.Animation.DROP,
+          title: companyInfo.title
+        });
 
-      setMap(newMap);
+        // infoWindowを作成
+        if (infoWindowRef.current) {
+          infoWindowRef.current.close();
+        }
+        
+        infoWindowRef.current = new window.google.maps.InfoWindow({
+          content: `<div style="color: #333; font-weight: bold; padding: 5px;">${companyInfo.title}</div>`
+        });
+
+        // マーカークリックでInfoWindowを表示
+        markersRef.current.base.addListener('click', () => {
+          infoWindowRef.current.open(newMap, markersRef.current.base);
+        });
+
+      } catch (error) {
+        console.error('Map initialization error:', error);
+      }
     };
 
     return () => {
+      // マーカーとinfoWindowのクリーンアップ
+      if (markersRef.current.base) {
+        markersRef.current.base.setMap(null);
+      }
+      if (markersRef.current.logo) {
+        markersRef.current.logo.setMap(null);
+      }
+      if (infoWindowRef.current) {
+        infoWindowRef.current.close();
+      }
+      
+      // マップの参照をクリア
       if (map) {
         setMap(null);
       }
-      // Cleanup
-      const scripts = document.getElementsByTagName('script');
-      for (let script of scripts) {
-        if (script.src.includes('maps.googleapis.com')) {
-          script.remove();
-        }
-      }
-      delete window.initMap;
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div 
@@ -416,7 +330,7 @@ const GoogleMap = () => {
       className="w-full h-full min-h-[400px] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl"
       style={{ 
         position: 'relative', 
-        height: '400px',
+        height: isMobile ? '350px' : '400px', // モバイルでは高さを調整
         border: '1px solid rgba(255, 255, 255, 0.1)',
         background: '#1a1d29'
       }}
@@ -474,6 +388,9 @@ const getIcon = (iconName) => {
 };
 
 const Company = () => {
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   return (
     <>
       <div>
@@ -485,8 +402,8 @@ const Company = () => {
         </h2>
       </div>
 
-      <div className="mt-8 flex flex-col lg:flex-row gap-6">
-        <div className="flex-1">
+      <div className={`mt-8 flex ${isMobile ? 'flex-col' : 'flex-col lg:flex-row'} gap-6`}>
+        <div className={`${isMobile ? 'order-2' : 'order-1'} flex-1`}>
           <div className="flex flex-col space-y-2">
             {companyInfo.details.map((detail, index) => (
               <CompanyDetail
@@ -498,7 +415,7 @@ const Company = () => {
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className={`${isMobile ? 'order-1 mb-4' : 'order-2'} flex-1`}>
           <GoogleMap />
         </div>
       </div>

@@ -9,6 +9,41 @@ import ThreePyramid from "./canvas/ThreePyramidOptimized";
 import MVVContainer from "./mvv/MVVContainer";
 import { useMediaQuery } from "../hooks";
 
+// デスクトップバージョンのAboutコンテンツ
+const DesktopAboutContent = ({ visibleLayers, highlightedLayer, hoveredFromPyramid, handleHover }) => (
+  <div className="flex flex-row gap-16 items-center justify-center -mt-8">
+    <div className="relative w-full md:w-1/2">
+      <ThreePyramid 
+        visibleLayers={visibleLayers} 
+        highlightedLayer={highlightedLayer}
+        onLayerHover={useCallback((layerId) => {
+          handleHover(layerId);
+        }, [handleHover])}
+      />
+    </div>
+
+    <MVVContainer
+      orderedCards={aboutContent.cards.slice().reverse()}
+      visibleLayers={visibleLayers}
+      hoveredFromPyramid={hoveredFromPyramid}
+      onHover={handleHover}
+    />
+  </div>
+);
+
+// モバイルバージョンのAboutコンテンツ
+const MobileAboutContent = ({ visibleLayers, hoveredFromPyramid, handleHover }) => (
+  <div className="flex flex-col gap-16 items-center justify-center -mt-8">
+    <MVVContainer
+      orderedCards={aboutContent.cards.slice().reverse()}
+      visibleLayers={visibleLayers}
+      hoveredFromPyramid={hoveredFromPyramid}
+      onHover={handleHover}
+      className="w-full"
+    />
+  </div>
+);
+
 const About = () => {
   const [visibleLayers, setVisibleLayers] = useState([]);
   const [highlightedLayer, setHighlightedLayer] = useState(null);
@@ -21,6 +56,7 @@ const About = () => {
   const handleHover = useCallback((layerId) => {
     if (visibleLayers.includes(layerId) || layerId === null) {
       setHighlightedLayer(layerId);
+      setHoveredFromPyramid(layerId);
     }
   }, [visibleLayers]);
 
@@ -79,29 +115,20 @@ const About = () => {
         </motion.div>
       </div>
 
-      <div className={`flex flex-col ${!isMobile ? 'md:flex-row' : ''} gap-16 items-center justify-center -mt-8`}>
-        {/* モバイルでない場合のみ3Dピラミッドを表示 */}
-        {!isMobile && (
-          <div className="relative w-full md:w-1/2">
-            <ThreePyramid 
-              visibleLayers={visibleLayers} 
-              highlightedLayer={highlightedLayer}
-              onLayerHover={useCallback((layerId) => {
-                setHoveredFromPyramid(layerId);
-                setHighlightedLayer(layerId);
-              }, [])}
-            />
-          </div>
-        )}
-
-        <MVVContainer
-          orderedCards={aboutContent.cards.slice().reverse()}
-          visibleLayers={visibleLayers}
-          hoveredFromPyramid={hoveredFromPyramid}
-          onHover={handleHover}
-          className={isMobile ? "w-full" : ""}
+      {isMobile ? (
+        <MobileAboutContent 
+          visibleLayers={visibleLayers} 
+          hoveredFromPyramid={hoveredFromPyramid} 
+          handleHover={handleHover} 
         />
-      </div>
+      ) : (
+        <DesktopAboutContent 
+          visibleLayers={visibleLayers} 
+          highlightedLayer={highlightedLayer}
+          hoveredFromPyramid={hoveredFromPyramid} 
+          handleHover={handleHover} 
+        />
+      )}
     </div>
   );
 };

@@ -142,12 +142,12 @@ const companyInfo = {
     },
     {
       label: "所在地",
-      value: "東京都世田谷区用賀",
+      value: "東京都世田谷区",
       icon: "location"
     },
     {
       label: "設立",
-      value: "2025年3月1日",
+      value: "2025年4月1日",
       icon: "calendar"
     },
     {

@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useMediaQuery } from "../../hooks";
 
 // パフォーマンス計測用のユーティリティ
 const PERFORMANCE_METRICS = {
@@ -11,9 +12,14 @@ const PERFORMANCE_METRICS = {
   renderTime: 0
 };
 
+// デバッグモードの設定
+const DEBUG_MODE = false;
+
 const measurePerformance = () => {
+  if (!DEBUG_MODE) return;
+  
   const now = performance.now();
-  const memory = window.performance.memory;
+  const memory = window?.performance?.memory;
   
   PERFORMANCE_METRICS.frameCount++;
   
@@ -119,15 +125,63 @@ const PYRAMID_CONFIG = {
 
 // ジオメトリ生成用のユーティリティ関数
 const createGeometry = (config) => {
-  const geometry = new THREE.CylinderGeometry(
-    config.scales[1],
-    config.scales[0],
-    config.height,
-    3
-  );
-  geometry.computeBoundingSphere();
-  geometry.computeVertexNormals();
-  return geometry;
+  try {
+    const geometry = new THREE.CylinderGeometry(
+      config.scales[1],
+      config.scales[0],
+      config.height,
+      3
+    );
+    
+    // バッファジオメトリの検証と修正
+    const position = geometry.attributes.position;
+    if (position) {
+      let hasNaN = false;
+      const array = position.array;
+      for (let i = 0; i < array.length; i++) {
+        if (isNaN(array[i])) {
+          array[i] = 0;
+          hasNaN = true;
+        }
+      }
+      if (hasNaN) {
+        position.needsUpdate = true;
+        console.warn('Fixed NaN values in geometry position attribute');
+      }
+    }
+    
+    // 正しい計算順序を確保
+    geometry.computeVertexNormals();
+    
+    // boundingSphereの計算前にposition属性が有効であることを確認
+    if (geometry.attributes.position && geometry.attributes.position.count > 0) {
+      geometry.computeBoundingSphere();
+      
+      // バウンディングスフィアがNaNでないことを確認
+      if (geometry.boundingSphere && 
+          (isNaN(geometry.boundingSphere.radius) || 
+           isNaN(geometry.boundingSphere.center.x) || 
+           isNaN(geometry.boundingSphere.center.y) || 
+           isNaN(geometry.boundingSphere.center.z))) {
+        
+        // 異常値が見つかった場合は手動で初期化
+        console.warn('Invalid bounding sphere detected, resetting to default values');
+        geometry.boundingSphere.radius = 1;
+        geometry.boundingSphere.center.set(0, 0, 0);
+      }
+    } else {
+      console.warn('Cannot compute bounding sphere: Invalid position attribute');
+    }
+    
+    return geometry;
+  } catch (error) {
+    console.error('Error creating geometry:', error);
+    // フォールバックジオメトリを返す
+    const fallbackGeometry = new THREE.BoxGeometry(1, 1, 1);
+    fallbackGeometry.computeVertexNormals();
+    fallbackGeometry.computeBoundingSphere();
+    return fallbackGeometry;
+  }
 };
 
 // アニメーション更新用のユーティリティ関数
@@ -225,12 +279,59 @@ const PyramidLayer = React.memo(({ layerId, visible, isHighlighted, highlightedL
   );
 });
 
-const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover }) => {
+// モバイルでのシンプルな表示用コンポーネント
+const MobilePyramidLayer = React.memo(({ layerId, visible, isHighlighted, highlightedLayer, onHover }) => {
+  const meshRef = useRef();
+  const config = PYRAMID_CONFIG.layers[layerId];
+  
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.visible = visible;
+      meshRef.current.scale.setScalar(isHighlighted ? 1.1 : 1);
+      
+      // ハイライト状態に応じて色を変更
+      const material = meshRef.current.material;
+      if (material) {
+        const brightness = highlightedLayer === null || isHighlighted ? 1 : 0.4;
+        material.color.copy(config.color).multiplyScalar(brightness);
+      }
+    }
+  }, [visible, isHighlighted, highlightedLayer, config.color]);
+  
+  return (
+    <mesh
+      ref={meshRef}
+      position={config.position}
+      rotation={[0, Math.PI / 6, 0]}
+      visible={visible}
+      onPointerEnter={() => onHover(layerId)}
+      onPointerLeave={() => onHover(null)}
+    >
+      <cylinderGeometry 
+        args={[
+          config.scales[1], 
+          config.scales[0], 
+          config.height, 
+          3
+        ]} 
+      />
+      <meshStandardMaterial 
+        color={config.color} 
+        transparent={true}
+        opacity={0.8}
+        metalness={0.5}
+        roughness={0.2}
+      />
+    </mesh>
+  );
+});
+
+const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover, isMobile }) => {
   const groupRef = useRef();
 
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * ANIMATION_CONFIG.rotation.group;
+      groupRef.current.rotation.y += delta * (isMobile ? 0.05 : ANIMATION_CONFIG.rotation.group);
     }
   });
 
@@ -242,41 +343,95 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
       onPointerMissed={() => onLayerHover(null)}
     >
       {Object.keys(PYRAMID_CONFIG.layers).map((layerId) => (
-        <PyramidLayer
-          key={layerId}
-          layerId={layerId}
-          visible={visibleLayers.includes(layerId)}
-          isHighlighted={highlightedLayer === layerId}
-          highlightedLayer={highlightedLayer}
-          onHover={onLayerHover}
-        />
+        isMobile ? 
+          <MobilePyramidLayer
+            key={layerId}
+            layerId={layerId}
+            visible={visibleLayers.includes(layerId)}
+            isHighlighted={highlightedLayer === layerId}
+            highlightedLayer={highlightedLayer}
+            onHover={onLayerHover}
+          /> :
+          <PyramidLayer
+            key={layerId}
+            layerId={layerId}
+            visible={visibleLayers.includes(layerId)}
+            isHighlighted={highlightedLayer === layerId}
+            highlightedLayer={highlightedLayer}
+            onHover={onLayerHover}
+          />
       ))}
     </group>
   );
 });
 
-const ThreePyramid = React.memo(({ visibleLayers = ['value'], highlightedLayer = null, onLayerHover }) => {
+const Scene = React.memo(({ visibleLayers, highlightedLayer, onLayerHover }) => {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   return (
-    <div className="w-full h-[600px]">
-      <Canvas
-        camera={PYRAMID_CONFIG.camera}
-        gl={{ 
-          antialias: true,
-          alpha: true,
-          powerPreference: 'high-performance',
-          precision: 'mediump'
-        }}
-      >
+    <>
+      <ambientLight intensity={PYRAMID_CONFIG.lights.ambient.intensity} />
+      <directionalLight
+        position={PYRAMID_CONFIG.lights.directional.position}
+        intensity={PYRAMID_CONFIG.lights.directional.intensity}
+      />
+      <pointLight
+        position={PYRAMID_CONFIG.lights.point1.position}
+        intensity={PYRAMID_CONFIG.lights.point1.intensity}
+        color={PYRAMID_CONFIG.lights.point1.color}
+      />
+      <pointLight
+        position={PYRAMID_CONFIG.lights.point2.position}
+        intensity={PYRAMID_CONFIG.lights.point2.intensity}
+        color={PYRAMID_CONFIG.lights.point2.color}
+      />
+      
+      <PyramidGroup
+        visibleLayers={visibleLayers}
+        highlightedLayer={highlightedLayer}
+        onLayerHover={onLayerHover}
+        isMobile={isMobile}
+      />
+    </>
+  );
+});
+
+const ThreePyramid = React.memo(({ visibleLayers, highlightedLayer, onLayerHover }) => {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
+  const handleHover = useCallback((layerId) => {
+    if (onLayerHover) {
+      onLayerHover(layerId);
+    }
+  }, [onLayerHover]);
+  
+  const canvasProps = {
+    camera: PYRAMID_CONFIG.camera,
+    shadows: !isMobile,
+    frameloop: isMobile ? 'demand' : 'always',
+    dpr: isMobile ? [0.5, 1] : [1, 2],
+    gl: {
+      antialias: !isMobile,
+      alpha: true,
+      precision: 'lowp',
+      powerPreference: isMobile ? "low-power" : "high-performance",
+    }
+  };
+
+  return (
+    <div style={{ 
+      position: 'relative', 
+      width: '100%', 
+      height: '100%', 
+      minHeight: '400px',
+      maxHeight: '600px' 
+    }}>
+      <Canvas {...canvasProps}>
         <Suspense fallback={null}>
-          <directionalLight {...PYRAMID_CONFIG.lights.directional} />
-          <ambientLight {...PYRAMID_CONFIG.lights.ambient} />
-          <pointLight {...PYRAMID_CONFIG.lights.point1} />
-          <pointLight {...PYRAMID_CONFIG.lights.point2} />
-          
-          <PyramidGroup 
-            visibleLayers={visibleLayers} 
-            highlightedLayer={highlightedLayer} 
-            onLayerHover={onLayerHover} 
+          <Scene
+            visibleLayers={visibleLayers}
+            highlightedLayer={highlightedLayer}
+            onLayerHover={handleHover}
           />
         </Suspense>
       </Canvas>

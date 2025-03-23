@@ -6,11 +6,35 @@ import { useState, useEffect } from "react";
  * @returns {boolean} - クエリに一致するかどうか
  */
 function useMediaQuery(query) {
-  const [matches, setMatches] = useState(false);
+  // 初期値をモバイル判定に設定（User-Agentに基づく）
+  const isMobileByUserAgent = () => {
+    if (typeof window === "undefined" || !window.navigator) return false;
+    
+    const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+    return /android|iPad|iPhone|iPod|webOS|BlackBerry|Windows Phone/i.test(userAgent);
+  };
+
+  const getInitialValue = () => {
+    if (typeof window === "undefined") return false;
+    if (query === "(max-width: 767px)" && isMobileByUserAgent()) return true;
+    return window.matchMedia ? window.matchMedia(query).matches : false;
+  };
+
+  const [matches, setMatches] = useState(getInitialValue);
 
   useEffect(() => {
     // SSR対応（windowがない場合は早期リターン）
     if (typeof window === "undefined") {
+      return;
+    }
+
+    // ブラウザがmatchMediaをサポートしていない場合
+    if (!window.matchMedia) {
+      console.warn("Browser doesn't support matchMedia");
+      // モバイル判定の場合はUser-Agentを使用
+      if (query === "(max-width: 767px)") {
+        setMatches(isMobileByUserAgent());
+      }
       return;
     }
 
@@ -25,11 +49,31 @@ function useMediaQuery(query) {
     };
 
     // イベントリスナーを追加
-    mediaQuery.addEventListener("change", handleChange);
+    try {
+      // モダンなブラウザ
+      mediaQuery.addEventListener("change", handleChange);
+    } catch (err) {
+      try {
+        // 古いブラウザ（Safari 13.1以前など）
+        mediaQuery.addListener(handleChange);
+      } catch (e) {
+        console.warn("Browser doesn't support media query listeners", e);
+      }
+    }
 
     // クリーンアップ関数
     return () => {
-      mediaQuery.removeEventListener("change", handleChange);
+      try {
+        // モダンなブラウザ
+        mediaQuery.removeEventListener("change", handleChange);
+      } catch (err) {
+        try {
+          // 古いブラウザ
+          mediaQuery.removeListener(handleChange);
+        } catch (e) {
+          console.warn("Error cleaning up media query listeners", e);
+        }
+      }
     };
   }, [query]);
 

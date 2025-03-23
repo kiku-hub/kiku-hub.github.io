@@ -208,6 +208,40 @@ const MobileServiceCard = React.memo(({ service }) => (
   />
 ));
 
+// モバイル用サービスカードリスト
+const MobileServicesList = React.memo(({ services }) => (
+  <div className={STYLES.section.mobileCardContainer}>
+    {services.map((service, index) => (
+      <MobileServiceCard key={`mobile-${service.title}-${index}`} service={service} />
+    ))}
+  </div>
+));
+
+// デスクトップ用Swiperカルーセル
+const DesktopServicesCarousel = React.memo(({ services }) => (
+  <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
+    <div className={STYLES.swiper.container}>
+      <div className={STYLES.swiper.wrapper}>
+        <div className={STYLES.swiper.gradient.left} />
+        <div className={STYLES.swiper.gradient.right} />
+        
+        <Swiper {...SWIPER_CONFIG}>
+          {services.map((service, index) => (
+            <SwiperSlide
+              key={`${service.title}-${index}`}
+              className={STYLES.swiper.slide}
+            >
+              <div className="transform transition-all duration-300 w-full">
+                <ServiceCard {...service} isMobile={false} />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+    </div>
+  </div>
+));
+
 // サービスデータのカスタムフック
 const useServices = () => {
   return useMemo(() => {
@@ -237,118 +271,87 @@ const useServices = () => {
 // Servicesコンポーネント
 const Services = () => {
   const allServices = useServices();
-  const uniqueServices = allServices.slice(0, 4); // 重複なしのサービス一覧
+  const uniqueServices = useMemo(() => allServices.slice(0, 4), [allServices]); // 重複なしのサービス一覧をメモ化
   // モバイルデバイスかどうかを検出
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
-    <section className={STYLES.section.container}>
-      <div className={STYLES.section.wrapper}>
-        <div className={STYLES.section.header}>
-          <div className="text-center">
-            <p className={`${styles.sectionSubText} ${STYLES.section.title}`}>
-              事業内容
-            </p>
-            <h2 className={`${styles.sectionHeadText} ${STYLES.section.subtitle}`}>
-              Services.
-            </h2>
-          </div>
-        </div>
+    <section className="relative w-full min-h-screen mx-auto bg-services-pattern bg-cover bg-no-repeat overflow-hidden">
+      <div>
+        <motion.div variants={textVariant()}>
+          <p className={styles.sectionSubText}>当社のサービス</p>
+          <h2 className={styles.sectionHeadText}>サービス一覧</h2>
+        </motion.div>
 
-        {isMobile ? (
-          // モバイル向け表示: 縦に並べたカード
-          <div className={STYLES.section.mobileCardContainer}>
-            {uniqueServices.map((service, index) => (
-              <MobileServiceCard key={`mobile-${service.title}-${index}`} service={service} />
-            ))}
-          </div>
-        ) : (
-          // デスクトップ向け表示: Swiperカルーセル
-          <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
-            <div className={STYLES.swiper.container}>
-              <div className={STYLES.swiper.wrapper}>
-                <div className={STYLES.swiper.gradient.left} />
-                <div className={STYLES.swiper.gradient.right} />
-                
-                <Swiper {...SWIPER_CONFIG}>
-                  {allServices.map((service, index) => (
-                    <SwiperSlide
-                      key={`${service.title}-${index}`}
-                      className={STYLES.swiper.slide}
-                    >
-                      <div className="transform transition-all duration-300 w-full">
-                        <ServiceCard {...service} isMobile={false} />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </div>
-            </div>
-          </div>
-        )}
+        {isMobile ? 
+          <MobileServicesList services={uniqueServices} /> : 
+          <DesktopServicesCarousel services={allServices} />
+        }
       </div>
 
-      <style jsx global>{`
-        .services-swiper .swiper-slide {
-          transition: all 0.4s ease;
-          opacity: 0.4;
-          transform: scale(0.85);
-          will-change: transform, opacity;
-        }
-        
-        .services-swiper .swiper-slide-active {
-          opacity: 1;
-          transform: scale(1);
-          z-index: 2;
-        }
-
-        .services-swiper .swiper-slide-prev,
-        .services-swiper .swiper-slide-next {
-          opacity: 0.6;
-          transform: scale(0.9);
-        }
-
-        .services-swiper .swiper-button-next,
-        .services-swiper .swiper-button-prev {
-          color: rgba(255, 255, 255, 0.8);
-          transition: all 0.3s ease;
-          top: 45%;
-          width: 30px;
-          height: 30px;
-        }
-
-        .services-swiper .swiper-button-next:hover,
-        .services-swiper .swiper-button-prev:hover {
-          color: white;
-          transform: scale(1.1);
-        }
-
-        .services-swiper .swiper-button-next:after,
-        .services-swiper .swiper-button-prev:after {
-          font-size: 1.2rem;
-          font-weight: bold;
-        }
-
-        @media (min-width: 640px) {
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .services-swiper .swiper-slide {
+            transition: all 0.4s ease;
+            opacity: 0.4;
+            transform: scale(0.85);
+            will-change: transform, opacity;
+          }
+          
+          .services-swiper .swiper-slide-active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+          }
+  
+          .services-swiper .swiper-slide-prev,
+          .services-swiper .swiper-slide-next {
+            opacity: 0.6;
+            transform: scale(0.9);
+          }
+  
           .services-swiper .swiper-button-next,
           .services-swiper .swiper-button-prev {
-            width: 44px;
-            height: 44px;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            top: 45%;
+            width: 30px;
+            height: 30px;
           }
-
+  
+          .services-swiper .swiper-button-next:hover,
+          .services-swiper .swiper-button-prev:hover {
+            color: white;
+            transform: scale(1.1);
+          }
+  
           .services-swiper .swiper-button-next:after,
           .services-swiper .swiper-button-prev:after {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
           }
-        }
-
-        @media (max-width: 639px) {
-          .services-swiper .swiper-button-next,
-          .services-swiper .swiper-button-prev {
-            display: none;
+  
+          @media (min-width: 640px) {
+            .services-swiper .swiper-button-next,
+            .services-swiper .swiper-button-prev {
+              width: 44px;
+              height: 44px;
+            }
+  
+            .services-swiper .swiper-button-next:after,
+            .services-swiper .swiper-button-prev:after {
+              font-size: 1.5rem;
+            }
           }
-        }
-      `}</style>
+  
+          @media (max-width: 639px) {
+            .services-swiper .swiper-button-next,
+            .services-swiper .swiper-button-prev {
+              display: none;
+            }
+          }
+        `
+      }} />
     </section>
   );
 };

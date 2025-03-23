@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from 'three';
+import { useMediaQuery } from "../../hooks";
 
 // 定数の定義
 const MODEL_PATH = "/orca/Animation_Formal_Bow_withSkin.glb";
@@ -20,8 +21,38 @@ const CAMERA_CONFIG = {
 
 const MODEL_SCALE = 6.5;
 
+// モバイル用のシンプルなプレースホルダー
+const MobilePlaceholder = () => {
+  const ref = useRef();
+  
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.rotation.y = Math.PI / 4;
+    }
+  }, []);
+  
+  return (
+    <mesh ref={ref} position={[0, 0, 0]} rotation={[0, 0, 0]}>
+      <boxGeometry args={[5, 5, 5]} />
+      <meshStandardMaterial 
+        color="#1976D2"
+        metalness={0.8}
+        roughness={0.2}
+        transparent
+        opacity={0.8}
+      />
+      <pointLight position={[10, 10, 10]} intensity={0.6} />
+    </mesh>
+  );
+};
+
 // Orcaモデルコンポーネント
-const OrcaModel = () => {
+const OrcaModel = ({ isMobile }) => {
+  // モバイルの場合は早期リターン
+  if (isMobile) {
+    return <MobilePlaceholder />;
+  }
+  
   const modelRef = useRef();
   const hasStartedRef = useRef(false);
   const [modelPath, setModelPath] = useState(MODEL_PATH);
@@ -37,13 +68,17 @@ const OrcaModel = () => {
       } catch (error) {
         console.error('CDNからのモデル読み込みに失敗:', error);
         if (modelPath === MODEL_PATH) {
-          setModelPath(FALLBACK_MODEL_PATH);
           setLoadError(true);
         }
       }
     };
     loadModel();
   }, [modelPath]);
+
+  // モデルの読み込みに失敗した場合はプレースホルダーを表示
+  if (loadError) {
+    return <MobilePlaceholder />;
+  }
 
   const orca = useGLTF(modelPath);
   const { actions, names } = useAnimations(orca.animations, orca.scene);
@@ -52,7 +87,7 @@ const OrcaModel = () => {
   useEffect(() => {
     if (gl) {
       // レンダラーの設定
-      gl.setPixelRatio(window.devicePixelRatio);
+      gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // デバイスピクセル比を最大2までに制限
       gl.capabilities.getMaxAnisotropy();
     }
   }, [gl]);
@@ -175,34 +210,40 @@ const OrcaModel = () => {
 };
 
 // Canvas コンポーネント
-const OrcaCanvas = () => (
-  <Canvas
-    shadows
-    frameloop='always'
-    dpr={[1, 2]}
-    gl={{ 
+const OrcaCanvas = () => {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  
+  const canvasProps = {
+    shadows: !isMobile, // モバイルでは影を無効
+    frameloop: isMobile ? 'demand' : 'always', // モバイルでは必要なときだけ描画
+    dpr: isMobile ? [0.5, 1] : [1, 2], // モバイルではピクセル比を下げる
+    gl: { 
       preserveDrawingBuffer: true,
-      antialias: true,
-      powerPreference: "high-performance",
+      antialias: !isMobile, // モバイルではアンチエイリアスを無効
+      powerPreference: isMobile ? "low-power" : "high-performance",
       alpha: true,
       precision: 'lowp',
       depth: true,
       stencil: false
-    }}
-    camera={CAMERA_CONFIG}
-    performance={{ min: 0.5 }}
-  >
-    <Suspense fallback={null}>
-      <OrbitControls
-        enableZoom={false}
-        enableRotate={false}
-        maxPolarAngle={Math.PI / 2}
-        minPolarAngle={Math.PI / 2}
-      />
-      <OrcaModel />
-    </Suspense>
-    <Preload all />
-  </Canvas>
-);
+    },
+    camera: CAMERA_CONFIG,
+    performance: { min: 0.1 }
+  };
+
+  return (
+    <Canvas {...canvasProps}>
+      <Suspense fallback={null}>
+        <OrbitControls
+          enableZoom={false}
+          enableRotate={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2}
+        />
+        <OrcaModel isMobile={isMobile} />
+      </Suspense>
+      {!isMobile && <Preload all />}
+    </Canvas>
+  );
+};
 
 export default OrcaCanvas; 
