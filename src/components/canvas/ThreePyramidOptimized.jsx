@@ -110,8 +110,8 @@ const PYRAMID_CONFIG = {
     }
   },
   camera: {
-    position: [0, 4.0, 20],
-    fov: 45,
+    position: [0, 4.0, 22],
+    fov: 42,
     near: 0.1,
     far: 1000
   },
@@ -339,7 +339,8 @@ const PyramidGroup = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
     <group 
       ref={groupRef} 
       rotation={[0, Math.PI / 6, 0]} 
-      position={[0, 0.6, 0]}
+      position={[0, 0, 0]}
+      scale={[1.0, 1.0, 1.0]}
       onPointerMissed={() => onLayerHover(null)}
     >
       {Object.keys(PYRAMID_CONFIG.layers).map((layerId) => (
@@ -422,9 +423,8 @@ const ThreePyramid = React.memo(({ visibleLayers, highlightedLayer, onLayerHover
     <div style={{ 
       position: 'relative', 
       width: '100%', 
-      height: '100%', 
-      minHeight: '400px',
-      maxHeight: '600px' 
+      height: '100%',
+      minHeight: isMobile ? '400px' : '100%'
     }}>
       <Canvas {...canvasProps}>
         <Suspense fallback={null}>

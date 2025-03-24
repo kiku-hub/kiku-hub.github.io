@@ -11,8 +11,8 @@ import { useMediaQuery } from "../hooks";
 
 // デスクトップバージョンのAboutコンテンツ
 const DesktopAboutContent = ({ visibleLayers, highlightedLayer, hoveredFromPyramid, handleHover }) => (
-  <div className="flex flex-row gap-16 items-center justify-center -mt-8">
-    <div className="relative w-full md:w-1/2">
+  <div className="flex flex-row items-center justify-between w-full h-full">
+    <div className="relative w-[47%] h-[580px] -mt-12">
       <ThreePyramid 
         visibleLayers={visibleLayers} 
         highlightedLayer={highlightedLayer}
@@ -22,18 +22,20 @@ const DesktopAboutContent = ({ visibleLayers, highlightedLayer, hoveredFromPyram
       />
     </div>
 
-    <MVVContainer
-      orderedCards={aboutContent.cards.slice().reverse()}
-      visibleLayers={visibleLayers}
-      hoveredFromPyramid={hoveredFromPyramid}
-      onHover={handleHover}
-    />
+    <div className="w-[53%] pl-8">
+      <MVVContainer
+        orderedCards={aboutContent.cards.slice().reverse()}
+        visibleLayers={visibleLayers}
+        hoveredFromPyramid={hoveredFromPyramid}
+        onHover={handleHover}
+      />
+    </div>
   </div>
 );
 
 // モバイルバージョンのAboutコンテンツ
 const MobileAboutContent = ({ visibleLayers, hoveredFromPyramid, handleHover }) => (
-  <div className="flex flex-col gap-16 items-center justify-center -mt-8">
+  <div className="flex flex-col gap-16 items-center justify-center">
     <MVVContainer
       orderedCards={aboutContent.cards.slice().reverse()}
       visibleLayers={visibleLayers}
@@ -96,8 +98,8 @@ const About = () => {
   }, [hasAnimated]);
 
   return (
-    <div ref={sectionRef}>
-      <div className="text-center mb-8">
+    <div ref={sectionRef} className={`w-full ${!isMobile ? 'h-screen' : ''} flex flex-col`}>
+      <div className="text-center mb-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -115,20 +117,22 @@ const About = () => {
         </motion.div>
       </div>
 
-      {isMobile ? (
-        <MobileAboutContent 
-          visibleLayers={visibleLayers} 
-          hoveredFromPyramid={hoveredFromPyramid} 
-          handleHover={handleHover} 
-        />
-      ) : (
-        <DesktopAboutContent 
-          visibleLayers={visibleLayers} 
-          highlightedLayer={highlightedLayer}
-          hoveredFromPyramid={hoveredFromPyramid} 
-          handleHover={handleHover} 
-        />
-      )}
+      <div className={`flex-1 flex items-center justify-center ${!isMobile ? 'w-full h-[calc(100vh-150px)] max-w-7xl mx-auto' : ''}`}>
+        {isMobile ? (
+          <MobileAboutContent 
+            visibleLayers={visibleLayers} 
+            hoveredFromPyramid={hoveredFromPyramid} 
+            handleHover={handleHover} 
+          />
+        ) : (
+          <DesktopAboutContent 
+            visibleLayers={visibleLayers} 
+            highlightedLayer={highlightedLayer}
+            hoveredFromPyramid={hoveredFromPyramid} 
+            handleHover={handleHover} 
+          />
+        )}
+      </div>
     </div>
   );
 };

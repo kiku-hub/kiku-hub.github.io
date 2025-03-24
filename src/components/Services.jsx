@@ -36,37 +36,37 @@ const ANIMATION_CONFIG = {
 // スタイル定数
 const STYLES = {
   card: {
-    container: "bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-3 sm:p-4 md:p-5 rounded-2xl w-full flex flex-col shadow-lg hover:shadow-xl h-[500px] sm:h-[540px] md:h-[580px]",
+    container: "bg-[#1d1836] hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent transition-all duration-300 p-5 rounded-2xl w-full flex flex-col shadow-lg hover:shadow-xl h-[520px]",
     mobileContainer: "bg-[#1d1836] border-2 border-[#4a4a8f] transition-all p-3 rounded-2xl w-full flex flex-col shadow-lg mb-6",
-    image: "w-full h-[160px] sm:h-[180px] md:h-[200px] rounded-xl overflow-hidden relative group shadow-lg mb-2 sm:mb-3 md:mb-4",
+    image: "w-full h-[180px] rounded-xl overflow-hidden relative group shadow-lg mb-4",
     mobileImage: "w-full h-[160px] rounded-xl overflow-hidden relative group shadow-lg mb-2",
     imageWrapper: "w-full h-full relative",
-    title: "text-white text-[18px] sm:text-[20px] md:text-[24px] font-bold text-center mb-2 sm:mb-3",
+    title: "text-white text-[20px] font-bold text-center mb-3",
     mobileTitle: "text-white text-[18px] font-bold text-center mb-2",
-    description: "text-secondary text-[13px] sm:text-[14px] md:text-[16px] text-center whitespace-pre-line mb-2 sm:mb-3",
+    description: "text-secondary text-[14px] text-center whitespace-pre-line mb-3",
     mobileDescription: "text-secondary text-[13px] text-center whitespace-pre-line mb-2",
-    content: "text-white-100 text-[12px] sm:text-[13px] md:text-[14px] tracking-wider whitespace-pre-line",
+    content: "text-white-100 text-[13px] tracking-wider whitespace-pre-line",
     mobileContent: "text-white-100 text-[12px] tracking-wider whitespace-pre-line",
     contentWrapper: "flex-grow flex flex-col",
-    list: "space-y-1 sm:space-y-2 flex-grow",
+    list: "space-y-2 flex-grow",
     mobileList: "space-y-1 flex-grow",
   },
   section: {
     container: "relative w-full min-h-[100vh] sm:h-screen mx-auto overflow-hidden",
     wrapper: "absolute inset-0 flex flex-col items-center py-4 sm:py-0",
-    header: "w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-2 sm:mb-4",
-    title: "text-[14px] sm:text-base",
-    subtitle: "text-[28px] sm:text-[32px] md:text-[36px]",
+    header: "w-full max-w-7xl mx-auto px-6 mb-4",
+    title: "text-[14px]",
+    subtitle: "text-[32px]",
     mobileCardContainer: "w-full max-w-7xl mx-auto px-4 mt-6 mb-24",
   },
   swiper: {
     container: "absolute inset-0 flex items-start justify-center",
-    wrapper: "relative w-full max-w-[1600px] mx-auto px-2 sm:px-4",
+    wrapper: "relative w-full max-w-[1600px] mx-auto px-4",
     gradient: {
-      left: "absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[10%] sm:w-[15%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none",
-      right: "absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[10%] sm:w-[15%] h-full bg-gradient-to-l from-primary to-transparent pointer-events-none",
+      left: "absolute left-0 top-1/2 -translate-y-1/2 z-10 w-[10%] h-full bg-gradient-to-r from-primary to-transparent pointer-events-none",
+      right: "absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[10%] h-full bg-gradient-to-l from-primary to-transparent pointer-events-none",
     },
-    slide: "w-[80vw] sm:!w-[340px] md:!w-[400px] lg:!w-[450px] flex items-center justify-center py-3 sm:py-4 md:py-6 lg:py-8",
+    slide: "!w-[380px] flex items-center justify-center py-4",
   },
 };
 
@@ -89,7 +89,7 @@ const SWIPER_CONFIG = {
     reverseDirection: false,
   },
   breakpoints: {
-    320: { 
+    0: { 
       slidesPerView: 1,
       spaceBetween: 20,
       coverflowEffect: {
@@ -99,17 +99,7 @@ const SWIPER_CONFIG = {
         modifier: 1,
       }
     },
-    480: {
-      slidesPerView: "auto",
-      spaceBetween: -10,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-      }
-    },
-    640: { 
+    768: {
       slidesPerView: "auto",
       spaceBetween: -20,
       coverflowEffect: {
@@ -120,6 +110,16 @@ const SWIPER_CONFIG = {
       }
     },
     1024: { 
+      slidesPerView: "auto",
+      spaceBetween: -30,
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+      }
+    },
+    1440: { 
       slidesPerView: "auto",
       spaceBetween: -30,
       coverflowEffect: {
@@ -219,25 +219,23 @@ const MobileServicesList = React.memo(({ services }) => (
 
 // デスクトップ用Swiperカルーセル
 const DesktopServicesCarousel = React.memo(({ services }) => (
-  <div className="flex-1 w-full relative flex items-start justify-center -mt-4 sm:-mt-6">
-    <div className={STYLES.swiper.container}>
-      <div className={STYLES.swiper.wrapper}>
-        <div className={STYLES.swiper.gradient.left} />
-        <div className={STYLES.swiper.gradient.right} />
-        
-        <Swiper {...SWIPER_CONFIG}>
-          {services.map((service, index) => (
-            <SwiperSlide
-              key={`${service.title}-${index}`}
-              className={STYLES.swiper.slide}
-            >
-              <div className="transform transition-all duration-300 w-full">
-                <ServiceCard {...service} isMobile={false} />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+  <div className="flex-1 w-full relative flex items-center justify-center px-4 mx-auto max-w-[1800px]">
+    <div className="w-full relative">
+      <div className={STYLES.swiper.gradient.left} />
+      <div className={STYLES.swiper.gradient.right} />
+      
+      <Swiper {...SWIPER_CONFIG}>
+        {services.map((service, index) => (
+          <SwiperSlide
+            key={`${service.title}-${index}`}
+            className={STYLES.swiper.slide}
+          >
+            <div className="transform transition-all duration-300 w-full">
+              <ServiceCard {...service} isMobile={false} />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   </div>
 ));
@@ -277,16 +275,18 @@ const Services = () => {
 
   return (
     <section className="relative w-full min-h-screen mx-auto bg-services-pattern bg-cover bg-no-repeat overflow-hidden">
-      <div>
+      <div className="flex flex-col h-full py-10">
         <div className="text-center mb-8">
           <p className={`${styles.sectionSubText} text-secondary`}>事業内容</p>
           <h2 className={`${styles.sectionHeadText} text-white`}>Services.</h2>
         </div>
 
-        {isMobile ? 
-          <MobileServicesList services={uniqueServices} /> : 
-          <DesktopServicesCarousel services={allServices} />
-        }
+        <div className="flex-1 flex items-center justify-center">
+          {isMobile ? 
+            <MobileServicesList services={uniqueServices} /> : 
+            <DesktopServicesCarousel services={allServices} />
+          }
+        </div>
       </div>
 
       <style dangerouslySetInnerHTML={{

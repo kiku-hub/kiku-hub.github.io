@@ -53,9 +53,9 @@ const GoogleMap = () => {
 
     // 初期化関数を定義
     const initializeMapWithAPI = () => {
-      if (!mapRef.current) return;
+        if (!mapRef.current) return;
 
-      try {
+        try {
         // window.googleが既に存在するか確認
         if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
           console.warn('Google Maps API not fully loaded');
@@ -66,7 +66,6 @@ const GoogleMap = () => {
         isGoogleMapsLoading = false;
 
         const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ address: address }, (results, status) => {
           if (status === 'OK' && results[0]) {
             initializeMap(results[0].geometry.location);
           } else {
@@ -130,148 +129,148 @@ const GoogleMap = () => {
       
       try {
         const newMap = new window.google.maps.Map(mapRef.current, {
-          center: location,
+        center: location,
           zoom: isMobile ? 16 : 17, // モバイルではズームレベルを調整
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }]
-            },
-            {
-              featureType: "transit",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }]
-            },
-            {
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#1a1d29"
-                }
-              ]
-            },
-            {
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#ffffff"
-                }
-              ]
-            },
-            {
-              "elementType": "labels.text.stroke",
-              "stylers": [
-                {
-                  "color": "#1a1d29"
-                },
-                {
-                  "visibility": "simplified"
-                }
-              ]
-            },
-            {
-              "featureType": "administrative",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#2c303d"
-                }
-              ]
-            },
-            {
-              "featureType": "poi",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#242836"
-                }
-              ]
-            },
-            {
-              "featureType": "poi",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#6f7285"
-                }
-              ]
-            },
-            {
-              "featureType": "road",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#2d3241"
-                }
-              ]
-            },
-            {
-              "featureType": "road",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#8c93a8"
-                }
-              ]
-            },
-            {
-              "featureType": "road.highway",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#3d4254"
-                }
-              ]
-            },
-            {
-              "featureType": "road.highway",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#a8aec4"
-                }
-              ]
-            },
-            {
-              "featureType": "water",
-              "elementType": "geometry",
-              "stylers": [
-                {
-                  "color": "#151821"
-                }
-              ]
-            },
-            {
-              "featureType": "water",
-              "elementType": "labels.text.fill",
-              "stylers": [
-                {
-                  "color": "#4e6d70"
-                }
-              ]
-            }
-          ],
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-          zoomControl: true,
-          zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_BOTTOM
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
           },
+          {
+            featureType: "transit",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          },
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#1a1d29"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#ffffff"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#1a1d29"
+              },
+              {
+                "visibility": "simplified"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2c303d"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#242836"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#6f7285"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2d3241"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#8c93a8"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#3d4254"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#a8aec4"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#151821"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#4e6d70"
+              }
+            ]
+          }
+        ],
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_BOTTOM
+        },
           gestureHandling: isMobile ? 'cooperative' : 'greedy',
           disableDefaultUI: isMobile,
-          backgroundColor: '#1a1d29',
-          restriction: {
-            latLngBounds: {
-              north: location.lat() + 0.01,
-              south: location.lat() - 0.01,
-              east: location.lng() + 0.01,
-              west: location.lng() - 0.01,
-            },
-            strictBounds: true
-          }
-        });
+        backgroundColor: '#1a1d29',
+        restriction: {
+          latLngBounds: {
+            north: location.lat() + 0.01,
+            south: location.lat() - 0.01,
+            east: location.lng() + 0.01,
+            west: location.lng() - 0.01,
+          },
+          strictBounds: true
+        }
+      });
 
         setMap(newMap);
 
@@ -280,8 +279,8 @@ const GoogleMap = () => {
           markersRef.current.base.setMap(null);
         }
         markersRef.current.base = new window.google.maps.Marker({
-          position: location,
-          map: newMap,
+        position: location,
+        map: newMap,
           animation: window.google.maps.Animation.DROP,
           title: companyInfo.title
         });

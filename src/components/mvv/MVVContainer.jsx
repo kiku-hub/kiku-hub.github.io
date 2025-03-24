@@ -4,7 +4,7 @@ import MVVDescription from "./MVVDescription";
 // MVVの説明部分のコンテナコンポーネント
 const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover, className = "" }) => {
   return (
-    <div className={`w-full md:w-1/2 -mt-4 relative h-[500px] ${className}`}>
+    <div className={`w-full md:w-full -mt-24 relative h-[550px] ${className}`}>
       <div className="relative w-full h-full">
         {orderedCards.map((card, index) => {
           const isVisible = visibleLayers.includes(card.id.toLowerCase());
@@ -12,8 +12,8 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
           const getPosition = () => {
             switch (card.id.toLowerCase()) {
               case 'value': return 0;      // 一番下
-              case 'vision': return 175;   // 真ん中 (200px上)
-              case 'mission': return 350;  // 一番上 (400px上)
+              case 'vision': return 180;   // 真ん中
+              case 'mission': return 360;  // 一番上
               default: return 0;
             }
           };
