@@ -66,15 +66,16 @@ const GoogleMap = () => {
         isGoogleMapsLoading = false;
 
         const geocoder = new window.google.maps.Geocoder();
-          if (status === 'OK' && results[0]) {
-            initializeMap(results[0].geometry.location);
-          } else {
-            console.error('Geocode was not successful:', status);
-          }
-        });
-      } catch (error) {
-        console.error('Map initialization failed:', error);
-      }
+          geocoder.geocode({ address: address }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              initializeMap(results[0].geometry.location);
+            } else {
+              console.error('Geocode was not successful:', status);
+            }
+          });
+        } catch (error) {
+          console.error('Map initialization failed:', error);
+        }
     };
 
     // Google Maps APIを読み込む
