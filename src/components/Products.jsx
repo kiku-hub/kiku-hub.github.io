@@ -6,6 +6,7 @@ import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 import { images } from "../assets";
+import { useMediaQuery } from "../hooks";
 
 const ProjectCard = ({
   index,
@@ -17,6 +18,8 @@ const ProjectCard = ({
 }) => {
   // 画像オブジェクトの取得（文字列の場合はcomingsoonを使用）
   const imageObj = typeof image === 'string' ? images.comingsoon : image;
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
     <motion.div 
@@ -26,7 +29,14 @@ const ProjectCard = ({
       viewport={{ once: true }}
       className='w-full'>
       <motion.div
-        className='bg-[#1d1836] border-2 border-transparent p-5 rounded-2xl w-full sm:w-[550px] md:w-[650px] lg:w-[800px] mx-auto'
+        whileHover={!isMobile ? {
+          scale: 1.02,
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+        } : undefined}
+        transition={{
+          duration: 0.3,
+        }}
+        className={`bg-[#1d1836] ${isMobile ? 'border-2 border-[#4a4a8f]' : 'hover:bg-[#232631] hover:border-[#4a4a8f] border-2 border-transparent'} transition-all duration-300 p-5 rounded-2xl w-full ${isMobile ? 'mx-auto' : 'sm:w-[550px] md:w-[650px] lg:w-[800px] mx-auto'} shadow-lg ${!isMobile && 'hover:shadow-xl'}`}
       >
         <motion.div
           variants={fadeIn("", "", index * 0.2, 0.5)}
@@ -40,7 +50,7 @@ const ProjectCard = ({
             <img
               src={imageObj.src}
               alt={`${name} - ${subtitle}`}
-              className='w-full h-full object-cover rounded-2xl transition-opacity duration-300 opacity-0'
+              className='w-full h-full object-cover rounded-2xl transition-all duration-500 group-hover:scale-110'
               loading="lazy"
               width="800"
               height="450"
@@ -51,16 +61,16 @@ const ProjectCard = ({
               }}
             />
           </picture>
-          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent z-10" />
         </motion.div>
 
-        <div className="text-white text-[20px] font-bold mb-3">
+        <div className="text-white text-[20px] font-bold mb-3 text-center">
           {name}
         </div>
-        <div className="text-secondary text-[16px] mb-4">
+        <div className="text-secondary text-[16px] mb-4 text-center">
           {subtitle}
         </div>
-        <p className="text-white-100 text-[14px] leading-relaxed">
+        <p className="text-white-100 text-[14px] leading-relaxed tracking-wider whitespace-pre-line">
           {description}
         </p>
       </motion.div>
@@ -69,6 +79,9 @@ const ProjectCard = ({
 };
 
 const Products = () => {
+  // モバイルデバイスかどうかを検出
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   return (
     <section className={`relative w-full h-screen mx-auto bg-gradient-to-b from-transparent to-[#0a0a0a]`}>
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
@@ -86,7 +99,7 @@ const Products = () => {
         }}
       />
 
-      <div className={`absolute inset-0 top-[40%] -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-col items-center justify-center`}>
+      <div className={`absolute inset-0 ${isMobile ? 'top-[42%]' : 'top-[40%]'} -translate-y-1/2 max-w-7xl mx-auto ${styles.paddingX} flex flex-col items-center justify-center`}>
         <motion.div 
           variants={textVariant()}
           initial="hidden"

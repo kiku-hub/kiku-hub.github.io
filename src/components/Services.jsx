@@ -278,10 +278,10 @@ const Services = () => {
   return (
     <section className="relative w-full min-h-screen mx-auto bg-services-pattern bg-cover bg-no-repeat overflow-hidden">
       <div>
-        <motion.div variants={textVariant()}>
-          <p className={styles.sectionSubText}>当社のサービス</p>
-          <h2 className={styles.sectionHeadText}>サービス一覧</h2>
-        </motion.div>
+        <div className="text-center mb-8">
+          <p className={`${styles.sectionSubText} text-secondary`}>事業内容</p>
+          <h2 className={`${styles.sectionHeadText} text-white`}>Services.</h2>
+        </div>
 
         {isMobile ? 
           <MobileServicesList services={uniqueServices} /> : 
