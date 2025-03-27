@@ -34,13 +34,13 @@ const DesktopAboutContent = ({ visibleLayers, highlightedLayer, hoveredFromPyram
 );
 
 // モバイルバージョンのAboutコンテンツ
-const MobileAboutContent = ({ visibleLayers, hoveredFromPyramid, handleHover }) => (
-  <div className="flex flex-col items-center justify-start w-full pt-2">
+const MobileAboutContent = ({ visibleLayers }) => (
+  <div className="flex flex-col items-center justify-start w-full pt-0">
     <MVVContainer
       orderedCards={aboutContent.cards}
       visibleLayers={['mission', 'vision', 'value']}
-      hoveredFromPyramid={hoveredFromPyramid}
-      onHover={handleHover}
+      hoveredFromPyramid={null}
+      onHover={() => {}}
       className="w-full"
     />
   </div>
@@ -121,8 +121,6 @@ const About = () => {
         {isMobile ? (
           <MobileAboutContent 
             visibleLayers={visibleLayers} 
-            hoveredFromPyramid={hoveredFromPyramid} 
-            handleHover={handleHover} 
           />
         ) : (
           <DesktopAboutContent 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { aboutContent } from "../../constants";
+import classNames from "classnames";
 
 // MVVDescriptionコンポーネントを別ファイルに分離
 const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover, isHighlightedFromPyramid }) => {
@@ -51,13 +52,15 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       transform: isMobile 
         ? 'none' 
         : `translateX(${isAnimationVisible ? '0' : '120%'})`,
-      backgroundColor: isHovered 
-        ? `color-mix(in srgb, ${textColor} 15%, #232631)`
-        : '#1d1836',
-      borderColor: isHovered ? textColor : 'transparent',
-      boxShadow: isHovered 
-        ? `0 0 15px ${textColor}40`
-        : 'none',
+      backgroundColor: isMobile 
+        ? '#1d1836' 
+        : (isHovered ? `color-mix(in srgb, ${textColor} 15%, #232631)` : '#1d1836'),
+      borderColor: isMobile 
+        ? 'transparent' 
+        : (isHovered ? textColor : 'transparent'),
+      boxShadow: isMobile 
+        ? 'none' 
+        : (isHovered ? `0 0 15px ${textColor}40` : 'none'),
       transitionDelay: isMobile ? '0s' : `${getDelay() * 0.7}s`,
       transitionProperty: isMobile ? 'none' : 'transform, opacity',
       transitionDuration: isMobile ? '0s' : '0.5s',
@@ -67,18 +70,18 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       width: '100%',
     },
     hoverScale: {
-      transform: isHovered ? 'scale(1.01)' : 'scale(1)',
-      transition: 'transform 0.2s ease',
+      transform: isMobile ? 'scale(1)' : (isHovered ? 'scale(1.01)' : 'scale(1)'),
+      transition: isMobile ? 'none' : 'transform 0.2s ease',
     },
     title: {
       color: textColor,
-      textShadow: isHovered ? `0 0 15px ${textColor}99` : 'none',
-      transition: 'all 0.2s ease',
+      textShadow: isMobile ? 'none' : (isHovered ? `0 0 15px ${textColor}99` : 'none'),
+      transition: isMobile ? 'none' : 'all 0.2s ease',
     },
     description: {
-      color: isHovered ? 'white' : '#e0e0e0',
-      textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none',
-      transition: 'all 0.2s ease',
+      color: isMobile ? '#e0e0e0' : (isHovered ? 'white' : '#e0e0e0'),
+      textShadow: isMobile ? 'none' : (isHovered ? `0 0 10px ${textColor}40` : 'none'),
+      transition: isMobile ? 'none' : 'all 0.2s ease',
       fontSize: isMobile ? '15px' : '16.5px',
       fontWeight: 'bold',
       '& strong': {
@@ -87,32 +90,35 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       }
     },
     subDescription: {
-      borderColor: isHovered ? textColor + '40' : '#4a4a8f30'
+      borderColor: isMobile ? '#4a4a8f30' : (isHovered ? textColor + '40' : '#4a4a8f30')
     },
     overlay: {
-      opacity: isHovered ? 1 : 0,
+      opacity: isMobile ? 0 : (isHovered ? 1 : 0),
       background: `radial-gradient(circle at center, ${textColor}08 0%, transparent 60%)`,
-      transition: 'opacity 0.2s ease',
+      transition: isMobile ? 'none' : 'opacity 0.2s ease',
     }
   }), [isHovered, textColor, isAnimationVisible, getDelay, isMobile]);
 
   const handleMouseEnter = useCallback(() => {
+    if (isMobile) return;
     requestAnimationFrame(() => {
       setIsHovered(true);
       onHover(title.toLowerCase());
     });
-  }, [onHover, title]);
+  }, [onHover, title, isMobile]);
   
   const handleMouseLeave = useCallback(() => {
+    if (isMobile) return;
     requestAnimationFrame(() => {
       setIsHovered(false);
       onHover(null);
     });
-  }, [onHover]);
+  }, [onHover, isMobile]);
 
   useEffect(() => {
+    if (isMobile) return;
     setIsHovered(isHighlightedFromPyramid);
-  }, [isHighlightedFromPyramid]);
+  }, [isHighlightedFromPyramid, isMobile]);
 
   // モバイル用スタイル計算
   const getMobileStyleAdjustments = () => {
@@ -129,19 +135,22 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
 
   return (
     <div
-      className="border-2 border-transparent p-4 md:p-5 rounded-xl mb-2 last:mb-0 flex flex-col shadow-md relative"
-      style={{...styles.container, ...getMobileStyleAdjustments()}}
+      className={classNames('flex flex-col rounded-md border p-5 mb-7 sm:p-6 max-w-full', getMobileStyleAdjustments())}
+      style={{
+        ...styles.container,
+        marginBottom: isMobile ? '15px' : (containerIndex === 2 ? '0' : '30px'),
+        padding: isMobile ? '15px' : '',
+      }}
+      onMouseEnter={isMobile ? undefined : () => setIsHovered(true)}
+      onMouseLeave={isMobile ? undefined : () => setIsHovered(false)}
     >
-      <div
-        style={styles.hoverScale}
-        className="relative w-full"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div 
-          className="absolute inset-0 rounded-xl transition-opacity duration-300"
-          style={styles.overlay}
-        />
+      {/* オーバーレイ効果 */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full rounded-md"
+        style={styles.overlay}
+      />
+      {/* コンテンツコンテナ */}
+      <div className="relative z-10" style={styles.hoverScale}>
         <h3 
           className="text-[18px] md:text-[20px] font-bold mb-2 md:mb-4 relative z-10 transition-all duration-300"
           style={styles.title}

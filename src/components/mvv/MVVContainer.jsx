@@ -6,7 +6,7 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 767;
 
   return (
-    <div className={`w-full md:w-full ${isMobile ? '-mt-4' : '-mt-24'} relative h-auto md:h-[550px] ${className}`}>
+    <div className={`w-full md:w-full ${isMobile ? '-mt-8' : '-mt-24'} relative h-auto md:h-[550px] ${className}`}>
       <div className="relative w-full h-full">
         {orderedCards.map((card, index) => {
           const isVisible = visibleLayers.includes(card.id.toLowerCase());
@@ -65,8 +65,8 @@ const MVVContainer = ({ orderedCards, visibleLayers, hoveredFromPyramid, onHover
                 title={card.title}
                 description={card.description}
                 isVisible={isVisible}
-                onHover={onHover}
-                isHighlightedFromPyramid={hoveredFromPyramid === card.id.toLowerCase()}
+                onHover={isMobile ? () => {} : onHover}
+                isHighlightedFromPyramid={isMobile ? false : hoveredFromPyramid === card.id.toLowerCase()}
               />
             </div>
           );
