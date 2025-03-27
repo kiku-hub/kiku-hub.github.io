@@ -35,7 +35,7 @@ const DesktopAboutContent = ({ visibleLayers, highlightedLayer, hoveredFromPyram
 
 // モバイルバージョンのAboutコンテンツ
 const MobileAboutContent = ({ visibleLayers, hoveredFromPyramid, handleHover }) => (
-  <div className="flex flex-col gap-16 items-center justify-center">
+  <div className="flex flex-col items-center justify-start w-full">
     <MVVContainer
       orderedCards={aboutContent.cards.slice().reverse()}
       visibleLayers={visibleLayers}
@@ -98,8 +98,8 @@ const About = () => {
   }, [hasAnimated]);
 
   return (
-    <div ref={sectionRef} className={`w-full ${!isMobile ? 'h-screen' : ''} flex flex-col`}>
-      <div className="text-center mb-6">
+    <div ref={sectionRef} className={`w-full ${!isMobile ? 'h-screen' : 'min-h-screen'} flex flex-col`}>
+      <div className={`text-center ${isMobile ? 'mb-2' : 'mb-6'}`}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -117,7 +117,7 @@ const About = () => {
         </motion.div>
       </div>
 
-      <div className={`flex-1 flex items-center justify-center ${!isMobile ? 'w-full h-[calc(100vh-150px)] max-w-7xl mx-auto' : ''}`}>
+      <div className={`flex-1 flex items-center justify-center ${!isMobile ? 'w-full h-[calc(100vh-150px)] max-w-7xl mx-auto' : 'mt-[-20px]'}`}>
         {isMobile ? (
           <MobileAboutContent 
             visibleLayers={visibleLayers} 

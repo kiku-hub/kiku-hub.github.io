@@ -19,6 +19,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
   
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimationVisible, setIsAnimationVisible] = useState(false);
+  const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth <= 767, []);
 
   // アニメーションの状態管理を修正
   useEffect(() => {
@@ -55,7 +56,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       boxShadow: isHovered 
         ? `0 0 15px ${textColor}40`
         : 'none',
-      transitionDelay: `${getDelay() * 0.7}s`,
+      transitionDelay: isMobile ? '0s' : `${getDelay() * 0.7}s`,
       transitionProperty: 'transform, opacity',
       transitionDuration: '0.5s',
       transitionTimingFunction: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
@@ -76,7 +77,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       color: isHovered ? 'white' : '#e0e0e0',
       textShadow: isHovered ? `0 0 10px ${textColor}40` : 'none',
       transition: 'all 0.2s ease',
-      fontSize: '16.5px',
+      fontSize: isMobile ? '15px' : '16.5px',
       fontWeight: 'bold',
       '& strong': {
         color: 'white',
@@ -91,7 +92,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       background: `radial-gradient(circle at center, ${textColor}08 0%, transparent 60%)`,
       transition: 'opacity 0.2s ease',
     }
-  }), [isHovered, textColor, isAnimationVisible, getDelay]);
+  }), [isHovered, textColor, isAnimationVisible, getDelay, isMobile]);
 
   const handleMouseEnter = useCallback(() => {
     requestAnimationFrame(() => {
@@ -111,12 +112,23 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
     setIsHovered(isHighlightedFromPyramid);
   }, [isHighlightedFromPyramid]);
 
+  // モバイル用スタイル計算
+  const getMobileStyleAdjustments = () => {
+    if (typeof window === 'undefined') return {};
+    const isMobile = window.innerWidth <= 767;
+    if (!isMobile) return {};
+    
+    return {
+      marginBottom: '30px'
+    };
+  };
+
   if (!isVisibleProp) return null;
 
   return (
     <div
-      className="border-2 border-transparent p-5 rounded-xl mb-3 last:mb-0 flex flex-col shadow-md relative"
-      style={styles.container}
+      className="border-2 border-transparent p-5 md:p-5 p-4 rounded-xl mb-3 last:mb-0 flex flex-col shadow-md relative"
+      style={{...styles.container, ...getMobileStyleAdjustments()}}
     >
       <div
         style={styles.hoverScale}
@@ -129,21 +141,21 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
           style={styles.overlay}
         />
         <h3 
-          className="text-[20px] font-bold mb-4 relative z-10 transition-all duration-300"
+          className="text-[18px] md:text-[20px] font-bold mb-3 md:mb-4 relative z-10 transition-all duration-300"
           style={styles.title}
         >
           {title}
         </h3>
         
-        <div className="space-y-3 flex-grow relative z-10">
+        <div className="space-y-2 md:space-y-3 flex-grow relative z-10">
           <p 
-            className="text-[15px] tracking-wide leading-relaxed font-medium transition-all duration-300"
+            className="text-[14px] md:text-[15px] tracking-wide leading-relaxed font-medium transition-all duration-300"
             style={styles.description}
             dangerouslySetInnerHTML={{ __html: description }}
           />
           {cardDetails?.subDescription && (
             <p 
-              className="text-white/40 text-[12px] tracking-wide italic leading-relaxed pl-3 border-l transition-all duration-300"
+              className="text-white/40 text-[11px] md:text-[12px] tracking-wide italic leading-relaxed pl-3 border-l transition-all duration-300"
               style={styles.subDescription}
             >
               {cardDetails.subDescription}
