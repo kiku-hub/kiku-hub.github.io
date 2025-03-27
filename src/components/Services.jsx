@@ -76,12 +76,19 @@ const SWIPER_CONFIG = {
   grabCursor: true,
   centeredSlides: true,
   loop: true,
-  slidesPerView: "auto",
   speed: 800,
-  initialSlide: 2,
+  initialSlide: 0,
   modules: [Autoplay, EffectCoverflow, Navigation],
   navigation: true,
   className: "services-swiper",
+  slidesPerView: "auto",
+  coverflowEffect: {
+    rotate: 0,
+    stretch: 0,
+    depth: 100,
+    modifier: 1,
+    slideShadows: false,
+  },
   autoplay: {
     delay: 3500,
     pauseOnMouseEnter: true,
@@ -92,42 +99,10 @@ const SWIPER_CONFIG = {
     0: { 
       slidesPerView: 1,
       spaceBetween: 20,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-      }
     },
-    768: {
-      slidesPerView: "auto",
-      spaceBetween: -20,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-      }
-    },
-    1024: { 
+    768: { 
       slidesPerView: "auto",
       spaceBetween: -30,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-      }
-    },
-    1440: { 
-      slidesPerView: "auto",
-      spaceBetween: -30,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-      }
     }
   }
 };
@@ -219,8 +194,8 @@ const MobileServicesList = React.memo(({ services }) => (
 
 // デスクトップ用Swiperカルーセル
 const DesktopServicesCarousel = React.memo(({ services }) => (
-  <div className="flex-1 w-full relative flex items-center justify-center px-4 mx-auto max-w-[1800px]">
-    <div className="w-full relative">
+  <div className="flex-1 w-full h-full relative flex items-center justify-center mx-auto">
+    <div className="w-full max-w-[1440px] mx-auto relative">
       <div className={STYLES.swiper.gradient.left} />
       <div className={STYLES.swiper.gradient.right} />
       
@@ -254,14 +229,20 @@ const useServices = () => {
       Object.entries(imageMap).find(([key]) => title.includes(key))?.[1] || null
     );
 
+    // 「AIサーバー構築事業」を先頭にするための並べ替え
+    const aiServer = services.find(service => service.title.includes('AI サーバー'));
     const itSolution = services.find(service => service.title.includes('ITソリューション'));
-    const otherServices = services.filter(service => !service.title.includes('ITソリューション'));
+    const otherServices = services.filter(service => 
+      !service.title.includes('ITソリューション') && 
+      !service.title.includes('AI サーバー')
+    );
     
-    const sortedServices = [itSolution, ...otherServices].map(service => ({
+    const sortedServices = [aiServer, itSolution, ...otherServices].filter(Boolean).map(service => ({
       ...service,
       image: getServiceImage(service.title)
     }));
 
+    // ループ用に同じサービスを3セット作成
     return [...sortedServices, ...sortedServices, ...sortedServices];
   }, []);
 };
@@ -270,7 +251,7 @@ const useServices = () => {
 const Services = () => {
   const allServices = useServices();
   const uniqueServices = useMemo(() => allServices.slice(0, 4), [allServices]); // 重複なしのサービス一覧をメモ化
-  // モバイルデバイスかどうかを検出
+  // モバイルデバイスかどうかを検出（767px以下をモバイルと判定）
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
@@ -291,11 +272,24 @@ const Services = () => {
 
       <style dangerouslySetInnerHTML={{
         __html: `
+          .services-swiper {
+            width: 100%;
+            padding-top: 20px;
+            padding-bottom: 50px;
+            overflow: visible !important;
+          }
+          
+          .services-swiper .swiper-wrapper {
+            align-items: center;
+          }
+          
           .services-swiper .swiper-slide {
             transition: all 0.4s ease;
             opacity: 0.4;
             transform: scale(0.85);
             will-change: transform, opacity;
+            width: 380px !important;
+            height: auto !important;
           }
           
           .services-swiper .swiper-slide-active {
@@ -331,7 +325,7 @@ const Services = () => {
             font-weight: bold;
           }
   
-          @media (min-width: 640px) {
+          @media (min-width: 768px) {
             .services-swiper .swiper-button-next,
             .services-swiper .swiper-button-prev {
               width: 44px;
@@ -344,7 +338,11 @@ const Services = () => {
             }
           }
   
-          @media (max-width: 639px) {
+          @media (max-width: 767px) {
+            .services-swiper .swiper-slide {
+              width: 100% !important;
+            }
+            
             .services-swiper .swiper-button-next,
             .services-swiper .swiper-button-prev {
               display: none;
