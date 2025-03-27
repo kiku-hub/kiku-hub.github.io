@@ -122,7 +122,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose, onScroll, canClose }) => {
               <p>
                 本ポリシーに関するお問い合わせ、または保有個人情報に関する開示請求等のお手続きに関しては、下記までご連絡ください。<br /><br />
                 ORCX株式会社<br />
-                住所：東京都世田谷区4-18-7<br />
+                住所：東京都世田谷区<br />
                 メールアドレス：info@orcx.co.jp<br />
                 受付時間：平日9:00～18:00（土日祝および当社指定休業日を除く）
               </p>

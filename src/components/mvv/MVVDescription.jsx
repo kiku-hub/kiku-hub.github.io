@@ -9,6 +9,16 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
     [title]
   );
 
+  // タイトルに基づいてコンテナインデックスを計算
+  const containerIndex = useMemo(() => {
+    switch (title.toLowerCase()) {
+      case 'mission': return 2;
+      case 'vision': return 1;
+      case 'value': return 0;
+      default: return 0;
+    }
+  }, [title]);
+
   const textColor = useMemo(() => {
     switch (title.toLowerCase()) {
       case 'mission': return '#8dd3c7';
@@ -138,7 +148,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
       className={classNames('flex flex-col rounded-md border p-5 mb-7 sm:p-6 max-w-full', getMobileStyleAdjustments())}
       style={{
         ...styles.container,
-        marginBottom: isMobile ? '15px' : (containerIndex === 2 ? '0' : '30px'),
+        marginBottom: isMobile ? '15px' : '30px',
         padding: isMobile ? '15px' : '',
       }}
       onMouseEnter={isMobile ? undefined : () => setIsHovered(true)}
