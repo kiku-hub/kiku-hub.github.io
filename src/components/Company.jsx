@@ -403,7 +403,7 @@ const Company = () => {
       </div>
 
       <div className={`mt-8 flex ${isMobile ? 'flex-col' : 'flex-col lg:flex-row'} gap-6`}>
-        <div className={`${isMobile ? 'order-2' : 'order-1'} flex-1`}>
+        <div className={`${isMobile ? 'order-1' : 'order-1'} flex-1`}>
           <div className="flex flex-col space-y-2">
             {companyInfo.details.map((detail, index) => (
               <CompanyDetail
@@ -415,7 +415,7 @@ const Company = () => {
           </div>
         </div>
 
-        <div className={`${isMobile ? 'order-1 mb-4' : 'order-2'} flex-1`}>
+        <div className={`${isMobile ? 'order-2 mt-6' : 'order-2'} flex-1`}>
           <GoogleMap />
         </div>
       </div>
