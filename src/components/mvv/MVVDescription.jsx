@@ -47,8 +47,10 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
   // スタイルをメモ化
   const styles = useMemo(() => ({
     container: {
-      opacity: isAnimationVisible ? 1 : 0,
-      transform: `translateX(${isAnimationVisible ? '0' : '120%'})`,
+      opacity: isMobile ? 1 : (isAnimationVisible ? 1 : 0),
+      transform: isMobile 
+        ? 'none' 
+        : `translateX(${isAnimationVisible ? '0' : '120%'})`,
       backgroundColor: isHovered 
         ? `color-mix(in srgb, ${textColor} 15%, #232631)`
         : '#1d1836',
@@ -57,10 +59,10 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
         ? `0 0 15px ${textColor}40`
         : 'none',
       transitionDelay: isMobile ? '0s' : `${getDelay() * 0.7}s`,
-      transitionProperty: 'transform, opacity',
-      transitionDuration: '0.5s',
+      transitionProperty: isMobile ? 'none' : 'transform, opacity',
+      transitionDuration: isMobile ? '0s' : '0.5s',
       transitionTimingFunction: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
-      willChange: 'transform, opacity, background-color, box-shadow',
+      willChange: isMobile ? 'auto' : 'transform, opacity, background-color, box-shadow',
       position: 'relative',
       width: '100%',
     },
@@ -119,7 +121,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
     if (!isMobile) return {};
     
     return {
-      marginBottom: '30px'
+      marginBottom: '15px'
     };
   };
 
@@ -127,7 +129,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
 
   return (
     <div
-      className="border-2 border-transparent p-5 md:p-5 p-4 rounded-xl mb-3 last:mb-0 flex flex-col shadow-md relative"
+      className="border-2 border-transparent p-4 md:p-5 rounded-xl mb-2 last:mb-0 flex flex-col shadow-md relative"
       style={{...styles.container, ...getMobileStyleAdjustments()}}
     >
       <div
@@ -141,13 +143,13 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
           style={styles.overlay}
         />
         <h3 
-          className="text-[18px] md:text-[20px] font-bold mb-3 md:mb-4 relative z-10 transition-all duration-300"
+          className="text-[18px] md:text-[20px] font-bold mb-2 md:mb-4 relative z-10 transition-all duration-300"
           style={styles.title}
         >
           {title}
         </h3>
         
-        <div className="space-y-2 md:space-y-3 flex-grow relative z-10">
+        <div className="space-y-1 md:space-y-3 flex-grow relative z-10">
           <p 
             className="text-[14px] md:text-[15px] tracking-wide leading-relaxed font-medium transition-all duration-300"
             style={styles.description}
@@ -155,7 +157,7 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
           />
           {cardDetails?.subDescription && (
             <p 
-              className="text-white/40 text-[11px] md:text-[12px] tracking-wide italic leading-relaxed pl-3 border-l transition-all duration-300"
+              className="text-white/40 text-[11px] md:text-[12px] tracking-wide italic leading-relaxed pl-2 md:pl-3 border-l transition-all duration-300"
               style={styles.subDescription}
             >
               {cardDetails.subDescription}
