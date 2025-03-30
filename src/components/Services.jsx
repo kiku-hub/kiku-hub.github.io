@@ -86,7 +86,7 @@ const SWIPER_CONFIG = {
     rotate: 0,
     stretch: 0,
     depth: 100,
-    modifier: 1,
+    modifier: 0.8,
     slideShadows: false,
   },
   autoplay: {
@@ -102,7 +102,7 @@ const SWIPER_CONFIG = {
     },
     768: { 
       slidesPerView: "auto",
-      spaceBetween: -30,
+      spaceBetween: 0,
     }
   }
 };
@@ -301,7 +301,8 @@ const Services = () => {
           .services-swiper .swiper-slide-prev,
           .services-swiper .swiper-slide-next {
             opacity: 0.6;
-            transform: scale(0.9);
+            transform: scale(0.85);
+            z-index: 1;
           }
   
           .services-swiper .swiper-button-next,
