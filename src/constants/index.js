@@ -142,7 +142,7 @@ const companyInfo = {
     },
     {
       label: "所在地",
-      value: "東京都世田谷区",
+      value: "東京都世田谷区玉川3-20-2 マノア玉川第三ビル 501",
       icon: "location"
     },
     {

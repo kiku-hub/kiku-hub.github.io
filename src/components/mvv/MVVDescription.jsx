@@ -151,8 +151,8 @@ const MVVDescription = ({ title, description, isVisible: isVisibleProp, onHover,
         marginBottom: isMobile ? '15px' : '30px',
         padding: isMobile ? '15px' : '',
       }}
-      onMouseEnter={isMobile ? undefined : () => setIsHovered(true)}
-      onMouseLeave={isMobile ? undefined : () => setIsHovered(false)}
+      onMouseEnter={isMobile ? undefined : handleMouseEnter}
+      onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >
       {/* オーバーレイ効果 */}
       <div 

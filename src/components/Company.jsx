@@ -279,12 +279,59 @@ const GoogleMap = () => {
         if (markersRef.current.base) {
           markersRef.current.base.setMap(null);
         }
+
+        // カスタムマーカーアイコンの設定
+        const markerIcon = {
+          path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+          fillColor: '#ffffff',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+          scale: 2,
+          anchor: new window.google.maps.Point(12, 22),
+        };
+
         markersRef.current.base = new window.google.maps.Marker({
-        position: location,
-        map: newMap,
+          position: location,
+          map: newMap,
+          icon: markerIcon,
           animation: window.google.maps.Animation.DROP,
-          title: companyInfo.title
+          title: companyInfo.details.find(detail => detail.icon === 'location')?.value
         });
+
+        // カスタムInfoWindowのスタイル
+        const infoWindowContent = `
+          <div style="
+            padding: 16px 20px;
+            background: rgba(26, 29, 41, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-width: 280px;
+          ">
+            <div style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 1px;
+              background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+              );
+            "></div>
+            <div style="
+              color: rgba(255, 255, 255, 0.9);
+              font-size: 15px;
+              line-height: 1.6;
+              font-family: 'Noto Sans JP', sans-serif;
+              letter-spacing: 0.02em;
+            ">${companyInfo.details.find(detail => detail.icon === 'location')?.value || ''}</div>
+          </div>
+        `;
 
         // infoWindowを作成
         if (infoWindowRef.current) {
@@ -292,7 +339,19 @@ const GoogleMap = () => {
         }
         
         infoWindowRef.current = new window.google.maps.InfoWindow({
-          content: `<div style="color: #333; font-weight: bold; padding: 5px;">${companyInfo.title}</div>`
+          content: infoWindowContent,
+          pixelOffset: new window.google.maps.Size(0, -15),
+          maxWidth: 320,
+          arrowStyle: 2
+        });
+
+        // マーカーホバー時のアニメーション
+        markersRef.current.base.addListener('mouseover', () => {
+          if (markersRef.current.base.getAnimation() !== null) return;
+          markersRef.current.base.setAnimation(window.google.maps.Animation.BOUNCE);
+          setTimeout(() => {
+            markersRef.current.base.setAnimation(null);
+          }, 750);
         });
 
         // マーカークリックでInfoWindowを表示
