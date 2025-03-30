@@ -5,7 +5,7 @@ import * as random from "maath/random/dist/maath-random.esm";
 import { useMediaQuery } from "../../hooks";
 
 // モバイル用と通常用の星の数を定数として定義
-const MOBILE_STAR_COUNT = 1000;
+const MOBILE_STAR_COUNT = 1800;
 const DESKTOP_STAR_COUNT = 3000;
 
 const Stars = ({ isMobile }) => {
