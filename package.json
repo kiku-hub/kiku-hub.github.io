@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run optimize:assets && vite build",
+    "build": "NODE_ENV=production npm run optimize:assets && vite build",
     "preview": "vite preview",
     "start": "wrangler pages dev docs",
-    "deploy:staging": "npm run build && wrangler pages deploy docs --branch staging",
-    "deploy:production": "npm run build && wrangler pages deploy docs --branch main",
+    "deploy:staging": "NODE_ENV=production npm run build && wrangler pages deploy docs --branch staging",
+    "deploy:production": "NODE_ENV=production npm run build && wrangler pages deploy docs --branch main",
     "optimize:assets": "bash scripts/optimize-assets.sh",
-    "optimize-models": "node scripts/optimize-glb.js"
+    "optimize-models": "node scripts/optimize-glb.js",
+    "clean": "rm -rf node_modules/.vite docs"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.3.4",

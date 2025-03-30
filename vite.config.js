@@ -24,46 +24,27 @@ export default defineConfig({
           if (/\.svg$/i.test(name ?? '')) {
             return 'assets/icons/[name].[hash][extname]'
           }
-          if (/\.wasm$/i.test(name ?? '')) {
-            return 'assets/wasm/[name].[hash][extname]'
-          }
           return 'assets/[name].[hash][extname]'
         },
-        manualChunks: (id) => {
-          if (id.includes('three') || id.includes('drei') || id.includes('fiber')) {
-            return 'three-vendor';
-          }
-          
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'swiper'],
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei']
+        },
+        format: 'es',
+        generatedCode: {
+          preset: 'es2015',
+          constBindings: true
         }
       }
     },
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false,
-        drop_debugger: false,
-        pure_funcs: [],
-        passes: 1,
-        ecma: 2020
-      },
-      mangle: {
-        safari10: true
-      },
-      format: {
-        comments: false,
-        ecma: 2020
-      }
-    },
+    minify: 'esbuild',
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 2000,
     emptyOutDir: true,
     copyPublicDir: true,
     reportCompressedSize: false,
-    target: 'es2020'
+    target: 'es2015'
   },
   resolve: {
     alias: {
@@ -71,31 +52,28 @@ export default defineConfig({
       '@assets': resolve(__dirname, 'src/assets'),
       '@components': resolve(__dirname, 'src/components'),
       '@constants': resolve(__dirname, 'src/constants'),
-      '@utils': resolve(__dirname, 'src/utils'),
-      'three': 'three'
+      '@utils': resolve(__dirname, 'src/utils')
     }
   },
   optimizeDeps: {
     include: [
       'react', 
       'react-dom', 
-      'three', 
-      '@react-three/fiber', 
-      '@react-three/drei',
       'framer-motion',
       'swiper'
     ],
-    exclude: ['@google/model-viewer'],
+    exclude: ['three', '@react-three/fiber', '@react-three/drei', '@google/model-viewer'],
     esbuildOptions: {
-      target: 'es2020'
+      target: 'es2015'
     }
   },
   esbuild: {
-    target: 'es2020',
+    target: 'es2015',
     treeShaking: true,
     minifyIdentifiers: true,
     minifySyntax: true,
-    minifyWhitespace: true
+    minifyWhitespace: true,
+    legalComments: 'none'
   },
   server: {
     host: true,
@@ -120,8 +98,7 @@ export default defineConfig({
     '**/*.png',
     '**/*.gif',
     '**/*.svg',
-    '**/*.webp',
-    '**/*.wasm'
+    '**/*.webp'
   ],
   publicDir: 'public'
 })

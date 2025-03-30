@@ -15,13 +15,19 @@
     <title>ORCX株式会社</title>
     <script>
       // サービスワーカーの登録
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful');
-          }).catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
+          try {
+            navigator.serviceWorker.register('/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                console.error('ServiceWorker registration failed: ', err);
+              });
+          } catch (e) {
+            console.error('ServiceWorker registration error: ', e);
+          }
         });
       }
     </script>

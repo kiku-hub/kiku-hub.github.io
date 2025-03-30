@@ -15,19 +15,25 @@
     <title>ORCX株式会社</title>
     <script>
       // サービスワーカーの登録
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful');
-          }).catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
+          try {
+            navigator.serviceWorker.register('/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(err => {
+                console.error('ServiceWorker registration failed: ', err);
+              });
+          } catch (e) {
+            console.error('ServiceWorker registration error: ', e);
+          }
         });
       }
     </script>
-    <script type="module" crossorigin src="/assets/main.af36f2aa.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor.726de139.js">
-    <link rel="modulepreload" crossorigin href="/assets/three-vendor.7f8b9649.js">
+    <script type="module" crossorigin src="/assets/main.9fa0b534.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor.5114477a.js">
+    <link rel="modulepreload" crossorigin href="/assets/three-vendor.0c18b6e6.js">
     <link rel="stylesheet" href="/assets/style.49c93d26.css">
   </head>
   <body>
