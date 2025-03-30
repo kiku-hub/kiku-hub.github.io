@@ -31,8 +31,16 @@ const GoogleMap = () => {
   const scriptRef = useRef(null);
   // モバイルデバイスかどうかを検出
   const isMobile = useMediaQuery("(max-width: 767px)");
+  // 地図の読み込みエラーの状態
+  const [mapLoadError, setMapLoadError] = React.useState(false);
 
   useEffect(() => {
+    // 本番環境でエラーが発生している場合は、直接フォールバックを表示
+    if (window.location.hostname === 'www.orcx.co.jp') {
+      setMapLoadError(true);
+      return;
+    }
+
     // DOMの準備ができていることを確認
     if (!mapRef.current) {
       console.warn('Map container is not ready');
@@ -49,6 +57,7 @@ const GoogleMap = () => {
     const handleLoadError = (error) => {
       console.error('Google Maps API loading failed:', error);
       isGoogleMapsLoading = false;
+      setMapLoadError(true);
     };
 
     // 初期化関数を定義
@@ -78,8 +87,11 @@ const GoogleMap = () => {
         }
     };
 
-    // Google Maps APIを読み込む
+    // Google Maps APIをロード
     const loadGoogleMapsAPI = () => {
+      // エラー状態の場合は何もしない
+      if (mapLoadError) return;
+
       // 既にグローバルなスクリプトロード中の場合は待機
       if (isGoogleMapsLoading) {
         // 定期的にAPIのロードが完了したかチェック
@@ -93,6 +105,8 @@ const GoogleMap = () => {
         // 10秒後にタイムアウト
         setTimeout(() => {
           clearInterval(checkInterval);
+          console.error('Google Maps API loading timeout');
+          setMapLoadError(true);
         }, 10000);
         return;
       }
@@ -108,15 +122,31 @@ const GoogleMap = () => {
       
       // APIをロード
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=geocoding&loading=async`;
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+      
+      // APIキーが存在しない場合のフォールバック処理
+      if (!apiKey) {
+        console.error('Google Maps API key is not defined');
+        return;
+      }
+
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&loading=async`;
       script.async = true;
       script.defer = true;
-      script.onload = () => {
+
+      // グローバルコールバック関数を定義
+      window.initMap = () => {
         isGoogleMapsLoaded = true;
         isGoogleMapsLoading = false;
         initializeMapWithAPI();
       };
-      script.onerror = handleLoadError;
+
+      script.onerror = (error) => {
+        console.error('Google Maps API loading failed:', error);
+        isGoogleMapsLoading = false;
+        setMapLoadError(true);
+      };
+
       document.head.appendChild(script);
       scriptRef.current = script;
     };
@@ -381,7 +411,38 @@ const GoogleMap = () => {
         setMap(null);
       }
     };
-  }, [isMobile]);
+  }, [isMobile, mapLoadError]);
+
+  // 地図読み込みエラー時のフォールバックUI
+  if (mapLoadError) {
+    return (
+      <div 
+        className="w-full h-full min-h-[400px] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl flex items-center justify-center"
+        style={{ 
+          position: 'relative', 
+          height: isMobile ? '350px' : '400px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: '#1a1d29'
+        }}
+      >
+        <div className="text-center p-6">
+          <BiMap size={48} className="text-white/50 mx-auto mb-4" />
+          <h3 className="text-white text-xl mb-2">地図を表示できません</h3>
+          <p className="text-white/70 mb-4">
+            {companyInfo.details.find(detail => detail.icon === 'location')?.value}
+          </p>
+          <a 
+            href="https://goo.gl/maps/NnMpGrAVVR7hvwEp7" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-primary/80 hover:bg-primary text-white py-2 px-4 rounded-lg transition-all duration-300"
+          >
+            Google マップで見る
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 

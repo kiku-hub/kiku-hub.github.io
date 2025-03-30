@@ -24,14 +24,19 @@ export default defineConfig({
           if (/\.svg$/i.test(name ?? '')) {
             return 'assets/icons/[name].[hash][extname]'
           }
+          if (/\.wasm$/i.test(name ?? '')) {
+            return 'assets/wasm/[name].[hash][extname]'
+          }
           return 'assets/[name].[hash][extname]'
         },
-        manualChunks: {
-          'three': ['three', '@react-three/fiber', '@react-three/drei'],
-          'react': ['react', 'react-dom', 'react-router-dom'],
-          'animation': ['framer-motion'],
-          'swiper': ['swiper'],
-          'utils': ['maath']
+        manualChunks: (id) => {
+          if (id.includes('three') || id.includes('drei') || id.includes('fiber')) {
+            return 'three-vendor';
+          }
+          
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         }
       }
     },
@@ -39,10 +44,10 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: process.env.NODE_ENV === 'production',
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2,
+        drop_console: false,
+        drop_debugger: false,
+        pure_funcs: [],
+        passes: 1,
         ecma: 2020
       },
       mangle: {
@@ -53,7 +58,7 @@ export default defineConfig({
         ecma: 2020
       }
     },
-    assetsInlineLimit: 0,
+    assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 2000,
     emptyOutDir: true,
     copyPublicDir: true,
@@ -66,7 +71,8 @@ export default defineConfig({
       '@assets': resolve(__dirname, 'src/assets'),
       '@components': resolve(__dirname, 'src/components'),
       '@constants': resolve(__dirname, 'src/constants'),
-      '@utils': resolve(__dirname, 'src/utils')
+      '@utils': resolve(__dirname, 'src/utils'),
+      'three': 'three'
     }
   },
   optimizeDeps: {
@@ -96,7 +102,7 @@ export default defineConfig({
     strictPort: true,
     port: 5173,
     headers: {
-      'Cache-Control': 'public, max-age=31536000',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Service-Worker-Allowed': '/'
     }
   },
@@ -104,7 +110,7 @@ export default defineConfig({
     port: 5174,
     host: true,
     headers: {
-      'Cache-Control': 'public, max-age=31536000',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Service-Worker-Allowed': '/'
     }
   },
@@ -114,7 +120,8 @@ export default defineConfig({
     '**/*.png',
     '**/*.gif',
     '**/*.svg',
-    '**/*.webp'
+    '**/*.webp',
+    '**/*.wasm'
   ],
   publicDir: 'public'
 })
